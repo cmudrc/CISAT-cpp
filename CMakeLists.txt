@@ -32,4 +32,5 @@ set(SOURCE_FILES_MAIN
     src/utils/customprint.cpp
     src/utils/stats.cpp)
 
+
 add_executable(cisat ${SOURCE_FILES_MAIN})
