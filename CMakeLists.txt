@@ -20,6 +20,7 @@ set(SOURCE_FILES_MAIN
     include/utils/makerandom.hpp
     include/utils/customprint.hpp
     include/utils/stats.hpp
+    include/problem_statements/ackley.hpp
     src/agent_team/agent.cpp
     src/agent_team/team.cpp
     src/agent_team/multipleteams.cpp
@@ -30,7 +31,8 @@ set(SOURCE_FILES_MAIN
     src/utils/objective.cpp
     src/utils/makerandom.cpp
     src/utils/customprint.cpp
-    src/utils/stats.cpp)
+    src/utils/stats.cpp
+    src/problem_statements/ackley.cpp)
 
 
 add_executable(cisat ${SOURCE_FILES_MAIN})

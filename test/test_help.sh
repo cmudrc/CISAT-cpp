@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Test the benchmarking functionality
-../build/bin/CISAT --help
+../build/bin/cisat --help

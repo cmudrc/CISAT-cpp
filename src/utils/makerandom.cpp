@@ -5,6 +5,11 @@ long double uniform(long double ub, long double lb){
     return lb + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(ub-lb)));
 }
 
+//// This returns a uniform long double between upper and lower bounds
+int uniform_int(int ub, int lb){
+    return lb + (rand() % (ub - lb + 1));
+}
+
 //// Seeds rand with the current time
 void seed_time(void){
     srand(static_cast <unsigned> (time(0)));

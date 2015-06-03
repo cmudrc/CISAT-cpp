@@ -11,6 +11,9 @@ using namespace std;
 // Function to return a uniform long double
 long double uniform(long double ub, long double lb);
 
+// Function to return a uniform int
+int uniform_int(int ub, int lb);
+
 // Function to seed wrt time
 void seed_time(void);
 

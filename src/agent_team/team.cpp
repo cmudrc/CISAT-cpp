@@ -21,8 +21,10 @@ void Team::new_start(void){
     }
 
     // Instantiate the sharing vectors for agents
-    Agent().all_fx_current.assign(p.n_agents, 0.0);
-    Agent().all_xx_current.assign(p.n_agents, vector<long double>(p.D, 0.0));
+    for (int i=0; i < p.n_agents; i++){
+        Agent().all_fx_current.push_back(0.0);
+        Agent().all_xx_current.push_back(Solution());
+    }
 
     // Give agents starting locations
     for(int i=0; i<p.n_agents; i++){
