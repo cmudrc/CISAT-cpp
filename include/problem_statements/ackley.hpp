@@ -10,9 +10,9 @@
 class Solution {
 public:
     // Constants
-    int number_of_move_ops = 20;
-    long double upper_bound = 10;
-    long double lower_bound = -10;
+    constexpr int number_of_move_ops = 20;
+    constexpr long double upper_bound = 10;
+    constexpr long double lower_bound = -10;
 
     // Functions
     Solution(void);
