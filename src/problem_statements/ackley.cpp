@@ -3,12 +3,12 @@
 Solution::Solution(void) {
     // Init that which must be init'd
     id = rand();
-    ubnd = 10;
-    lbnd = -10;
-    number_of_move_ops = 60;
+    upper_bound = 10;
+    lower_bound = -10;
+    number_of_move_ops = 10;
 
     // Create the x vector based on upper and lower bounds from problem statement
-    x = random_vector(static_cast <unsigned long> (number_of_move_ops/2), ubnd, lbnd);
+    x = random_vector(static_cast <unsigned long> (number_of_move_ops/2), upper_bound, lower_bound);
 
     // Compute the quality.
     compute_quality();
@@ -31,8 +31,7 @@ void Solution::compute_quality(void) {
 }
 
 void Solution::apply_move_operator(int n, long double size) {
-    cout << n << ", " << size << endl;
-
+    size *= tan(uniform(M_PI/2, 0.0));
     int plus_or_minus = 2*(n % 2) - 1;
     int dimension = n/2;
     x[dimension] += static_cast<long double>(plus_or_minus)*size;

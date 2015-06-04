@@ -38,6 +38,7 @@ Solution Agent::candidate_solution(void){
     Solution candidate; // stores the candidate solution
     vector<long double> w;         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
+    long double sum_w = 0;
     int j;                    // Index for random draw
 
     // Random draw to get candidate starting position
@@ -46,9 +47,20 @@ Solution Agent::candidate_solution(void){
     if(p.interacting) {
         w = all_fx_current;
         wmax = vector_max(w);
+
+        // Make a thing
         for (int i = 0; i < w.size(); i++) {
             w[i] = wmax - w[i];
+            sum_w += w[i];
         }
+        
+        // Normalize the thing, and incorporate self-bias and quality-bias
+        for (int i = 0; i < w.size(); i++) {
+            w[i] /= sum_w;
+            w[i] += p.q_bias;
+        }
+        w[id] += p.s_bias;
+
         j = weighted_choice(w);
         candidate = all_xx_current[j];
     } else{

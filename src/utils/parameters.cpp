@@ -24,9 +24,8 @@ void Parameters::set_from_file(string file_name) {
         else if(name == "L_HIST")  ss >> history_length;
         else if(name == "NREPS")   ss >> n_reps;
         else if(name == "MAX_IT")  ss >> max_iter;
-        else if(name == "UBND")    ss >> ub;
-        else if(name == "LBND")    ss >> lb;
-
+        else if(name == "S_BIAS")  ss >> s_bias;
+        else if(name == "Q_BIAS")  ss >> q_bias;
     }
 }
 
@@ -40,8 +39,8 @@ void Parameters::print_params(void) {
     cout << "History length:   " <<  history_length                  << endl;
     cout << "Number of reps:   " <<  n_reps                          << endl;
     cout << "Max iterations:   " <<  max_iter                        << endl;
-    cout << "Upper bound on x: " <<  ub                              << endl;
-    cout << "Lower bound on x: " <<  lb                              << endl;
+    cout << "Self-bias:        " <<  s_bias                          << endl;
+    cout << "Quality-bias:     " <<  q_bias                          << endl;
 }
 
 //// Sets parameters based on a vector

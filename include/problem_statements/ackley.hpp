@@ -11,8 +11,8 @@ class Solution {
 public:
     // Constants
     int number_of_move_ops;
-    long double ubnd;
-    long double lbnd;
+    long double upper_bound;
+    long double lower_bound;
 
     // Functions
     Solution(void);
@@ -22,7 +22,7 @@ public:
     // Variables
     int id;
     long double quality;
-    std::vector<long double> x;
+    vector<long double> x;
 };
 
 #endif

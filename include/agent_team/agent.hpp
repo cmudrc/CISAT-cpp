@@ -5,6 +5,7 @@
 #include "../utils/parameters.hpp"
 #include "../utils/makerandom.hpp"
 #include "../utils/stats.hpp"
+#include "../utils/customprint.hpp"
 #include "../problem_statements/ackley.hpp"
 
 #define NUMBER_OF_MOVE_OPERATORS 60;

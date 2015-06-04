@@ -16,9 +16,6 @@ public:
     // Must be set separately
     unsigned long n_reps;
     unsigned long max_iter;
-    long double ub;
-    long double lb;
-    string function;
 
     bool adaptive;
     bool interacting;
@@ -26,6 +23,8 @@ public:
     unsigned long n_agents;
     long double temp_init;
     long double delt;
+    long double s_bias;
+    long double q_bias;
 
     //// Functions
     Parameters(void);
