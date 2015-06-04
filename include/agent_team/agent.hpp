@@ -5,7 +5,6 @@
 #include "../utils/parameters.hpp"
 #include "../utils/makerandom.hpp"
 #include "../utils/stats.hpp"
-#include "../problem_statements/ackley.hpp"
 
 using namespace std;
 
@@ -23,16 +22,16 @@ public:
     int iteration_number;     // The number of the current iteration
     long double Ti;                // The current temperature
     long double fx_current;        // The function value of the current solution
-    Solution x_current; // The value of the current solution
+    vector<long double> x_current; // The value of the current solution
     deque<long double> history;   // History of quality
 
     //// Accessible everywhere
     static vector<long double> all_fx_current;         // Function value of all agents current solutions
-    static vector<Solution> all_xx_current; // All agents current solutions
+    static vector< vector<long double> > all_xx_current; // All agents current solutions
 
 private:
     //// Functions
-    Solution candidate_solution(void); // Generated a candidate solution usign Cauchy distribution.
+    vector<long double > candidate_solution(void); // Generated a candidate solution usign Cauchy distribution.
     void update_temp(void);                  // Updates the temperature.
     long double update_triki(void);
     long double update_cauchy(void);

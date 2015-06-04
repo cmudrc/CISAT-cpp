@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "../../include/utils/makerandom.hpp"
 

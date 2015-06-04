@@ -31,6 +31,7 @@ vector<long double> random_vector(unsigned long D, long double ub, long double l
 
 
 // Weighted random choice function
+
 int weighted_choice(vector<long double> x){
     // Get the sum of the vector
     long double sum = 0;

@@ -2,7 +2,7 @@
 
 //// Necessary definitions of static vectors for sharing between agents.
 vector<long double> Agent::all_fx_current;
-vector<Solution> Agent::all_xx_current;
+vector< vector<long double> > Agent::all_xx_current;
 
 //// Inline Agent constructor for accessing static vectors
 Agent::Agent(void){}
@@ -24,8 +24,8 @@ Agent::Agent(int ID, Parameters x){
 void Agent::new_start(void){
 
     // Select a random starting point and evaluate it
-    x_current = Solution();
-    fx_current = x_current.quality;
+    x_current = random_vector(p.D, p.ub, p.lb);
+    fx_current = p.obj(x_current);
 
     // Share hte information
     all_fx_current[id] = fx_current;
@@ -33,9 +33,10 @@ void Agent::new_start(void){
 }
 
 //// Generated a candidate solution using Cauchy distribution.
-Solution Agent::candidate_solution(void){
+vector<long double> Agent::candidate_solution(void){
     // Make some variable for use in this function
-    Solution candidate; // stores the candidate solution
+    vector<long double> candidate; // stores the candidate solution
+    vector<long double> urv;       // A uniform random vector
     vector<long double> w;         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
     int j;                    // Index for random draw
@@ -55,9 +56,26 @@ Solution Agent::candidate_solution(void){
         candidate = x_current;
     }
 
-    // Apply move operator to solution
-    candidate.apply_move_operator(uniform_int(0, 60), Ti);
-    return candidate;
+    // Draw a uniform random vector for passing to tan function
+    urv = random_vector(p.D, M_PI/2.0, -M_PI/2.0);
+
+    // Cycle through, updating dimensions as you go. Analyze each to see if its in the domain
+    int NOT_IN_DOMAIN = 0;
+    for(int i=0; i<p.D; i++){
+        candidate[i] += 0.5*Ti*tan(urv[i]);
+        if(candidate[i] < p.lb || candidate[i] > p.ub){
+            NOT_IN_DOMAIN += 1;
+        }
+    }
+
+    // Recursive.
+    //   IF: any dimension was outside the bounds, repeat this function.
+    //   ELSE: return candidate
+    if(NOT_IN_DOMAIN==0){
+        return candidate;
+    } else {
+        return candidate_solution();
+    }
 }
 
 //// A function to perform an iteration of SA.
@@ -66,14 +84,14 @@ void Agent::iterate(int iter){
     iteration_number = iter;
 
     // Vector for saving new candidate solution
-    Solution x_cand;
+    vector<long double> x_cand(p.D, 0.0);
 
     // Objective function value of current solution, and probability of accepting new solution
     long double fx_cand, p_accept;
 
     // Generate a new solution
     x_cand = candidate_solution();
-    fx_cand = x_cand.quality;
+    fx_cand = p.obj(x_cand);
 
     if(p.adaptive && p.history_length < 0) {
         history.push_back(fx_cand);

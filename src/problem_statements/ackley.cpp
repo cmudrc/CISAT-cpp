@@ -15,6 +15,7 @@ Solution::Solution(void) {
 }
 
 void Solution::compute_quality(void) {
+    cout << "Begin eval" << endl;
     // Initialize a couple variable for sums
     long double fx1 = 0;
     long double fx2 = 0;
@@ -28,12 +29,15 @@ void Solution::compute_quality(void) {
 
     // Return a sum of sums
     quality = abs(-20.0*exp(-0.2*sqrt(fx1/D)) - exp(fx2/D) + 20.0 + exp(1.0));
+    cout << "End eval" << endl;
 }
 
 void Solution::apply_move_operator(int n, long double size) {
+    cout << "Begin apply move operator" << endl;
     int plus_or_minus = 2*(n % 2) - 1;
     int dimension = n/2;
     x[dimension] += static_cast<long double>(plus_or_minus)*size;
+    cout << "Finish apply move operator" << endl;
 
     compute_quality();
 }
