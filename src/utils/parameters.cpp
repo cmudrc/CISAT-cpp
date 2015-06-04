@@ -26,6 +26,7 @@ void Parameters::set_from_file(string file_name) {
         else if(name == "MAX_IT")  ss >> max_iter;
         else if(name == "S_BIAS")  ss >> s_bias;
         else if(name == "Q_BIAS")  ss >> q_bias;
+        else if(name == "OLEARN")  ss >> op_learn;
     }
 }
 
@@ -41,6 +42,7 @@ void Parameters::print_params(void) {
     cout << "Max iterations:   " <<  max_iter                        << endl;
     cout << "Self-bias:        " <<  s_bias                          << endl;
     cout << "Quality-bias:     " <<  q_bias                          << endl;
+    cout << "Operation learn:  " <<  op_learn                        << endl;
 }
 
 //// Sets parameters based on a vector

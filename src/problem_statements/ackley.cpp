@@ -3,9 +3,9 @@
 Solution::Solution(void) {
     // Init that which must be init'd
     id = rand();
-    upper_bound = 10;
-    lower_bound = -10;
-    number_of_move_ops = 10;
+//    upper_bound = 10;
+//    lower_bound = -10;
+//    number_of_move_ops = 10;
 
     // Create the x vector based on upper and lower bounds from problem statement
     x = random_vector(static_cast <unsigned long> (number_of_move_ops/2), upper_bound, lower_bound);

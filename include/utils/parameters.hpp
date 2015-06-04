@@ -25,6 +25,7 @@ public:
     long double delt;
     long double s_bias;
     long double q_bias;
+    long double op_learn;
 
     //// Functions
     Parameters(void);

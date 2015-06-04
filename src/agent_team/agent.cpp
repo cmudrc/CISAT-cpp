@@ -18,6 +18,9 @@ Agent::Agent(int ID, Parameters x){
     // The beginning is usually the best place to start
     iteration_number = 0;
     Ti = p.temp_init;
+
+    // Define initial move operator preferences
+    move_oper_pref.assign(static_cast <unsigned long> (x_current.number_of_move_ops), 1.0);
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
@@ -39,6 +42,7 @@ Solution Agent::candidate_solution(void){
     vector<long double> w;         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
+    long double old_fx = 0;
     int j;                    // Index for random draw
 
     // Random draw to get candidate starting position
@@ -67,7 +71,28 @@ Solution Agent::candidate_solution(void){
         candidate = x_current;
     }
 
-    candidate.apply_move_operator(uniform_int(candidate.number_of_move_ops-1, 0), Ti);
+    // Choose which move operator to apply
+    j = weighted_choice(move_oper_pref);
+
+    // Save current quality, apply move operator
+    old_fx = candidate.quality;
+    candidate.apply_move_operator(j, Ti);
+
+    // Update move oeprator preferences
+    if (candidate.quality < old_fx) {
+        move_oper_pref[j] *= (1 + p.op_learn);
+    } else if (candidate.quality > old_fx) {
+        move_oper_pref[j] *= (1 - p.op_learn);
+    }
+
+    // Normalize the vector so it doesn't get out of hand
+    sum_w = 0;
+    for (int i=0; i < move_oper_pref.size(); i++) {
+        sum_w += move_oper_pref[i];
+    }
+    for (int i=0; i < move_oper_pref.size(); i++) {
+        move_oper_pref[i]/=sum_w;
+    }
 
     return candidate;
 

@@ -8,7 +8,6 @@
 #include "../utils/customprint.hpp"
 #include "../problem_statements/ackley.hpp"
 
-#define NUMBER_OF_MOVE_OPERATORS 60;
 
 using namespace std;
 
@@ -27,6 +26,7 @@ public:
     long double Ti;                // The current temperature
     long double fx_current;        // The function value of the current solution
     Solution x_current; // The value of the current solution
+    vector<long double> move_oper_pref; // preference for different move operators
     deque<long double> history;   // History of quality
 
     //// Accessible everywhere
