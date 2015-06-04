@@ -1,7 +1,7 @@
-#ifndef UNIVARIATE_HPP
-#define UNIVARIATE_HPP
+#ifndef META_OPTIMIZATION__UNIVARIATE_HPP
+#define META_OPTIMIZATION__UNIVARIATE_HPP
 
-#include "../agent_team/multipleteams.hpp"
+#include "../agents_and_teams/multiple_teams.hpp"
 #include "search.hpp"
 
 using namespace std;

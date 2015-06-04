@@ -1,4 +1,4 @@
-#include "../../include/utils/makerandom.hpp"
+#include "../../include/utilities/make_random.hpp"
 
 //// This returns a uniform long double between upper and lower bounds
 long double uniform(long double ub, long double lb){

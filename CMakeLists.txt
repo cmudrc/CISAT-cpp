@@ -9,29 +9,27 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
 
 set(SOURCE_FILES_MAIN
     src/cisat.cpp
-    include/agent_team/agent.hpp
-    include/agent_team/team.hpp
-    include/agent_team/multipleteams.hpp
-    include/meta_optim/search.hpp
-    include/meta_optim/pattern.hpp
-    include/meta_optim/univariate.hpp
-    include/utils/objective.hpp
-    include/utils/parameters.hpp
-    include/utils/makerandom.hpp
-    include/utils/customprint.hpp
-    include/utils/stats.hpp
+    include/agents_and_teams/agent.hpp
+    include/agents_and_teams/team.hpp
+    include/agents_and_teams/multiple_teams.hpp
+    include/meta_optimization/search.hpp
+    include/meta_optimization/pattern.hpp
+    include/meta_optimization/univariate.hpp
+    include/utilities/parameters.hpp
+    include/utilities/make_random.hpp
+    include/utilities/custom_print.hpp
+    include/utilities/stats.hpp
     include/problem_statements/ackley.hpp
-    src/agent_team/agent.cpp
-    src/agent_team/team.cpp
-    src/agent_team/multipleteams.cpp
-    src/meta_optim/search.cpp
-    src/meta_optim/pattern.cpp
-    src/meta_optim/univariate.cpp
-    src/utils/parameters.cpp
-    src/utils/objective.cpp
-    src/utils/makerandom.cpp
-    src/utils/customprint.cpp
-    src/utils/stats.cpp
+    src/agents_and_teams/agent.cpp
+    src/agents_and_teams/team.cpp
+    src/agents_and_teams/multiple_teams.cpp
+    src/meta_optimization/search.cpp
+    src/meta_optimization/pattern.cpp
+    src/meta_optimization/univariate.cpp
+    src/utilities/parameters.cpp
+    src/utilities/make_random.cpp
+    src/utilities/custom_print.cpp
+    src/utilities/stats.cpp
     src/problem_statements/ackley.cpp)
 
 

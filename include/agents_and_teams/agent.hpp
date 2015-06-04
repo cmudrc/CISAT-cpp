@@ -1,11 +1,11 @@
-#ifndef AGENT_HPP
-#define AGENT_HPP
+#ifndef AGENTS_AND_TEAMS__AGENT_HPP
+#define AGENTS_AND_TEAMS__AGENT_HPP
 
 #include <list>
-#include "../utils/parameters.hpp"
-#include "../utils/makerandom.hpp"
-#include "../utils/stats.hpp"
-#include "../utils/customprint.hpp"
+#include "../utilities/parameters.hpp"
+#include "../utilities/make_random.hpp"
+#include "../utilities/stats.hpp"
+#include "../utilities/custom_print.hpp"
 #include "../problem_statements/ackley.hpp"
 
 

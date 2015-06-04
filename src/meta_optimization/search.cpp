@@ -1,4 +1,4 @@
-#include "../../include/meta_optim/pattern.hpp"
+#include "../../include/meta_optimization/pattern.hpp"
 
 // Null initializer for search
 Search::Search(){}

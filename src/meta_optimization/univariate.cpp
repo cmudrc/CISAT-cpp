@@ -1,4 +1,4 @@
-#include "../../include/meta_optim/univariate.hpp"
+#include "../../include/meta_optimization/univariate.hpp"
 
 UnivariateSearch::UnivariateSearch(string file_name){
     seed_time();

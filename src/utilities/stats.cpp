@@ -1,4 +1,4 @@
-#include "../../include/utils/stats.hpp"
+#include "../../include/utilities/stats.hpp"
 
 //// Return the largest element in a vector.
 long double vector_max(vector<long double> v){

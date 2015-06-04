@@ -1,4 +1,4 @@
-#include "../../include/agent_team/team.hpp"
+#include "../../include/agents_and_teams/team.hpp"
 
 //// This constructs the team
 Team::Team(Parameters x){

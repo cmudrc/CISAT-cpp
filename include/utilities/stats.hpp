@@ -1,5 +1,5 @@
-#ifndef STATS_HPP
-#define STATS_HPP
+#ifndef UTILITIES__STATS_HPP
+#define UTILITIES__STATS_HPP
 
 #include <vector>
 #include <cstdlib>

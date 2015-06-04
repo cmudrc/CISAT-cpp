@@ -1,5 +1,5 @@
-#ifndef MAKERANDOM_HPP
-#define MAKERANDOM_HPP
+#ifndef UTILITIES__MAKE_RANDOM_HPP
+#define UTILITIES__MAKERANDOM_HPP
 
 #include <vector>
 #include <cstdlib>

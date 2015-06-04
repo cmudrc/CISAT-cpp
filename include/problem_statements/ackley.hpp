@@ -1,18 +1,18 @@
-#ifndef ACKLEY_HPP
-#define ACKLEY_HPP
+#ifndef PROBLEM_STATEMENTS__ACKLEY_HPP
+#define PROBLEM_STATEMENTS__ACKLEY_HPP
 
 #include <vector>
 #include <cmath>
 #include <iostream>
 
-#include "../../include/utils/makerandom.hpp"
+#include "../../include/utilities/make_random.hpp"
 
 class Solution {
 public:
     // Constants
-    static constexpr int number_of_move_ops = 20;
-    static constexpr long double upper_bound = 10;
-    static constexpr long double lower_bound = -10;
+    static constexpr int         number_of_move_ops =  20;
+    static constexpr long double upper_bound        =  10;
+    static constexpr long double lower_bound        = -10;
 
     // Functions
     Solution(void);

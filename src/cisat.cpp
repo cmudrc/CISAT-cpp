@@ -1,7 +1,7 @@
-#include "../include/agent_team/multipleteams.hpp"
-#include "../include/meta_optim/univariate.hpp"
-#include "../include/meta_optim/pattern.hpp"
-#include "../include/utils/customprint.hpp"
+#include "../include/agents_and_teams/multiple_teams.hpp"
+#include "../include/meta_optimization/univariate.hpp"
+#include "../include/meta_optimization/pattern.hpp"
+#include "../include/utilities/custom_print.hpp"
 #include <sys/time.h>
 
 int main(int argc, char *argv[]) {

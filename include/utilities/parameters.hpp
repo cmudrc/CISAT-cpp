@@ -1,11 +1,11 @@
-#ifndef PARAMETERS_HPP
-#define PARAMETERS_HPP
+#ifndef UTILITIES__PARAMETERS_HPP
+#define UTILITIES__PARAMETERS_HPP
 
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include "objective.hpp"
+#include <cmath>
 
 using namespace std;
 

@@ -1,5 +1,5 @@
-#ifndef SEARCH_HPP
-#define SEARCH_HPP
+#ifndef META_OPTIMIZATION__SEARCH_HPP
+#define META_OPTIMIZATION__SEARCH_HPP
 
 using namespace std;
 

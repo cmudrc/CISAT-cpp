@@ -1,5 +1,5 @@
-#ifndef MULTIPLETEAMS_HPP
-#define MULTIPLETEAMS_HPP
+#ifndef AGENTS_AND_TEAMS__MULTIPLE_TEAMS_HPP
+#define AGENTS_AND_TEAMS__MULTIPLE_TEAMS_HPP
 
 #include "team.hpp"
 #include <algorithm>

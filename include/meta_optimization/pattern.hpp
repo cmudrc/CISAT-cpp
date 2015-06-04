@@ -1,7 +1,7 @@
-#ifndef PATTERN_HPP
-#define PATTERN_HPP
+#ifndef META_OPTIMIZATION__PATTERN_HPP
+#define META_OPTIMIZATION__PATTERN_HPP
 
-#include "../agent_team/multipleteams.hpp"
+#include "../agents_and_teams/multiple_teams.hpp"
 #include "search.hpp"
 
 using namespace std;

@@ -1,5 +1,5 @@
-#ifndef TEAM_HPP
-#define TEAM_HPP
+#ifndef AGENTS_AND_TEAMS__TEAM_HPP
+#define AGENTS_AND_TEAMS__TEAM_HPP
 
 #include "agent.hpp"
 

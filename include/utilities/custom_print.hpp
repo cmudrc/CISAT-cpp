@@ -1,5 +1,5 @@
-#ifndef CUSTOMPRINT_HPP
-#define CUSTOMPRINT_HPP
+#ifndef UTILITIES__CUSTOM_PRINT_HPP
+#define UTILITIES__CUSTOM_PRINT_HPP
 
 #include <vector>
 #include <string>
