@@ -16,7 +16,6 @@ public:
     // Must be set separately
     unsigned long n_reps;
     unsigned long max_iter;
-    unsigned long D;
     long double ub;
     long double lb;
     string function;
@@ -34,7 +33,6 @@ public:
     void set_from_pair(string name, long double x);
     void print_params(void);
     long double get_from_name(string name);
-    long double obj(vector<long double> x);
 
 private:
     //nothing yet

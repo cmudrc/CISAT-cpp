@@ -3,14 +3,6 @@
 //// Construct the thing
 Parameters::Parameters(void){}
 
-//// Object function of the thing
-long double Parameters::obj(vector<long double> x) {
-    if(function == "griewank")       return griewank(x);
-    else if(function == "ackley")    return ackley(x);
-    else if(function == "rastigrin") return rastigrin(x);
-    else                             return -1.0;
-}
-
 //// Function to read variables from a file
 void Parameters::set_from_file(string file_name) {
 
@@ -24,8 +16,7 @@ void Parameters::set_from_file(string file_name) {
 
         ss >> name;
 
-        if(name == "FUNC")         ss >> function;
-        else if(name == "NAGENTS") ss >> n_agents;
+        if(name == "NAGENTS")      ss >> n_agents;
         else if(name == "ADAPT")   ss >> adaptive;
         else if(name == "INTER")   ss >> interacting;
         else if(name == "TINIT")   ss >> temp_init;
@@ -33,7 +24,6 @@ void Parameters::set_from_file(string file_name) {
         else if(name == "L_HIST")  ss >> history_length;
         else if(name == "NREPS")   ss >> n_reps;
         else if(name == "MAX_IT")  ss >> max_iter;
-        else if(name == "DIMS")    ss >> D;
         else if(name == "UBND")    ss >> ub;
         else if(name == "LBND")    ss >> lb;
 
@@ -42,7 +32,6 @@ void Parameters::set_from_file(string file_name) {
 
 //// Shows the current parameters
 void Parameters::print_params(void) {
-    cout << "Function:         " <<  function                        << endl;
     cout << "Number of agents: " <<  n_agents                        << endl;
     cout << "Adaptive?:        " <<  (adaptive ? "yes" : "no")       << endl;
     cout << "Interacting?:     " <<  (interacting ? "yes" : "no")    << endl;
@@ -51,7 +40,6 @@ void Parameters::print_params(void) {
     cout << "History length:   " <<  history_length                  << endl;
     cout << "Number of reps:   " <<  n_reps                          << endl;
     cout << "Max iterations:   " <<  max_iter                        << endl;
-    cout << "Number of dims:   " <<  D                               << endl;
     cout << "Upper bound on x: " <<  ub                              << endl;
     cout << "Lower bound on x: " <<  lb                              << endl;
 }

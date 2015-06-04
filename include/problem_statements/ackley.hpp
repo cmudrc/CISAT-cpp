@@ -1,8 +1,6 @@
 #ifndef ACKLEY_HPP
 #define ACKLEY_HPP
 
-#define THIS_IS_A_THING 30
-
 #include <vector>
 #include <cmath>
 #include <iostream>
