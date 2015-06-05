@@ -2,7 +2,7 @@
 
 PatternSearch::PatternSearch(string file_name){
     seed_time();
-    parse_param_file(file_name);
+    parse_parameter_file(file_name);
 }
 
 void PatternSearch::solve(int max_iter, bool verb){
@@ -26,22 +26,22 @@ void PatternSearch::solve(int max_iter, bool verb){
         if(verb) {
             cout << "\tIteration " << current_iteration + 1 << " of " << max_iter << endl;
         }
-        for(int i=0; i<var_name.size(); i++){
+        for(int i=0; i<variable_names.size(); i++){
             for(int j=1; j>-2; j-=2){
                 // Modify the list of parameters
                 p_current = p_best;
-                new_val = var_vals[i] + j*step_sizes[i];
+                new_val = variable_values[i] + j*step_sizes[i];
                 // Keep it all in range
-                if(new_val < lower_lims[i]){
-                    new_val = lower_lims[i];
+                if(new_val < lower_limits[i]){
+                    new_val = lower_limits[i];
                 }
-                if(new_val > upper_lims[i]){
-                    new_val = upper_lims[i];
+                if(new_val > upper_limits[i]){
+                    new_val = upper_limits[i];
                 }
                 if (verb) {
-                    cout << "\t\tTrying " << var_name[i] << " = " << new_val << ", ";
+                    cout << "\t\tTrying " << variable_names[i] << " = " << new_val << ", ";
                 }
-                p_current.set_from_pair(var_name[i], new_val);
+                p_current.set_from_pair(variable_names[i], new_val);
 
                 // Evalute the new combination
                 MultipleTeams MTR(p_current);
@@ -53,7 +53,7 @@ void PatternSearch::solve(int max_iter, bool verb){
                     if (verb) {
                         cout << "\t\tImprovement." << endl;
                     }
-                    var_vals[i] = new_val;
+                    variable_values[i] = new_val;
                     fx_best = fx_current;
                     p_best = p_current;
                     IMPROVED = true;

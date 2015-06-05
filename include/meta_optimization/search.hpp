@@ -6,15 +6,15 @@ using namespace std;
 class Search {
 public:
     Search();
-    void parse_param_file(string file_name);
+    void parse_parameter_file(string file_name);
     void save_settings(string file_name);
 
     //// Variables
     Parameters p_best;       // The parameters of the simulation
-    vector<string> var_name;
-    vector<long double> var_vals;
-    vector<long double> lower_lims;
-    vector<long double> upper_lims;
+    vector<string> variable_names;
+    vector<long double> variable_values;
+    vector<long double> lower_limits;
+    vector<long double> upper_limits;
     vector<long double> step_sizes;
 };
 

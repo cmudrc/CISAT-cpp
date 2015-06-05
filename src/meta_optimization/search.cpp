@@ -3,7 +3,7 @@
 // Null initializer for search
 Search::Search(){}
 
-void Search::parse_param_file(string file_name){
+void Search::parse_parameter_file(string file_name){
     // Set the parameters to their current values in the setup file
     p_best.set_from_file(file_name);
 
@@ -24,11 +24,11 @@ void Search::parse_param_file(string file_name){
 
         if(indicator) {
             ss >> lower_limit;
-            lower_lims.push_back(lower_limit);
+            lower_limits.push_back(lower_limit);
             ss >> upper_limit;
-            upper_lims.push_back(upper_limit);
-            var_name.push_back(name);
-            var_vals.push_back(temp);
+            upper_limits.push_back(upper_limit);
+            variable_names.push_back(name);
+            variable_values.push_back(temp);
             step_sizes.push_back(0.25*temp);
         }
     }
