@@ -14,15 +14,15 @@ void Search::parse_parameter_file(string file_name){
     long double lower_limit;
     long double upper_limit;
     long double temp;
-    bool indicator;
+    bool INDICATOR;
 
     while (getline(inputFile, line))
     {
         // Read a line
         istringstream ss(line);
-        ss >> name >> temp >> indicator;
+        ss >> name >> temp >> INDICATOR;
 
-        if(indicator) {
+        if(INDICATOR) {
             ss >> lower_limit;
             lower_limits.push_back(lower_limit);
             ss >> upper_limit;
@@ -44,8 +44,7 @@ void Search::save_settings(string file_name){
 
     // Print a file with appropriate data
     myfile << "NAGENTS " << p_best.n_agents << endl;
-    myfile << "ADAPT   " << p_best.adaptive << endl;
-    myfile << "INTER   " << p_best.interacting << endl;
+    myfile << "INTER   " << p_best.interaction << endl;
     myfile << "TINIT   " << p_best.temp_init << endl;
     myfile << "DELT    " << p_best.delt << endl;
     myfile << "L_HIST  " << p_best.history_length << endl;

@@ -13,12 +13,14 @@ using namespace std;
 class Parameters{
 public:
     //// Variables
-    // Must be set separately
+    // Number of times to repeat the solution
     unsigned long n_reps;
+    // Maximum number of iterations to perform
     unsigned long max_iter;
-
+    // Boolean storing adaptivity
     bool adaptive;
-    bool interacting;
+    // Boolean storing interaction
+    long double interaction;
     int history_length;
     unsigned long n_agents;
     long double temp_init;

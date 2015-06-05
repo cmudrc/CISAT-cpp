@@ -45,10 +45,9 @@ Solution Agent::candidate_solution(void){
     long double old_fx = 0;
     int j;                    // Index for random draw
 
-    // Random draw to get candidate starting position
-    //   IF Interacting: Check out other solutions
-    //   ELSE: Start from where you are
-    if(p.interacting) {
+
+    // If a random draw is lower than teh probability of interaction, then interact.
+    if(p.interaction > uniform(1.0, 0.0)) {
         w = all_fx_current;
         wmax = vector_max(w);
 
@@ -78,7 +77,7 @@ Solution Agent::candidate_solution(void){
     old_fx = candidate.quality;
     candidate.apply_move_operator(j, Ti);
 
-    // Update move oeprator preferences
+    // Update move operator preferences
     if (candidate.quality < old_fx) {
         move_oper_pref[j] *= (1 + p.op_learn);
     } else if (candidate.quality > old_fx) {

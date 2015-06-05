@@ -18,7 +18,7 @@ void Parameters::set_from_file(string file_name) {
 
         if(name == "NAGENTS")      ss >> n_agents;
         else if(name == "ADAPT")   ss >> adaptive;
-        else if(name == "INTER")   ss >> interacting;
+        else if(name == "INTER")   ss >> interaction;
         else if(name == "TINIT")   ss >> temp_init;
         else if(name == "DELT")    ss >> delt;
         else if(name == "L_HIST")  ss >> history_length;
@@ -34,7 +34,7 @@ void Parameters::set_from_file(string file_name) {
 void Parameters::print_params(void) {
     cout << "Number of agents: " <<  n_agents                        << endl;
     cout << "Adaptive?:        " <<  (adaptive ? "yes" : "no")       << endl;
-    cout << "Interacting?:     " <<  (interacting ? "yes" : "no")    << endl;
+    cout << "Interacting?:     " <<  interaction                     << endl;
     cout << "Initial temp:     " <<  temp_init                       << endl;
     cout << "Temp factor:      " <<  delt                            << endl;
     cout << "History length:   " <<  history_length                  << endl;
@@ -53,7 +53,7 @@ void Parameters::set_from_pair(string name, long double x) {
     else if(name == "TINIT")   temp_init = x;
 }
 
-//// Sets parameters based on a vector
+//// Get parameters from a string name
 long double Parameters::get_from_name(string name) {
     if(name == "DELT")         return delt;
     else if(name == "L_HIST")  return history_length;
