@@ -51,6 +51,10 @@ void Parameters::set_from_pair(string name, long double x) {
     else if(name == "L_HIST")  history_length =static_cast <int> (round(x));
     else if(name == "NAGENTS") n_agents = static_cast <unsigned long> (round(x));
     else if(name == "TINIT")   temp_init = x;
+    else if(name == "INTER")   interaction = x;
+    else if(name == "S_BIAS")  s_bias = x;
+    else if(name == "Q_BIAS")  q_bias = x;
+    else if(name == "OLEARN")  op_learn = x;
 }
 
 //// Get parameters from a string name
@@ -59,6 +63,10 @@ long double Parameters::get_from_name(string name) {
     else if(name == "L_HIST")  return history_length;
     else if(name == "NAGENTS") return n_agents;
     else if(name == "TINIT")   return temp_init;
+    else if(name == "INTER")   return interaction;
+    else if(name == "S_BIAS")  return s_bias;
+    else if(name == "Q_BIAS")  return q_bias;
+    else if(name == "OLEARN")  return op_learn;
     else                       return -1;
 }
 
