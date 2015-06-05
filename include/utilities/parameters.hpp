@@ -26,6 +26,7 @@ public:
     long double s_bias;
     long double q_bias;
     long double op_learn;
+    long double satisficing_fraction;
 
     //// Functions
     Parameters(void);

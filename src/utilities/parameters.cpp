@@ -26,6 +26,7 @@ void Parameters::set_from_file(string file_name) {
         else if(name == "S_BIAS")  ss >> s_bias;
         else if(name == "Q_BIAS")  ss >> q_bias;
         else if(name == "OLEARN")  ss >> op_learn;
+        else if(name == "SATFRAC") ss >> satisficing_fraction;
     }
 }
 
@@ -41,6 +42,7 @@ void Parameters::print_params(void) {
     cout << "Self-bias:        " <<  s_bias                          << endl;
     cout << "Quality-bias:     " <<  q_bias                          << endl;
     cout << "Operation learn:  " <<  op_learn                        << endl;
+    cout << "Satisficing frac: " <<  satisficing_fraction            << endl;
 }
 
 //// Sets parameters based on a vector
@@ -53,6 +55,7 @@ void Parameters::set_from_pair(string name, long double x) {
     else if(name == "S_BIAS")  s_bias = x;
     else if(name == "Q_BIAS")  q_bias = x;
     else if(name == "OLEARN")  op_learn = x;
+    else if(name == "SATFRAC") satisficing_fraction = x;
 }
 
 //// Get parameters from a string name
@@ -65,6 +68,7 @@ long double Parameters::get_from_name(string name) {
     else if(name == "S_BIAS")  return s_bias;
     else if(name == "Q_BIAS")  return q_bias;
     else if(name == "OLEARN")  return op_learn;
+    else if(name == "SATFRAC") return satisficing_fraction;
     else                       return -1;
 }
 
