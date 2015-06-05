@@ -14,7 +14,9 @@ Solution::Solution(void) {
     solution_counter++;
 
     // Create the x vector based on upper and lower bounds from problem statement
-    x = random_vector(static_cast <unsigned long> (number_of_move_ops/2), upper_bound, lower_bound);
+    x = random_vector(static_cast <unsigned long> (number_of_move_ops/2),
+                      upper_bound,
+                      lower_bound);
 
     // Compute the quality.
     compute_quality();
@@ -33,7 +35,9 @@ void Solution::compute_quality(void) {
     }
 
     // Return a sum of sums
-    quality = abs(-20.0*exp(-0.2*sqrt(fx1/D)) - exp(fx2/D) + 20.0 + exp(1.0));
+    quality = abs(-20.0*exp(-0.2*sqrt(fx1/D))
+                  - exp(fx2/D)
+                  + 20.0 + exp(1.0));
 }
 
 void Solution::apply_move_operator(int n, long double size) {

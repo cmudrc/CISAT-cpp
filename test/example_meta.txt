@@ -9,3 +9,4 @@ L_HIST  -10    1    -100    -10
 S_BIAS  0.1    1    0   1
 Q_BIAS  0.1    1    0   1
 OLEARN  0.1    1    0   1
+SATFRAC 0.2    1    0   1
