@@ -51,6 +51,9 @@ void Search::save_settings(string file_name){
     myfile << "L_HIST  " << p_best.history_length << endl;
     myfile << "NREPS   " << p_best.n_reps << endl;
     myfile << "MAX_IT  " << p_best.max_iter << endl;
+    myfile << "S_BIAS  " << p_best.s_bias << endl;
+    myfile << "Q_BIAS  " << p_best.q_bias << endl;
+    myfile << "OLEARN  " << p_best.op_learn << endl;
 
     myfile.close();
 }

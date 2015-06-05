@@ -13,7 +13,7 @@ Agent::Agent(int ID, Parameters x){
     p = x;
 
     // Remember your damn name, agent
-    id = ID;
+    agent_id = ID;
 
     // The beginning is usually the best place to start
     iteration_number = 0;
@@ -31,8 +31,8 @@ void Agent::new_start(void){
     fx_current = x_current.quality;
 
     // Share hte information
-    all_fx_current[id] = fx_current;
-    all_xx_current[id] = x_current;
+    all_fx_current[agent_id] = fx_current;
+    all_xx_current[agent_id] = x_current;
 }
 
 //// Generated a candidate solution using Cauchy distribution.
@@ -63,7 +63,7 @@ Solution Agent::candidate_solution(void){
             w[i] /= sum_w;
             w[i] += p.q_bias;
         }
-        w[id] += p.s_bias;
+        w[agent_id] += p.s_bias;
 
         j = weighted_choice(w);
         candidate = all_xx_current[j];

@@ -1,11 +1,12 @@
 #include "../../include/problem_statements/ackley.hpp"
 
+// Integer to assign unique IDs to solutions
+int Solution::solution_counter;
+
 Solution::Solution(void) {
-    // Init that which must be init'd
-    id = rand();
-//    upper_bound = 10;
-//    lower_bound = -10;
-//    number_of_move_ops = 10;
+    // Give the solution a unique ID and increment the counter
+    solution_id = solution_counter;
+    solution_counter++;
 
     // Create the x vector based on upper and lower bounds from problem statement
     x = random_vector(static_cast <unsigned long> (number_of_move_ops/2), upper_bound, lower_bound);
