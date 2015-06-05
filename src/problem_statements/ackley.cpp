@@ -1,7 +1,12 @@
 #include "../../include/problem_statements/ackley.hpp"
 
 // Integer to assign unique IDs to solutions
-int Solution::solution_counter;
+int Solution::solution_counter = 0;
+const int Solution::number_of_move_ops = 20;
+const string Solution::name = "Ackley Function";
+const long double Solution::goal = 0.1;
+const long double Solution::upper_bound = 10;
+const long double Solution::lower_bound = -10;
 
 Solution::Solution(void) {
     // Give the solution a unique ID and increment the counter
@@ -38,4 +43,11 @@ void Solution::apply_move_operator(int n, long double size) {
     x[dimension] += static_cast<long double>(plus_or_minus)*size;
 
     compute_quality();
+}
+
+void Solution::print_surface_characteristics() {
+    cout << "Problem Characteristics" << endl;
+    cout << "\tName: " << name << endl;
+    cout << "\tGoal: " << goal << endl;
+    cout << "\tNumber of move operators: " << number_of_move_ops << endl;
 }

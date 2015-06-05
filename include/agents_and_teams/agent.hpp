@@ -23,8 +23,10 @@ public:
     Parameters p;             // A parameters structure that holds much of the SA info
     int agent_id;                   // Agent ID, tells it where to store info in static vectors.
     int iteration_number;     // The number of the current iteration
-    long double Ti;                // The current temperature
+    long double temperature;  // The current temperature
+    long double triki_temperature;
     long double fx_current;        // The function value of the current solution
+    long double best_so_far;
     Solution x_current; // The value of the current solution
     vector<long double> move_oper_pref; // preference for different move operators
     deque<long double> history;   // History of quality

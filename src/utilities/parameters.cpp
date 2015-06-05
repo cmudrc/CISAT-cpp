@@ -18,7 +18,7 @@ void Parameters::set_from_file(string file_name) {
 
         if(name == "NAGENTS")      ss >> n_agents;
         else if(name == "INTER")   ss >> interaction;
-        else if(name == "TINIT")   ss >> temp_init;
+        else if(name == "TINIT")   ss >> initial_temperature;
         else if(name == "DELT")    ss >> delt;
         else if(name == "L_HIST")  ss >> history_length;
         else if(name == "NREPS")   ss >> n_reps;
@@ -34,7 +34,7 @@ void Parameters::set_from_file(string file_name) {
 void Parameters::print_params(void) {
     cout << "Number of agents: " <<  n_agents                        << endl;
     cout << "Interaction:      " <<  interaction                     << endl;
-    cout << "Initial temp:     " <<  temp_init                       << endl;
+    cout << "Initial temp:     " <<  initial_temperature             << endl;
     cout << "Temp factor:      " <<  delt                            << endl;
     cout << "History length:   " <<  history_length                  << endl;
     cout << "Number of reps:   " <<  n_reps                          << endl;
@@ -50,7 +50,7 @@ void Parameters::set_from_pair(string name, long double x) {
     if(name == "DELT")         delt = x;
     else if(name == "L_HIST")  history_length =static_cast <int> (round(x));
     else if(name == "NAGENTS") n_agents = static_cast <unsigned long> (round(x));
-    else if(name == "TINIT")   temp_init = x;
+    else if(name == "TINIT")   initial_temperature = x;
     else if(name == "INTER")   interaction = x;
     else if(name == "S_BIAS")  s_bias = x;
     else if(name == "Q_BIAS")  q_bias = x;
@@ -63,7 +63,7 @@ long double Parameters::get_from_name(string name) {
     if(name == "DELT")         return delt;
     else if(name == "L_HIST")  return history_length;
     else if(name == "NAGENTS") return n_agents;
-    else if(name == "TINIT")   return temp_init;
+    else if(name == "TINIT")   return initial_temperature;
     else if(name == "INTER")   return interaction;
     else if(name == "S_BIAS")  return s_bias;
     else if(name == "Q_BIAS")  return q_bias;

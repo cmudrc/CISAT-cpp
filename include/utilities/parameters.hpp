@@ -21,7 +21,7 @@ public:
     long double interaction;
     int history_length;
     unsigned long n_agents;
-    long double temp_init;
+    long double initial_temperature;
     long double delt;
     long double s_bias;
     long double q_bias;

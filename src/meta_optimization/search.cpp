@@ -45,7 +45,7 @@ void Search::save_settings(string file_name){
     // Print a file with appropriate data
     myfile << "NAGENTS " << p_best.n_agents << endl;
     myfile << "INTER   " << p_best.interaction << endl;
-    myfile << "TINIT   " << p_best.temp_init << endl;
+    myfile << "TINIT   " << p_best.initial_temperature << endl;
     myfile << "DELT    " << p_best.delt << endl;
     myfile << "L_HIST  " << p_best.history_length << endl;
     myfile << "NREPS   " << p_best.n_reps << endl;

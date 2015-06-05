@@ -17,7 +17,10 @@ Agent::Agent(int ID, Parameters x){
 
     // The beginning is usually the best place to start
     iteration_number = 0;
-    Ti = p.temp_init;
+
+    // Set initial temperature
+    triki_temperature = p.initial_temperature;
+    temperature = p.initial_temperature;
 
     // Define initial move operator preferences
     move_oper_pref.assign(static_cast <unsigned long> (x_current.number_of_move_ops), 1.0);
@@ -29,6 +32,7 @@ void Agent::new_start(void){
     // Select a random starting point and evaluate it
     x_current = Solution();
     fx_current = x_current.quality;
+    best_so_far = fx_current;
 
     // Share hte information
     all_fx_current[agent_id] = fx_current;
@@ -75,7 +79,7 @@ Solution Agent::candidate_solution(void){
 
     // Save current quality, apply move operator
     old_fx = candidate.quality;
-    candidate.apply_move_operator(j, Ti);
+    candidate.apply_move_operator(j, temperature);
 
     // Update move operator preferences
     if (candidate.quality < old_fx) {
@@ -123,12 +127,17 @@ void Agent::iterate(int iter){
         fx_current = fx_cand;
     } else {
         // If not, accept with some probability
-        p_accept = exp((fx_current - fx_cand)/Ti);
+        p_accept = exp((fx_current - fx_cand)/temperature);
         if(uniform(0.0, 1.0) < p_accept){
             // Save locally
             x_current = x_cand;
             fx_current = fx_cand;
         }
+    }
+
+    // Update best so far
+    if (fx_current < best_so_far) {
+        best_so_far = fx_current;
     }
 
     if(p.history_length > 0) {
@@ -143,14 +152,17 @@ void Agent::iterate(int iter){
 void Agent::update_temp(void) {
 
     if(p.n_reps == 1)
-        cout << Ti << ", ";
+        cout << temperature << ", ";
 
     // If history_length is greater than 0, use a sliding window for the update
     if(p.history_length > 0) {
         // If the quality history is too long, pop one out and calculate the update
         if (history.size() > p.history_length) {
             history.pop_front();
-            Ti = update_triki();
+            triki_temperature = update_triki();
+            temperature = p.satisficing_fraction*p.initial_temperature*(max(static_cast <long double> (0.0),
+                                                                  best_so_far - Solution().goal)/best_so_far)
+                          + (1-p.satisficing_fraction)*triki_temperature;
         }
     }
 
@@ -165,7 +177,7 @@ void Agent::update_temp(void) {
 
         // If adaptive and time to update, update triki and clear the cache
         if(UPDATE){
-            Ti = update_triki();
+            triki_temperature = update_triki();
             history.clear();
         }
     }
@@ -175,7 +187,7 @@ void Agent::update_temp(void) {
 // This function updates Triki
 long double Agent::update_triki(void){
     long double q_std = stdev(history);
-    long double update_factor = p.delt * Ti / pow(q_std, 2);
+    long double update_factor = p.delt * triki_temperature / pow(q_std, 2);
     if (q_std > 0.0) {
         if (update_factor > 1.0) {
             // Update delt and update_factor
@@ -183,12 +195,12 @@ long double Agent::update_triki(void){
             update_factor /= 2.0;
         }
         if(update_factor > 1.0){
-            return Ti;
+            return triki_temperature;
         } else {
-            return Ti * (1 - update_factor);
+            return triki_temperature * (1 - update_factor);
         }
 
     } else {
-        return Ti;
+        return triki_temperature;
     }
 }

@@ -2,6 +2,7 @@
 #include "../include/meta_optimization/univariate.hpp"
 #include "../include/meta_optimization/pattern.hpp"
 #include "../include/utilities/custom_print.hpp"
+#include "../include/problem_statements/ackley.hpp"
 #include <sys/time.h>
 
 int main(int argc, char *argv[]) {
@@ -111,6 +112,7 @@ int main(int argc, char *argv[]) {
 
         // Print parameters if verbose
         if(verb){
+            Solution().print_surface_characteristics();
             MT.p.print_params();
         }
 
