@@ -6,4 +6,5 @@ script:
   - cd test
   - bash test_build.sh
   - bash test_bench.sh
+  - bash test_meta.sh
   - bash test_help.sh

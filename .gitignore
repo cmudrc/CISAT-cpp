@@ -1,2 +1,3 @@
 build/*
 .idea/*
+analysis/.ipynb_checkpoints/*
