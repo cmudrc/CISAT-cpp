@@ -17,9 +17,7 @@ public:
     unsigned long n_reps;
     // Maximum number of iterations to perform
     unsigned long max_iter;
-    // Boolean storing adaptivity
-    bool adaptive;
-    // Boolean storing interaction
+    // Float storing interaction
     long double interaction;
     int history_length;
     unsigned long n_agents;

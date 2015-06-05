@@ -17,7 +17,6 @@ void Parameters::set_from_file(string file_name) {
         ss >> name;
 
         if(name == "NAGENTS")      ss >> n_agents;
-        else if(name == "ADAPT")   ss >> adaptive;
         else if(name == "INTER")   ss >> interaction;
         else if(name == "TINIT")   ss >> temp_init;
         else if(name == "DELT")    ss >> delt;
@@ -33,8 +32,7 @@ void Parameters::set_from_file(string file_name) {
 //// Shows the current parameters
 void Parameters::print_params(void) {
     cout << "Number of agents: " <<  n_agents                        << endl;
-    cout << "Adaptive?:        " <<  (adaptive ? "yes" : "no")       << endl;
-    cout << "Interacting?:     " <<  interaction                     << endl;
+    cout << "Interaction:      " <<  interaction                     << endl;
     cout << "Initial temp:     " <<  temp_init                       << endl;
     cout << "Temp factor:      " <<  delt                            << endl;
     cout << "History length:   " <<  history_length                  << endl;

@@ -112,7 +112,7 @@ void Agent::iterate(int iter){
     x_cand = candidate_solution();
     fx_cand = x_cand.quality;
 
-    if(p.adaptive && p.history_length < 0) {
+    if(p.history_length < 0) {
         history.push_back(fx_cand);
     }
 
@@ -131,7 +131,7 @@ void Agent::iterate(int iter){
         }
     }
 
-    if(p.adaptive && p.history_length > 0) {
+    if(p.history_length > 0) {
         history.push_back(fx_current);
     }
 
@@ -147,14 +147,10 @@ void Agent::update_temp(void) {
 
     // If history_length is greater than 0, use a sliding window for the update
     if(p.history_length > 0) {
-        if (p.adaptive) {
-            // If the quality history is too long, pop one out and calculate the update
-            if (history.size() > p.history_length) {
-                history.pop_front();
-                Ti = update_triki();
-            }
-        } else {
-            Ti = update_cauchy();
+        // If the quality history is too long, pop one out and calculate the update
+        if (history.size() > p.history_length) {
+            history.pop_front();
+            Ti = update_triki();
         }
     }
 
@@ -168,14 +164,9 @@ void Agent::update_temp(void) {
         }
 
         // If adaptive and time to update, update triki and clear the cache
-        if(p.adaptive && UPDATE){
+        if(UPDATE){
             Ti = update_triki();
             history.clear();
-        }
-
-        // If not adaptive, but time to update, update cauchy.
-        if(!p.adaptive && UPDATE){
-            Ti = update_cauchy();
         }
     }
 }
@@ -200,8 +191,4 @@ long double Agent::update_triki(void){
     } else {
         return Ti;
     }
-}
-
-long double Agent::update_cauchy(void){
-     return p.temp_init / (1.0 + p.delt * iteration_number);
 }

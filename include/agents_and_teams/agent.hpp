@@ -38,7 +38,6 @@ private:
     Solution candidate_solution(void);
     void update_temp(void);                  // Updates the temperature.
     long double update_triki(void);
-    long double update_cauchy(void);
 };
 
 #endif
