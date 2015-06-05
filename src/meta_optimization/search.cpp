@@ -53,6 +53,7 @@ void Search::save_settings(string file_name){
     myfile << "S_BIAS  " << p_best.s_bias << endl;
     myfile << "Q_BIAS  " << p_best.q_bias << endl;
     myfile << "OLEARN  " << p_best.op_learn << endl;
+    myfile << "SATFRAC " << p_best.satisficing_fraction << endl;
 
     myfile.close();
 }
