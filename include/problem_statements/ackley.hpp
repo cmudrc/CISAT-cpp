@@ -20,7 +20,7 @@ public:
     std::vector<long double> quality;
 
     // Functions
-    Solution(bool);
+    Solution(bool _);
     Solution(void);
     void apply_move_operator(int n, long double size);
     void print_surface_characteristics();

@@ -9,7 +9,7 @@ const long double Solution::goal = 0.1;
 const long double Solution::upper_bound = 10;
 const long double Solution::lower_bound = -10;
 
-Solution::Solution(bool) {}
+Solution::Solution(bool _) {}
 
 Solution::Solution(void) {
     // Give the solution a unique ID and increment the counter
@@ -32,22 +32,22 @@ void Solution::compute_quality(void) {
     // Initialize a couple variable for sums
     long double fx1 = 0;
     long double fx2 = 0;
-    int D = static_cast <int> (x.size());
+    long double D = static_cast <long double> (x.size());
 
     // Step through every dimensions and do a thing
     for(int i=0; i < D; i++){
         fx1 += x[i]*x[i];
-        fx2 += cos(2.0*M_PI*x[i]);
+        fx2 += std::cos(2.0*M_PI*x[i]);
     }
 
     // Return a sum of sums
-    quality[0] = abs(-20.0*exp(-0.2*sqrt(fx1/D))
-                     - exp(fx2/D)
-                     + 20.0 + exp(1.0));
+    quality[0] = std::abs(-20.0*std::exp(-0.2*std::sqrt(fx1/D))
+                     - std::exp(fx2/D)
+                     + 20.0 + std::exp(1.0));
 }
 
 void Solution::apply_move_operator(int n, long double size) {
-    size *= tan(uniform(M_PI/2, 0.0));
+    size *= std::tan(uniform(M_PI/2, 0.0));
     int plus_or_minus = 2*(n % 2) - 1;
     int dimension = n/2;
     x[dimension] += static_cast<long double>(plus_or_minus)*size;

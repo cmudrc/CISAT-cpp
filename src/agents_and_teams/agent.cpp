@@ -1,8 +1,9 @@
 #include "../../include/agents_and_teams/agent.hpp"
 
 //// Necessary definitions of static vectors for sharing between agents.
-std::vector<long double> Agent::all_fx_current;
-std::vector<Solution> Agent::all_xx_current;
+std::vector<long double> Agent::quality_of_all_current_solutions;
+std::vector<Solution> Agent::all_current_solutions;
+std::vector< std::vector<long double> > Agent::all_current_objective_weightings;
 
 //// Inline Agent constructor for accessing static vectors
 Agent::Agent(void){}
@@ -27,6 +28,8 @@ Agent::Agent(int ID, Parameters x){
 
     // Define objective weighting
     objective_weighting.assign(static_cast <unsigned long> (Solution(false).number_of_objectives), 1.0);
+    print(objective_weighting);
+    all_current_objective_weightings[agent_id] = objective_weighting;
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
@@ -37,9 +40,9 @@ void Agent::new_start(void){
     fx_current = apply_weighting(x_current.quality, objective_weighting);
     best_so_far = fx_current;
 
-    // Share hte information
-    all_fx_current[agent_id] = fx_current;
-    all_xx_current[agent_id] = x_current;
+    // Share the information
+    quality_of_all_current_solutions[agent_id] = fx_current;
+    all_current_solutions[agent_id] = x_current;
 }
 
 //// Generated a candidate solution using Cauchy distribution.
@@ -55,7 +58,7 @@ Solution Agent::candidate_solution(void){
 
     // If a random draw is lower than teh probability of interaction, then interact.
     if(p.interaction > uniform(1.0, 0.0)) {
-        w = all_fx_current;
+        w = quality_of_all_current_solutions;
         wmax = vector_max(w);
 
         // Make a thing
@@ -72,7 +75,7 @@ Solution Agent::candidate_solution(void){
         w[agent_id] += p.s_bias;
 
         j = weighted_choice(w);
-        candidate = all_xx_current[j];
+        candidate = all_current_solutions[j];
     } else{
         candidate = x_current;
     }
@@ -84,6 +87,7 @@ Solution Agent::candidate_solution(void){
     old_fx = apply_weighting(candidate.quality, objective_weighting);
     candidate.apply_move_operator(j, temperature);
     new_fx = apply_weighting(candidate.quality, objective_weighting);
+
     // Update move operator preferences
     if (new_fx < old_fx) {
         move_oper_pref[j] *= (1 + p.op_learn);
@@ -172,15 +176,15 @@ void Agent::update_temp(void) {
 
     // If history length is less than 0, use an absolute stepping scheme
     if(p.history_length < 0) {
-        bool UPDATE = false;
+        bool update = false;
 
         // See if its time to compute an update
         if(iteration_number % p.history_length == 0) {
-            UPDATE = true;
+            update = true;
         }
 
         // If adaptive and time to update, update triki and clear the cache
-        if(UPDATE){
+        if(update){
             triki_temperature = update_triki();
             temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
                                                                             best_so_far - Solution(false).goal)/best_so_far)
@@ -205,7 +209,7 @@ long double Agent::update_triki(void){
         if(update_factor > 1.0){
             return triki_temperature;
         } else {
-            return triki_temperature * (1 - update_factor);
+            return triki_temperature * (1.0 - update_factor);
         }
 
     } else {

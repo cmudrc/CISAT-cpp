@@ -2,7 +2,7 @@
 
 //// Return the largest element in a vector.
 long double vector_max(std::vector<long double> v){
-    long double max = -DBL_MAX;
+    long double max = -LDBL_MAX;
     for(std::vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
         if(*it > max){
             max = *it;
@@ -13,7 +13,7 @@ long double vector_max(std::vector<long double> v){
 
 //// Returns the smallest element in a vector.
 long double vector_min(std::vector<long double> v){
-    long double min = DBL_MAX;
+    long double min = LDBL_MAX;
     for(std::vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
         if(*it < min){
             min = *it;

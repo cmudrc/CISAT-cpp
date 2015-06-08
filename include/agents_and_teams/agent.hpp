@@ -30,8 +30,9 @@ public:
     std::deque<long double> history;   // History of quality
 
     //// Accessible everywhere
-    static std::vector<long double> all_fx_current;         // Function value of all agents current solutions
-    static std::vector<Solution> all_xx_current;
+    static std::vector<long double> quality_of_all_current_solutions;         // Function value of all agents current solutions
+    static std::vector<Solution> all_current_solutions;
+    static std::vector< std::vector<long double> > all_current_objective_weightings;
 
 private:
     //// Functions
