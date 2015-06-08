@@ -15,7 +15,7 @@ Solution::Solution(void) {
     solution_counter++;
 
     // Create the x vector based on upper and lower bounds from problem statement
-    x = random_vector(static_cast <unsigned long> (number_of_move_ops/2),
+    x = random_vector(number_of_move_ops/2,
                       upper_bound,
                       lower_bound);
 
@@ -30,7 +30,7 @@ void Solution::compute_quality(void) {
     // Initialize a couple variable for sums
     long double fx1 = 0;
     long double fx2 = 0;
-    long double D = static_cast <long double> (x.size());
+    unsigned long D = x.size();
 
     // Step through every dimensions and do a thing
     for(int i=0; i < D; i++){

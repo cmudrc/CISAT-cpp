@@ -10,7 +10,7 @@ MultipleTeams::MultipleTeams(ParameterSet x){
     // Initialize the best solution vector
     best_solution.assign(p.n_reps,
                          std::vector< std::vector<long double> > (p.max_iter,
-                         std::vector<long double>(static_cast <unsigned long> (Solution::number_of_objectives, 0.0))));
+                         std::vector<long double>(Solution::number_of_objectives, 0.0)));
 }
 
 // This does the things, and initializes p from file
@@ -21,7 +21,7 @@ MultipleTeams::MultipleTeams(string file_name){
     // Initialize the best solution vector
     best_solution.assign(p.n_reps,
                          std::vector< std::vector<long double> > (p.max_iter/p.n_agents,
-                         std::vector<long double>(static_cast <unsigned long> (Solution::number_of_objectives, 0.0))));
+                         std::vector<long double>(Solution::number_of_objectives, 0.0)));
 }
 
 //// This actually solves the problem LOTS of times.
