@@ -7,9 +7,6 @@
 #include <fstream>
 #include <cmath>
 
-using namespace std;
-
-
 class Parameters{
 public:
     //// Variables
@@ -30,10 +27,10 @@ public:
 
     //// Functions
     Parameters(void);
-    void set_from_file(string file_name);
-    void set_from_pair(string name, long double x);
+    void set_from_file(std::string file_name);
+    void set_from_pair(std::string name, long double x);
     void print_params(void);
-    long double get_from_name(string name);
+    long double get_from_name(std::string name);
 
 private:
     //nothing yet

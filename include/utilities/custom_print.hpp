@@ -6,16 +6,14 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 // Functions to print variables
 void print(int x);
 void print(long double x);
-void print(vector<long double>);
-void print(vector<long double>::size_type x);
+void print(std::vector<long double>);
+void print(std::vector<long double>::size_type x);
 
 // Write to file
-void save_to_file(string file_path, vector<long double>);
-void save_to_file(string file_path, vector< vector<long double> >);
+void save_to_file(std::string file_path, std::vector<long double>);
+void save_to_file(std::string file_path, std::vector< std::vector<long double> >);
 
 #endif

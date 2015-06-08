@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
 
 set(SOURCE_FILES_MAIN
-    src/cisat.cpp
+    cisat.cpp
     include/agents_and_teams/agent.hpp
     include/agents_and_teams/team.hpp
     include/agents_and_teams/multiple_teams.hpp

@@ -1,6 +1,6 @@
 #include "../../include/meta_optimization/univariate.hpp"
 
-UnivariateSearch::UnivariateSearch(string file_name){
+UnivariateSearch::UnivariateSearch(std::string file_name){
     seed_time();
     parse_parameter_file(file_name);
 }
@@ -20,33 +20,33 @@ void UnivariateSearch::solve(int max_iter, bool verb){
     bool APPROACHING_BOUND;
 
     // Stores values to feed to quadratic regression
-    vector<long double> X(p_best.n_reps, 0.0);
-    vector<long double> Y(p_best.n_reps, 0.0);
+    std::vector<long double> X(p_best.n_reps, 0.0);
+    std::vector<long double> Y(p_best.n_reps, 0.0);
 
     // Stores the results from the quadratic regression
-    vector<long double> quad_res;
+    std::vector<long double> quad_res;
     long double temp_ub;
     long double temp_lb;
     if(verb) {
-        cout << "\nBeginning Optimization Routine" << endl;
+        std::cout << "\nBeginning Optimization Routine" << std::endl;
     }
 
     // Do some iterations, bro. Get mad optimized.
     while(current_iteration < max_iter) {
         if(verb) {
-            cout << "\tIteration " << current_iteration + 1 << " of " << max_iter << endl;
+            std::cout << "\tIteration " << current_iteration + 1 << " of " << max_iter << std::endl;
         }
         EDGE_SOLUTION = false;
         APPROACHING_BOUND = false;
         // Within each iteration, step in each direction
         for (int i = 0; i < variable_names.size(); i++) {
             if(verb) {
-                cout << "\t\tComputing " << variable_names[i];
+                std::cout << "\t\tComputing " << variable_names[i];
             }
 
             // Draw a random variable in the param range
-            temp_ub = min(variable_values[i]+step_sizes[i], upper_limits[i]);
-            temp_lb = max(variable_values[i]-step_sizes[i], lower_limits[i]);
+            temp_ub = std::min(variable_values[i]+step_sizes[i], upper_limits[i]);
+            temp_lb = std::max(variable_values[i]-step_sizes[i], lower_limits[i]);
 
             // Check to see if we're up against a bound
             if(temp_ub == upper_limits[i] || temp_lb == lower_limits[i]){
@@ -87,10 +87,10 @@ void UnivariateSearch::solve(int max_iter, bool verb){
             }
 
             if(verb) {
-                cout << " = " << p_best.get_from_name(variable_names[i])
+                std::cout << " = " << p_best.get_from_name(variable_names[i])
                         << ", mean = " << quad_res[2]
                         << ", r2 = " << quad_res[3]
-                        << ", " << (EDGE_SOLUTION ? "edge" : "interior") << endl;
+                        << ", " << (EDGE_SOLUTION ? "edge" : "interior") << std::endl;
             }
 
         }
@@ -100,7 +100,7 @@ void UnivariateSearch::solve(int max_iter, bool verb){
                 step_sizes[i] /= 2.0;
             }
             if(verb){
-                cout << "\t\t" << "All interior points. Updating step sizes." << endl;
+                std::cout << "\t\t" << "All interior points. Updating step sizes." << std::endl;
             }
         }
         current_iteration++;

@@ -1,9 +1,9 @@
 #include "../../include/utilities/stats.hpp"
 
 //// Return the largest element in a vector.
-long double vector_max(vector<long double> v){
+long double vector_max(std::vector<long double> v){
     long double max = -DBL_MAX;
-    for(vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
+    for(std::vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
         if(*it > max){
             max = *it;
         }
@@ -12,9 +12,9 @@ long double vector_max(vector<long double> v){
 }
 
 //// Returns the smallest element in a vector.
-long double vector_min(vector<long double> v){
+long double vector_min(std::vector<long double> v){
     long double min = DBL_MAX;
-    for(vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
+    for(std::vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
         if(*it < min){
             min = *it;
         }
@@ -24,15 +24,15 @@ long double vector_min(vector<long double> v){
 
 
 // Compute mean of a vector
-long double mean(vector<long double> x) {
+long double mean(std::vector<long double> x) {
     return accumulate(x.begin(), x.end(), 0.0) / x.size();
 }
 
 // Compute mean of a deque
-long double mean(deque<long double> x) {
+long double mean(std::deque<long double> x) {
     long double sum = 0;
 
-    for(deque<long double>::iterator j=x.begin(); j!=x.end();++j){
+    for(std::deque<long double>::iterator j=x.begin(); j!=x.end();++j){
         sum += *j;
     }
 
@@ -40,11 +40,11 @@ long double mean(deque<long double> x) {
 }
 
 // Compute standard deviation of a vector
-long double stdev(deque<long double> x) {
+long double stdev(std::deque<long double> x) {
     long double mean_val = mean(x);
     long double s = 0;
 
-    for(deque<long double>::iterator j=x.begin(); j!=x.end();++j){
+    for(std::deque<long double>::iterator j=x.begin(); j!=x.end();++j){
         s += pow((*j - mean_val), 2.0);
     }
 
@@ -52,11 +52,11 @@ long double stdev(deque<long double> x) {
 }
 
 // Compute the x value fo the optimium of a linear regression
-vector<long double> quad_max(vector<long double> x, vector<long double> y){
+std::vector<long double> quad_max(std::vector<long double> x, std::vector<long double> y){
 
     // Initialize things
-    vector< vector<long double> > A(3, vector<long double>(4, 0.0));
-    vector<long double> xx;
+    std::vector< std::vector<long double> > A(3, std::vector<long double>(4, 0.0));
+    std::vector<long double> xx;
     long double n   = 0.0;
     long double x1  = 0.0;
     long double x2  = 0.0;
@@ -112,8 +112,8 @@ vector<long double> quad_max(vector<long double> x, vector<long double> y){
     }
 
     // Check to make sure the solution is in teh trust region
-    x_loc = min(x_loc, x_max);
-    x_loc = max(x_loc, x_min);
+    x_loc = std::min(x_loc, x_max);
+    x_loc = std::max(x_loc, x_min);
 
     // Compute the r-squared value
     long double sse_mean = 0;
@@ -124,7 +124,7 @@ vector<long double> quad_max(vector<long double> x, vector<long double> y){
         sse_reg  += pow(xx[0] + x[i]*xx[1] +x[i]*x[i]*xx[2] - y[i], 2);
     }
 
-    vector<long double> results;
+    std::vector<long double> results;
     results.push_back(x_loc);
     results.push_back(xx[0] + x_loc*xx[1] +x_loc*x_loc*xx[2]);
     results.push_back(my);
@@ -134,7 +134,7 @@ vector<long double> quad_max(vector<long double> x, vector<long double> y){
 
 }
 
-vector<long double> gauss(vector< vector<long double> > A) {
+std::vector<long double> gauss(std::vector< std::vector<long double> > A) {
     // From http://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
 
     int n = static_cast <int> (A.size());
@@ -171,7 +171,7 @@ vector<long double> gauss(vector< vector<long double> > A) {
     }
 
     // Solve equation Ax=b for an upper triangular matrix A
-    vector<long double> x(static_cast <unsigned long> (n));
+    std::vector<long double> x(static_cast <unsigned long> (n));
     for (int i=n-1; i>=0; i--) {
         x[i] = A[i][n]/A[i][i];
         for (int k=i-1;k>=0; k--) {
@@ -179,4 +179,12 @@ vector<long double> gauss(vector< vector<long double> > A) {
         }
     }
     return x;
+}
+
+long double apply_weighting(std::vector<long double> a, std::vector<long double> b) {
+    long double sum = 0;
+    for (int i = 0; i < a.size(); i++) {
+        sum += (a[i]*b[i]);
+    }
+    return sum;
 }

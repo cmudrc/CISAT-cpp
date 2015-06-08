@@ -4,15 +4,15 @@
 Parameters::Parameters(void){}
 
 //// Function to read variables from a file
-void Parameters::set_from_file(string file_name) {
+void Parameters::set_from_file(std::string file_name) {
 
-    ifstream inputFile(file_name);
-    string line;
-    string name;
+    std::ifstream inputFile(file_name);
+    std::string line;
+    std::string name;
 
     while (getline(inputFile, line))
     {
-        istringstream ss(line);
+        std::istringstream ss(line);
 
         ss >> name;
 
@@ -32,21 +32,21 @@ void Parameters::set_from_file(string file_name) {
 
 //// Shows the current parameters
 void Parameters::print_params(void) {
-    cout << "Number of agents: " <<  n_agents                        << endl;
-    cout << "Interaction:      " <<  interaction                     << endl;
-    cout << "Initial temp:     " <<  initial_temperature             << endl;
-    cout << "Temp factor:      " <<  delt                            << endl;
-    cout << "History length:   " <<  history_length                  << endl;
-    cout << "Number of reps:   " <<  n_reps                          << endl;
-    cout << "Max iterations:   " <<  max_iter                        << endl;
-    cout << "Self-bias:        " <<  s_bias                          << endl;
-    cout << "Quality-bias:     " <<  q_bias                          << endl;
-    cout << "Operation learn:  " <<  op_learn                        << endl;
-    cout << "Satisficing frac: " <<  satisficing_fraction            << endl;
+    std::cout << "Number of agents: " <<  n_agents                        << std::endl;
+    std::cout << "Interaction:      " <<  interaction                     << std::endl;
+    std::cout << "Initial temp:     " <<  initial_temperature             << std::endl;
+    std::cout << "Temp factor:      " <<  delt                            << std::endl;
+    std::cout << "History length:   " <<  history_length                  << std::endl;
+    std::cout << "Number of reps:   " <<  n_reps                          << std::endl;
+    std::cout << "Max iterations:   " <<  max_iter                        << std::endl;
+    std::cout << "Self-bias:        " <<  s_bias                          << std::endl;
+    std::cout << "Quality-bias:     " <<  q_bias                          << std::endl;
+    std::cout << "Operation learn:  " <<  op_learn                        << std::endl;
+    std::cout << "Satisficing frac: " <<  satisficing_fraction            << std::endl;
 }
 
 //// Sets parameters based on a vector
-void Parameters::set_from_pair(string name, long double x) {
+void Parameters::set_from_pair(std::string name, long double x) {
     if(name == "DELT")         delt = x;
     else if(name == "L_HIST")  history_length =static_cast <int> (round(x));
     else if(name == "NAGENTS") n_agents = static_cast <unsigned long> (round(x));
@@ -59,7 +59,7 @@ void Parameters::set_from_pair(string name, long double x) {
 }
 
 //// Get parameters from a string name
-long double Parameters::get_from_name(string name) {
+long double Parameters::get_from_name(std::string name) {
     if(name == "DELT")         return delt;
     else if(name == "L_HIST")  return history_length;
     else if(name == "NAGENTS") return n_agents;

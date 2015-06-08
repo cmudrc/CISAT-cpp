@@ -16,9 +16,9 @@ void seed_time(void){
 }
 
 //// Creates a random vector
-vector<long double> random_vector(unsigned long D, long double ub, long double lb){
+std::vector<long double> random_vector(unsigned long D, long double ub, long double lb){
     // Initialize a vector
-    vector<long double> x(D, 0.0);
+    std::vector<long double> x(D, 0.0);
 
     // Create the elements in that vector
     for(int i=0; i<D; i++){
@@ -32,10 +32,10 @@ vector<long double> random_vector(unsigned long D, long double ub, long double l
 
 // Weighted random choice function
 
-int weighted_choice(vector<long double> x){
+int weighted_choice(std::vector<long double> x){
     // Get the sum of the vector
     long double sum = 0;
-    for(vector<long double>::iterator j=x.begin(); j!=x.end();++j)
+    for(std::vector<long double>::iterator j=x.begin(); j!=x.end();++j)
         sum += *j;
 
     // Get a random value somewhere within the vector CDF

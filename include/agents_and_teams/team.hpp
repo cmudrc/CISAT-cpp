@@ -13,8 +13,8 @@ public:
 
     //// Variables
     Parameters p; // Parameters used for SA
-    vector<Agent> agent_list;     // A vector to store agents in
-    vector<long double> best_solution; // A vector to store the time-string of best solutions in
+    std::vector<Agent> agent_list;     // A vector to store agents in
+    std::vector<long double> best_solution; // A vector to store the time-string of best solutions in
 
 private:
     // nothing yet

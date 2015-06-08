@@ -8,9 +8,6 @@
 #include "../utilities/custom_print.hpp"
 #include "../problem_statements/ackley.hpp"
 
-
-using namespace std;
-
 class Agent {
 public:
     //// Functions
@@ -27,19 +24,21 @@ public:
     long double triki_temperature;
     long double fx_current;        // The function value of the current solution
     long double best_so_far;
+    std::vector<long double> objective_weighting;
     Solution x_current; // The value of the current solution
-    vector<long double> move_oper_pref; // preference for different move operators
-    deque<long double> history;   // History of quality
+    std::vector<long double> move_oper_pref; // preference for different move operators
+    std::deque<long double> history;   // History of quality
 
     //// Accessible everywhere
-    static vector<long double> all_fx_current;         // Function value of all agents current solutions
-    static vector<Solution> all_xx_current;
+    static std::vector<long double> all_fx_current;         // Function value of all agents current solutions
+    static std::vector<Solution> all_xx_current;
 
 private:
     //// Functions
     Solution candidate_solution(void);
     void update_temp(void);                  // Updates the temperature.
     long double update_triki(void);
+
 };
 
 #endif

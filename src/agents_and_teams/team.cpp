@@ -47,7 +47,7 @@ void Team::iterate(int iter){
     }
 
     if (p.n_reps == 1){
-        cout << endl;
+        std::cout << std::endl;
     }
 }
 

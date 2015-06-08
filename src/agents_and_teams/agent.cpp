@@ -1,8 +1,8 @@
 #include "../../include/agents_and_teams/agent.hpp"
 
 //// Necessary definitions of static vectors for sharing between agents.
-vector<long double> Agent::all_fx_current;
-vector<Solution> Agent::all_xx_current;
+std::vector<long double> Agent::all_fx_current;
+std::vector<Solution> Agent::all_xx_current;
 
 //// Inline Agent constructor for accessing static vectors
 Agent::Agent(void){}
@@ -24,6 +24,9 @@ Agent::Agent(int ID, Parameters x){
 
     // Define initial move operator preferences
     move_oper_pref.assign(static_cast <unsigned long> (x_current.number_of_move_ops), 1.0);
+
+    // Define objective weighting
+    objective_weighting.assign(static_cast <unsigned long> (Solution(false).number_of_objectives), 1.0);
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
@@ -31,7 +34,7 @@ void Agent::new_start(void){
 
     // Select a random starting point and evaluate it
     x_current = Solution();
-    fx_current = x_current.quality;
+    fx_current = apply_weighting(x_current.quality, objective_weighting);
     best_so_far = fx_current;
 
     // Share hte information
@@ -43,10 +46,10 @@ void Agent::new_start(void){
 Solution Agent::candidate_solution(void){
     // Make some variable for use in this function
     Solution candidate; // stores the candidate solution
-    vector<long double> w;         // Vector of weights across agents
+    std::vector<long double> w;         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
-    long double old_fx = 0;
+    long double old_fx = 0, new_fx = 0;
     int j;                    // Index for random draw
 
 
@@ -78,13 +81,13 @@ Solution Agent::candidate_solution(void){
     j = weighted_choice(move_oper_pref);
 
     // Save current quality, apply move operator
-    old_fx = candidate.quality;
+    old_fx = apply_weighting(candidate.quality, objective_weighting);
     candidate.apply_move_operator(j, temperature);
-
+    new_fx = apply_weighting(candidate.quality, objective_weighting);
     // Update move operator preferences
-    if (candidate.quality < old_fx) {
+    if (new_fx < old_fx) {
         move_oper_pref[j] *= (1 + p.op_learn);
-    } else if (candidate.quality > old_fx) {
+    } else if (new_fx > old_fx) {
         move_oper_pref[j] *= (1 - p.op_learn);
     }
 
@@ -114,7 +117,7 @@ void Agent::iterate(int iter){
 
     // Generate a new solution
     x_cand = candidate_solution();
-    fx_cand = x_cand.quality;
+    fx_cand = apply_weighting(x_cand.quality, objective_weighting);
 
     if(p.history_length < 0) {
         history.push_back(fx_cand);
@@ -152,7 +155,7 @@ void Agent::iterate(int iter){
 void Agent::update_temp(void) {
 
     if(p.n_reps == 1)
-        cout << temperature << ", ";
+        std::cout << temperature << ", ";
 
     // If history_length is greater than 0, use a sliding window for the update
     if(p.history_length > 0) {
@@ -160,9 +163,10 @@ void Agent::update_temp(void) {
         if (history.size() > p.history_length) {
             history.pop_front();
             triki_temperature = update_triki();
-            temperature = p.satisficing_fraction*p.initial_temperature*(max(static_cast <long double> (0.0),
-                                                                  best_so_far - Solution().goal)/best_so_far)
-                          + (1-p.satisficing_fraction)*triki_temperature;
+
+            temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
+                                                                  best_so_far - Solution(false).goal)/best_so_far)
+                          + (1.0-p.satisficing_fraction)*triki_temperature;
         }
     }
 
@@ -178,6 +182,10 @@ void Agent::update_temp(void) {
         // If adaptive and time to update, update triki and clear the cache
         if(UPDATE){
             triki_temperature = update_triki();
+            temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
+                                                                            best_so_far - Solution(false).goal)/best_so_far)
+                          + (1.0-p.satisficing_fraction)*triki_temperature;
+
             history.clear();
         }
     }
