@@ -9,8 +9,6 @@ const long double Solution::goal = 0.1;
 const long double Solution::upper_bound = 10;
 const long double Solution::lower_bound = -10;
 
-Solution::Solution(bool _) {}
-
 Solution::Solution(void) {
     // Give the solution a unique ID and increment the counter
     solution_id = solution_counter;

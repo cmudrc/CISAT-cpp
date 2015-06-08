@@ -21,10 +21,9 @@ void Team::new_start(void){
     }
 
     // Instantiate the sharing vectors for agents
-    Agent().quality_of_all_current_solutions.assign(p.n_agents, 0.0);
-    Agent().all_current_solutions.assign(p.n_agents, Solution());
-    Agent().all_current_objective_weightings.assign(
-            p.n_agents, std::vector<long double>(static_cast <unsigned long> (Solution(false).number_of_objectives), 0.0));
+    Agent::quality_of_all_current_solutions.assign(p.n_agents, 0.0);
+    Agent::all_current_solutions.assign(p.n_agents, Solution());
+    Agent::all_current_objective_weightings.assign(p.n_agents, std::vector<long double>(static_cast <unsigned long> (Solution::number_of_objectives), 0.0));
 
     // Give agents starting locations
     for(int i=0; i<p.n_agents; i++){
@@ -32,7 +31,7 @@ void Team::new_start(void){
     }
 
     // Save the first best solution
-    best_solution[0] = vector_min(agent_list[0].quality_of_all_current_solutions);
+    best_solution[0] = vector_min(Agent::quality_of_all_current_solutions);
 };
 
 //// Iterate the team
@@ -44,8 +43,8 @@ void Team::iterate(int iter){
 
     // Share new results between agents
     for(int i=0; i<agent_list.size(); i++) {
-        Agent().quality_of_all_current_solutions[agent_list[i].agent_id] = agent_list[i].fx_current;
-        Agent().all_current_solutions[agent_list[i].agent_id] = agent_list[i].x_current;
+        Agent::quality_of_all_current_solutions[agent_list[i].agent_id] = agent_list[i].fx_current;
+        Agent::all_current_solutions[agent_list[i].agent_id] = agent_list[i].x_current;
     }
 
     if (p.n_reps == 1){
@@ -62,7 +61,7 @@ void Team::solve(void){
         iterate(i);
 
         // Save the best solution
-        best_solution[i] = vector_min(Agent().quality_of_all_current_solutions);
+        best_solution[i] = vector_min(Agent::quality_of_all_current_solutions);
 
         // If it isn't better than last time, overwrite
         if(best_solution[i] > best_solution[i-1]){

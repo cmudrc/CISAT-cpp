@@ -1,13 +1,6 @@
-#ifndef PROBLEM_STATEMENTS__ACKLEY_HPP
-#define PROBLEM_STATEMENTS__ACKLEY_HPP
-
-#include <vector>
-#include <cmath>
-#include <string>
-#include <algorithm>
-#include <iostream>
-
-#include "../utilities/make_random.hpp"
+#include <iostream>                  // for std::cout
+#include <utility>                   // for std::pair
+#include <algorithm>                 // for std::for_each
 
 class Solution {
 public:
@@ -22,7 +15,7 @@ public:
     // Functions
     Solution(void);
     void apply_move_operator(int n, long double size);
-    static void print_surface_characteristics();
+    void print_surface_characteristics();
 
 private:
     // Constants

@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
         // Print parameters if verbose
         if(verb){
-            Solution().print_surface_characteristics();
+            Solution::print_surface_characteristics();
             MT.p.print_params();
         }
 

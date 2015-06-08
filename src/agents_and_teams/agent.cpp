@@ -5,9 +5,6 @@ std::vector<long double> Agent::quality_of_all_current_solutions;
 std::vector<Solution> Agent::all_current_solutions;
 std::vector< std::vector<long double> > Agent::all_current_objective_weightings;
 
-//// Inline Agent constructor for accessing static vectors
-Agent::Agent(void){}
-
 //// Normal agent constructor, take one int
 Agent::Agent(int ID, Parameters x){
     // Save the list of parameters
@@ -30,7 +27,7 @@ void Agent::new_start(void){
     move_oper_pref.assign(static_cast <unsigned long> (x_current.number_of_move_ops), 1.0);
 
     // Define objective weighting
-    objective_weighting.assign(static_cast <unsigned long> (Solution(false).number_of_objectives), 1.0);
+    objective_weighting.assign(static_cast <unsigned long> (Solution::number_of_objectives), 1.0);
     all_current_objective_weightings[agent_id] = objective_weighting;
 
     // Select a random starting point and evaluate it
@@ -167,7 +164,7 @@ void Agent::update_temp(void) {
             triki_temperature = update_triki();
 
             temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
-                                                                  best_so_far - Solution(false).goal)/best_so_far)
+                                                                  best_so_far - Solution::goal)/best_so_far)
                           + (1.0-p.satisficing_fraction)*triki_temperature;
         }
     }
@@ -185,7 +182,7 @@ void Agent::update_temp(void) {
         if(update){
             triki_temperature = update_triki();
             temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
-                                                                            best_so_far - Solution(false).goal)/best_so_far)
+                                                                            best_so_far - Solution::goal)/best_so_far)
                           + (1.0-p.satisficing_fraction)*triki_temperature;
 
             history.clear();
