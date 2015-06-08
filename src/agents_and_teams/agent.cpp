@@ -1,12 +1,11 @@
 #include "../../include/agents_and_teams/agent.hpp"
 
 //// Necessary definitions of static vectors for sharing between agents.
-std::vector<long double> Agent::quality_of_all_current_solutions;
 std::vector<Solution> Agent::all_current_solutions;
 std::vector< std::vector<long double> > Agent::all_current_objective_weightings;
 
 //// Normal agent constructor, take one int
-Agent::Agent(int ID, Parameters x){
+Agent::Agent(int ID, ParameterSet x){
     // Save the list of parameters
     p = x;
 
@@ -24,27 +23,26 @@ Agent::Agent(int ID, Parameters x){
 //// A function that selects a random starting point, and pushes it to other agents.
 void Agent::new_start(void){
     // Define initial move operator preferences
-    move_oper_pref.assign(static_cast <unsigned long> (x_current.number_of_move_ops), 1.0);
+    move_oper_pref.assign(static_cast <unsigned long> (current_solution.number_of_move_ops), 1.0);
 
     // Define objective weighting
     objective_weighting.assign(static_cast <unsigned long> (Solution::number_of_objectives), 1.0);
     all_current_objective_weightings[agent_id] = objective_weighting;
 
     // Select a random starting point and evaluate it
-    x_current = Solution();
-    fx_current = apply_weighting(x_current.quality, objective_weighting);
-    best_so_far = fx_current;
+    current_solution = Solution();
+    current_solution_quality = apply_weighting(current_solution.quality, objective_weighting);
+    best_solution_so_far = current_solution_quality;
 
     // Share the information
-    quality_of_all_current_solutions[agent_id] = fx_current;
-    all_current_solutions[agent_id] = x_current;
+    all_current_solutions[agent_id] = current_solution;
 }
 
 //// Generated a candidate solution using Cauchy distribution.
 Solution Agent::candidate_solution(void){
     // Make some variable for use in this function
     Solution candidate; // stores the candidate solution
-    std::vector<long double> w;         // Vector of weights across agents
+    std::vector<long double> w(p.n_agents, 0.0);         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
     long double old_fx = 0, new_fx = 0;
@@ -53,7 +51,10 @@ Solution Agent::candidate_solution(void){
 
     // If a random draw is lower than teh probability of interaction, then interact.
     if(p.interaction > uniform(1.0, 0.0)) {
-        w = quality_of_all_current_solutions;
+        // Build the weight vector
+        for(int i=0; i < p.n_agents; i++) {
+            w[i] = apply_weighting(all_current_solutions[i].quality, objective_weighting);
+        }
         wmax = vector_max(w);
 
         // Make a thing
@@ -72,7 +73,7 @@ Solution Agent::candidate_solution(void){
         j = weighted_choice(w);
         candidate = all_current_solutions[j];
     } else{
-        candidate = x_current;
+        candidate = current_solution;
     }
 
     // Choose which move operator to apply
@@ -105,6 +106,7 @@ Solution Agent::candidate_solution(void){
 
 //// A function to perform an iteration of SA.
 void Agent::iterate(int iter){
+
     // Save the god-given iteration as the current iteration
     iteration_number = iter;
 
@@ -123,27 +125,27 @@ void Agent::iterate(int iter){
     }
 
     // If it is better, accept it
-    if(fx_cand < fx_current){
+    if(fx_cand < current_solution_quality){
         // Save locally
-        x_current = x_cand;
-        fx_current = fx_cand;
+        current_solution = x_cand;
+        current_solution_quality = fx_cand;
     } else {
         // If not, accept with some probability
-        p_accept = exp((fx_current - fx_cand)/temperature);
+        p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
         if(uniform(0.0, 1.0) < p_accept){
             // Save locally
-            x_current = x_cand;
-            fx_current = fx_cand;
+            current_solution = x_cand;
+            current_solution_quality = fx_cand;
         }
     }
 
     // Update best so far
-    if (fx_current < best_so_far) {
-        best_so_far = fx_current;
+    if (current_solution_quality < best_solution_so_far) {
+        best_solution_so_far = current_solution_quality;
     }
 
     if(p.history_length > 0) {
-        history.push_back(fx_current);
+        history.push_back(current_solution_quality);
     }
 
     //Update the temperature
@@ -164,7 +166,8 @@ void Agent::update_temp(void) {
             triki_temperature = update_triki();
 
             temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
-                                                                  best_so_far - Solution::goal)/best_so_far)
+                                                                  best_solution_so_far - Solution::goal)/
+                                                                        best_solution_so_far)
                           + (1.0-p.satisficing_fraction)*triki_temperature;
         }
     }
@@ -182,7 +185,8 @@ void Agent::update_temp(void) {
         if(update){
             triki_temperature = update_triki();
             temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
-                                                                            best_so_far - Solution::goal)/best_so_far)
+                                                                            best_solution_so_far - Solution::goal)/
+                                                                        best_solution_so_far)
                           + (1.0-p.satisficing_fraction)*triki_temperature;
 
             history.clear();

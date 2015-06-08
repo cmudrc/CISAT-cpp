@@ -15,7 +15,7 @@ set(SOURCE_FILES_MAIN
     include/meta_optimization/search.hpp
     include/meta_optimization/pattern.hpp
     include/meta_optimization/univariate.hpp
-    include/utilities/parameters.hpp
+    include/utilities/parameterset.hpp
     include/utilities/make_random.hpp
     include/utilities/custom_print.hpp
     include/utilities/stats.hpp
@@ -26,7 +26,7 @@ set(SOURCE_FILES_MAIN
     src/meta_optimization/search.cpp
     src/meta_optimization/pattern.cpp
     src/meta_optimization/univariate.cpp
-    src/utilities/parameters.cpp
+    src/utilities/parameterset.cpp
     src/utilities/make_random.cpp
     src/utilities/custom_print.cpp
     src/utilities/stats.cpp

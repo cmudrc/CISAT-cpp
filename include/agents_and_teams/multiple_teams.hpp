@@ -7,14 +7,13 @@
 class MultipleTeams {
 public:
     //// Functions
-    MultipleTeams(Parameters x); // A function to construct the thing from an object
+    MultipleTeams(ParameterSet x); // A function to construct the thing from an object
     MultipleTeams(std::string file_name); // A function to construct the thing from file
     long double solve(void);  // A function to solve the problem.
 
     //// Variables
-    Parameters p;       // The parameters of the simulation
-    std::vector<long double> cdf; // Stores the best value found in every run
-    std::vector< std::vector<long double> > best_solution; // Stores the string of best values from every run.
+    ParameterSet p;       // The parameters of the simulation
+    std::vector< std::vector< std::vector<long double> > > best_solution; // Stores the string of best values from every run.
 
 private:
     // nothing yet

@@ -6,15 +6,16 @@
 class Team {
 public:
     //// Functions
-    Team(Parameters p);
+    Team(ParameterSet p);
     void solve(void);
     void new_start(void);
     void iterate(int iter);
+    void pull_best_solution(int iter);
 
     //// Variables
-    Parameters p; // Parameters used for SA
+    ParameterSet p; // ParameterSet used for SA
     std::vector<Agent> agent_list;     // A vector to store agents in
-    std::vector<long double> best_solution; // A vector to store the time-string of best solutions in
+    std::vector< std::vector <long double> > best_solution; // A vector to store the time-string of best solutions in
 
 private:
     // nothing yet

@@ -80,11 +80,8 @@ int main(int argc, char *argv[]) {
         }
 
         // Print output if requested
-        std::cout << std::endl << "mean solution = " << MT.solve() << std::endl << std::endl;
-        if(verb){
-            std::cout << "all solutions = " << std::endl;
-            print(MT.cdf);
-        }
+        MT.solve();
+        std::cout << std::endl << "Output saved." << std::endl << std::endl;
 
         // Save output if possible
         if(found_output){

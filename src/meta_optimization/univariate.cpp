@@ -8,7 +8,7 @@ UnivariateSearch::UnivariateSearch(std::string file_name){
 void UnivariateSearch::solve(int max_iter, bool verb){
     // Stores the current iteration and values
     current_iteration = 0;
-    Parameters p_current;
+    ParameterSet p_current;
 
     // Stores a new value
     long double new_val = 0;
@@ -70,7 +70,7 @@ void UnivariateSearch::solve(int max_iter, bool verb){
                 Team T(p_current);
                 T.new_start();
                 T.solve();
-                Y[j] = T.best_solution.back();
+                Y[j] = T.best_solution.back()[0];
             }
 
             // Now, perform regression with Y and X

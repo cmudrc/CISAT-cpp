@@ -1,10 +1,10 @@
-#include "../../include/utilities/parameters.hpp"
+#include "../../include/utilities/parameterset.hpp"
 
 //// Construct the thing
-Parameters::Parameters(void){}
+ParameterSet::ParameterSet(void){}
 
 //// Function to read variables from a file
-void Parameters::set_from_file(std::string file_name) {
+void ParameterSet::set_from_file(std::string file_name) {
 
     std::ifstream inputFile(file_name);
     std::string line;
@@ -31,7 +31,7 @@ void Parameters::set_from_file(std::string file_name) {
 }
 
 //// Shows the current parameters
-void Parameters::print_params(void) {
+void ParameterSet::print_params(void) {
     std::cout << "Number of agents: " <<  n_agents                        << std::endl;
     std::cout << "Interaction:      " <<  interaction                     << std::endl;
     std::cout << "Initial temp:     " <<  initial_temperature             << std::endl;
@@ -46,7 +46,7 @@ void Parameters::print_params(void) {
 }
 
 //// Sets parameters based on a vector
-void Parameters::set_from_pair(std::string name, long double x) {
+void ParameterSet::set_from_pair(std::string name, long double x) {
     if(name == "DELT")         delt = x;
     else if(name == "L_HIST")  history_length =static_cast <int> (round(x));
     else if(name == "NAGENTS") n_agents = static_cast <unsigned long> (round(x));
@@ -59,7 +59,7 @@ void Parameters::set_from_pair(std::string name, long double x) {
 }
 
 //// Get parameters from a string name
-long double Parameters::get_from_name(std::string name) {
+long double ParameterSet::get_from_name(std::string name) {
     if(name == "DELT")         return delt;
     else if(name == "L_HIST")  return history_length;
     else if(name == "NAGENTS") return n_agents;

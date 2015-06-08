@@ -15,5 +15,6 @@ void print(std::vector<long double>::size_type x);
 // Write to file
 void save_to_file(std::string file_path, std::vector<long double>);
 void save_to_file(std::string file_path, std::vector< std::vector<long double> >);
+void save_to_file(std::string file_path, std::vector< std::vector< std::vector<long double> > > x);
 
 #endif

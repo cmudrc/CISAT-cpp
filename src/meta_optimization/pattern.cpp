@@ -11,7 +11,7 @@ void PatternSearch::solve(int max_iter, bool verb){
     long double fx_current;
     long double new_val;
     bool IMPROVED;
-    Parameters p_current;
+    ParameterSet p_current;
 
     // Find average initial quality
     MultipleTeams MT1(p_best);

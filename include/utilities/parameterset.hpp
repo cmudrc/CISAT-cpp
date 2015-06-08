@@ -7,7 +7,7 @@
 #include <fstream>
 #include <cmath>
 
-class Parameters{
+class ParameterSet {
 public:
     //// Variables
     // Number of times to repeat the solution
@@ -26,7 +26,7 @@ public:
     long double satisficing_fraction;
 
     //// Functions
-    Parameters(void);
+    ParameterSet(void);
     void set_from_file(std::string file_name);
     void set_from_pair(std::string name, long double x);
     void print_params(void);

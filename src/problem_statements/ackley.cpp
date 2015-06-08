@@ -2,8 +2,8 @@
 
 // Integer to assign unique IDs to solutions
 int Solution::solution_counter = 0;
-const int Solution::number_of_move_ops = 60;
-const int Solution::number_of_objectives = 1;
+const unsigned long Solution::number_of_move_ops = 60;
+const unsigned long Solution::number_of_objectives = 1;
 const std::string Solution::name = "Ackley Function";
 const long double Solution::goal = 0.1;
 const long double Solution::upper_bound = 10;

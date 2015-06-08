@@ -12,8 +12,8 @@
 class Solution {
 public:
     // Constants
-    static const int number_of_move_ops;
-    static const int number_of_objectives;
+    static const unsigned long number_of_move_ops;
+    static const unsigned long number_of_objectives;
     static const long double goal;
 
     // Variables
