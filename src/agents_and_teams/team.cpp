@@ -23,6 +23,8 @@ void Team::new_start(void){
     // Instantiate the sharing vectors for agents
     Agent().quality_of_all_current_solutions.assign(p.n_agents, 0.0);
     Agent().all_current_solutions.assign(p.n_agents, Solution());
+    Agent().all_current_objective_weightings.assign(
+            p.n_agents, std::vector<long double>(static_cast <unsigned long> (Solution(false).number_of_objectives), 0.0));
 
     // Give agents starting locations
     for(int i=0; i<p.n_agents; i++){

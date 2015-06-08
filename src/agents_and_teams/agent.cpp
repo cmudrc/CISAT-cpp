@@ -22,18 +22,16 @@ Agent::Agent(int ID, Parameters x){
     // Set initial temperature
     triki_temperature = p.initial_temperature;
     temperature = p.initial_temperature;
+}
 
+//// A function that selects a random starting point, and pushes it to other agents.
+void Agent::new_start(void){
     // Define initial move operator preferences
     move_oper_pref.assign(static_cast <unsigned long> (x_current.number_of_move_ops), 1.0);
 
     // Define objective weighting
     objective_weighting.assign(static_cast <unsigned long> (Solution(false).number_of_objectives), 1.0);
-    print(objective_weighting);
     all_current_objective_weightings[agent_id] = objective_weighting;
-}
-
-//// A function that selects a random starting point, and pushes it to other agents.
-void Agent::new_start(void){
 
     // Select a random starting point and evaluate it
     x_current = Solution();

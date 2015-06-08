@@ -8,7 +8,7 @@ MultipleTeams::MultipleTeams(Parameters x){
     p = x;
 
     // Initialize the best solution vector
-    best_solution.assign(p.n_reps, vector<long double>(p.max_iter/p.n_agents, 0.0));
+    best_solution.assign(p.n_reps, std::vector<long double>(p.max_iter/p.n_agents, 0.0));
 
     // Initialize the cdf vector
     cdf.assign(p.n_reps, 0.0);
@@ -20,7 +20,7 @@ MultipleTeams::MultipleTeams(string file_name){
     p.set_from_file(file_name);
 
     // Initialize the best solution vector
-    best_solution.assign(p.n_reps, vector<long double>(p.max_iter/p.n_agents, 0.0));
+    best_solution.assign(p.n_reps, std::vector<long double>(p.max_iter/p.n_agents, 0.0));
 
     // Initialize the cdf vector
     cdf.assign(p.n_reps, 0.0);
