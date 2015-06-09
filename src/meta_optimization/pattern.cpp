@@ -10,7 +10,7 @@ void PatternSearch::solve(int max_iter, bool verb){
     current_iteration = 0;
     long double fx_current;
     long double new_val;
-    bool IMPROVED;
+    bool has_improved;
     ParameterSet p_current;
 
     // Find average initial quality
@@ -22,7 +22,7 @@ void PatternSearch::solve(int max_iter, bool verb){
 
     while(current_iteration < max_iter){
         // This variable will keep track of whether or not an improvement has been made
-        IMPROVED = false;
+        has_improved = false;
         if(verb) {
             std::cout << "\tIteration " << current_iteration + 1 << " of " << max_iter << std::endl;
         }
@@ -56,15 +56,16 @@ void PatternSearch::solve(int max_iter, bool verb){
                     variable_values[i] = new_val;
                     fx_best = fx_current;
                     p_best = p_current;
-                    IMPROVED = true;
-                    i = 100000;
-                    j = -100000;
+                    has_improved = true;
+                    goto objective_improved_so_continue;
                 }
             }
         }
 
+        objective_improved_so_continue:
+
         // If no improvement, update the stepsize values
-        if(!IMPROVED){
+        if(!has_improved){
             if (verb) {
                 std::cout << "\t\tUpdating stepsizes." << std::endl;
             }
