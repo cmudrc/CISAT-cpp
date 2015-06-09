@@ -2,6 +2,7 @@
 #define META_OPTIMIZATION__UNIVARIATE_HPP
 
 #include "../agents_and_teams/multiple_teams.hpp"
+#include "../utilities/optimization.hpp"
 #include "search.hpp"
 
 class UnivariateSearch : public Search {

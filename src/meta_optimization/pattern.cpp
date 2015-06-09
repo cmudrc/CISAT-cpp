@@ -14,7 +14,7 @@ void PatternSearch::solve(int max_iter, bool verb){
     ParameterSet p_current;
 
     // Find average initial quality
-    MultipleTeams MT1(p_best);
+    MultipleTeams MT1(best_parameters);
     fx_best = MT1.solve();
     if(verb) {
         std::cout << "\nBeginning Optimization Routine, fx = " << fx_best << std::endl;
@@ -29,7 +29,7 @@ void PatternSearch::solve(int max_iter, bool verb){
         for(int i=0; i<variable_names.size(); i++){
             for(int j=1; j>-2; j-=2){
                 // Modify the list of parameters
-                p_current = p_best;
+                p_current = best_parameters;
                 new_val = variable_values[i] + j*step_sizes[i];
                 // Keep it all in range
                 if(new_val < lower_limits[i]){
@@ -55,7 +55,7 @@ void PatternSearch::solve(int max_iter, bool verb){
                     }
                     variable_values[i] = new_val;
                     fx_best = fx_current;
-                    p_best = p_current;
+                    best_parameters = p_current;
                     has_improved = true;
                     goto objective_improved_so_continue;
                 }

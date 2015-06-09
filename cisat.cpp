@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
             i++;
             max_iter = atoi(argv[i]);
         }
-        else if (std::string(argv[i]) == "--pattern"  || std::string(argv[i]) == "-p") {
+        else if (std::string(argv[i]) == "--pattern"  || std::string(argv[i]) == "-parameters") {
             pattern = true;
             i++;
             max_iter = atoi(argv[i]);
@@ -71,21 +71,25 @@ int main(int argc, char *argv[]) {
     // Run benchmarking
     if(bench){
         // Initialize it
-        MultipleTeams MT(input);
+        MultipleTeams some_teams(input);
 
         // Print parameters if verbose
         if(verb){
             Solution::print_surface_characteristics();
-            MT.p.print_params();
+            some_teams.parameters.print_parameters();
         }
 
         // Print output if requested
-        MT.solve();
-        std::cout << std::endl << "Output saved." << std::endl << std::endl;
+        std::cout << std::endl << some_teams.solve() << std::endl << std::endl;
+
+        // Print cdf if verbose
+        if(verb) {
+            print(some_teams.cdf);
+        }
 
         // Save output if possible
         if(found_output){
-            save_to_file(output, MT.best_solution);
+            save_to_file(output, some_teams.best_solution);
         }
     }
 
@@ -96,7 +100,7 @@ int main(int argc, char *argv[]) {
 
         // If verbose, print beginning values
         if(verb){
-            US.p_best.print_params();
+            US.best_parameters.print_parameters();
         }
 
         // Solve it all
@@ -116,7 +120,7 @@ int main(int argc, char *argv[]) {
 
         // If verbose, print beginning values
         if(verb){
-            PS.p_best.print_params();
+            PS.best_parameters.print_parameters();
         }
 
         // Solve it all

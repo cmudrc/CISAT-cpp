@@ -8,7 +8,7 @@ public:
     void save_settings(std::string file_name);
 
     //// Variables
-    ParameterSet p_best;       // The parameters of the simulation
+    ParameterSet best_parameters;       // The parameters of the simulation
     std::vector<std::string> variable_names;
     std::vector<long double> variable_values;
     std::vector<long double> lower_limits;

@@ -19,6 +19,7 @@ set(SOURCE_FILES_MAIN
     include/utilities/make_random.hpp
     include/utilities/custom_print.hpp
     include/utilities/stats.hpp
+    include/utilities/optimization.hpp
     include/problem_statements/ackley.hpp
     src/agents_and_teams/agent.cpp
     src/agents_and_teams/team.cpp
@@ -30,6 +31,7 @@ set(SOURCE_FILES_MAIN
     src/utilities/make_random.cpp
     src/utilities/custom_print.cpp
     src/utilities/stats.cpp
+    src/utilities/optimization.cpp
     src/problem_statements/ackley.cpp)
 
 

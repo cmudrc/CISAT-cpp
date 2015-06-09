@@ -2,10 +2,9 @@
 
 //// This constructs the team
 Team::Team(ParameterSet x){
-    p = x;
+    parameters = x;
     // Make a vector of the appropriate length for storing things.
-    best_solution.assign(p.max_iter/p.n_agents,
-                         std::vector<long double>(Solution::number_of_objectives, 0.0));
+    best_solution.assign(parameters.max_iter/parameters.n_agents, 0.0);
 }
 
 //// Give the team a new start
@@ -17,16 +16,16 @@ void Team::new_start(void){
     }
 
     // Create agent list
-    for(int i=0; i<p.n_agents; i++){
-        agent_list.emplace_back(Agent(i, p));
+    for(int i=0; i< parameters.n_agents; i++){
+        agent_list.emplace_back(Agent(i, parameters));
     }
 
     // Instantiate the sharing vectors for agents
-    Agent::all_current_solutions.assign(p.n_agents, Solution());
-    Agent::all_current_objective_weightings.assign(p.n_agents, std::vector<long double>(Solution::number_of_objectives, 0.0));
+    Agent::all_current_solutions.assign(parameters.n_agents, Solution());
+    Agent::all_current_objective_weightings.assign(parameters.n_agents, std::vector<long double>(Solution::number_of_objectives));
 
     // Give agents starting locations
-    for(int i=0; i<p.n_agents; i++){
+    for(int i=0; i< parameters.n_agents; i++){
         agent_list[i].new_start();
     }
 
@@ -46,7 +45,7 @@ void Team::iterate(int iter){
         Agent::all_current_solutions[agent_list[i].agent_id] = agent_list[i].current_solution;
     }
 
-    if (p.n_reps == 1){
+    if (parameters.n_reps == 1){
         std::cout << std::endl;
     }
 
@@ -58,28 +57,26 @@ void Team::iterate(int iter){
 //// Solve the team
 void Team::solve(void){
     // Iterate many times, and save the best solution each time
-    for(int i=1; i<p.max_iter/p.n_agents; i++){
+    for(int i=1; i< parameters.max_iter/ parameters.n_agents; i++){
         // Do the iteration
         iterate(i);
     }
 }
 
-#include "../../include/utilities/custom_print.hpp"
-
 void Team::pull_best_solution(int iter) {
-    // If a solution is good, add it to the pareto set with a stamp
-    std::vector<long double> temp;
+    long double temp;
+    unsigned long num = Solution::number_of_objectives;
+
     if(iter == 0) {
-        temp.assign(Solution::number_of_objectives, LDBL_MAX);
+        best_solution[iter] = LDBL_MAX;
     } else {
-        temp = best_solution[iter-1];
+        best_solution[iter] = best_solution[iter-1];
     }
-    for(int i=0; i<p.n_agents; i++) {
-        for (int j=0; j < Solution::number_of_objectives; j++){
-            if (agent_list[i].current_solution.quality[j] < temp[j]) {
-                temp[j] = agent_list[i].current_solution.quality[j];
-            }
+
+    for(int i=0; i<agent_list.size(); i++) {
+        temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0/num));
+        if (temp < best_solution[iter]) {
+            best_solution[iter] = temp;
         }
     }
-    best_solution[iter] = temp;
 }

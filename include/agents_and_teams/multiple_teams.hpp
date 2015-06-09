@@ -12,8 +12,9 @@ public:
     long double solve(void);  // A function to solve the problem.
 
     //// Variables
-    ParameterSet p;       // The parameters of the simulation
-    std::vector< std::vector< std::vector<long double> > > best_solution; // Stores the string of best values from every run.
+    ParameterSet parameters;       // The parameters of the simulation
+    std::vector< std::vector<long double > > best_solution; // Stores the string of best values from every run.
+    std::vector<long double> cdf;
 
 private:
     // nothing yet

@@ -5,7 +5,7 @@ Search::Search(){}
 
 void Search::parse_parameter_file(std::string file_name){
     // Set the parameters to their current values in the setup file
-    p_best.set_from_file(file_name);
+    best_parameters.set_from_file(file_name);
 
     // Step through the setup file and build parameter lists
     std::ifstream inputFile(file_name);
@@ -14,15 +14,15 @@ void Search::parse_parameter_file(std::string file_name){
     long double lower_limit;
     long double upper_limit;
     long double temp;
-    bool INDICATOR;
+    bool to_be_used_for_optimization;
 
     while (getline(inputFile, line))
     {
         // Read a line
         std::istringstream ss(line);
-        ss >> name >> temp >> INDICATOR;
+        ss >> name >> temp >> to_be_used_for_optimization;
 
-        if(INDICATOR) {
+        if(to_be_used_for_optimization) {
             ss >> lower_limit;
             lower_limits.push_back(lower_limit);
             ss >> upper_limit;
@@ -43,17 +43,17 @@ void Search::save_settings(std::string file_name){
     myfile.open(file_name);
 
     // Print a file with appropriate data
-    myfile << "NAGENTS " << p_best.n_agents << std::endl;
-    myfile << "INTER   " << p_best.interaction << std::endl;
-    myfile << "TINIT   " << p_best.initial_temperature << std::endl;
-    myfile << "DELT    " << p_best.delt << std::endl;
-    myfile << "L_HIST  " << p_best.history_length << std::endl;
-    myfile << "NREPS   " << p_best.n_reps << std::endl;
-    myfile << "MAX_IT  " << p_best.max_iter << std::endl;
-    myfile << "S_BIAS  " << p_best.s_bias << std::endl;
-    myfile << "Q_BIAS  " << p_best.q_bias << std::endl;
-    myfile << "OLEARN  " << p_best.op_learn << std::endl;
-    myfile << "SATFRAC " << p_best.satisficing_fraction << std::endl;
+    myfile << "NAGENTS " << best_parameters.n_agents << std::endl;
+    myfile << "INTER   " << best_parameters.interaction << std::endl;
+    myfile << "TINIT   " << best_parameters.initial_temperature << std::endl;
+    myfile << "DELT    " << best_parameters.delt << std::endl;
+    myfile << "L_HIST  " << best_parameters.history_length << std::endl;
+    myfile << "NREPS   " << best_parameters.n_reps << std::endl;
+    myfile << "MAX_IT  " << best_parameters.max_iter << std::endl;
+    myfile << "S_BIAS  " << best_parameters.s_bias << std::endl;
+    myfile << "Q_BIAS  " << best_parameters.q_bias << std::endl;
+    myfile << "OLEARN  " << best_parameters.op_learn << std::endl;
+    myfile << "SATFRAC " << best_parameters.satisficing_fraction << std::endl;
 
     myfile.close();
 }

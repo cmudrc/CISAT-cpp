@@ -31,7 +31,7 @@ void ParameterSet::set_from_file(std::string file_name) {
 }
 
 //// Shows the current parameters
-void ParameterSet::print_params(void) {
+void ParameterSet::print_parameters(void) {
     std::cout << "Number of agents: " <<  n_agents                        << std::endl;
     std::cout << "Interaction:      " <<  interaction                     << std::endl;
     std::cout << "Initial temp:     " <<  initial_temperature             << std::endl;

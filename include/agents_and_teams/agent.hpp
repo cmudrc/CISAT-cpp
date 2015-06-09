@@ -10,13 +10,17 @@
 
 class Agent {
 public:
-    //// Functions
-    Agent(int ID, ParameterSet p);          // A function to initialize the agent with a specific ID
-    void new_start(void);   // A function that selects a random starting point, and pushes it to other agents.
-    void iterate(int iter); // A function to perform an iteration of SA.
+    // A function to initialize the agent with a specific ID
+    Agent(int ID, ParameterSet p);
+
+    // A function that selects a random starting point, and pushes it to other agents.
+    void new_start(void);
+
+    // A function to perform an iteration of SA.
+    void iterate(int iter);
 
     //// Variables
-    ParameterSet p;             // A parameters structure that holds much of the SA info
+    ParameterSet parameters;             // A parameters structure that holds much of the SA info
     int agent_id;                   // Agent ID, tells it where to store info in static vectors.
     int iteration_number;     // The number of the current iteration
     long double temperature;  // The current temperature

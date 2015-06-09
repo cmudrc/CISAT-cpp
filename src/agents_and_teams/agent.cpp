@@ -7,7 +7,7 @@ std::vector< std::vector<long double> > Agent::all_current_objective_weightings;
 //// Normal agent constructor, take one int
 Agent::Agent(int ID, ParameterSet x){
     // Save the list of parameters
-    p = x;
+    parameters = x;
 
     // Remember your damn name, agent
     agent_id = ID;
@@ -16,8 +16,8 @@ Agent::Agent(int ID, ParameterSet x){
     iteration_number = 0;
 
     // Set initial temperature
-    triki_temperature = p.initial_temperature;
-    temperature = p.initial_temperature;
+    triki_temperature = parameters.initial_temperature;
+    temperature = parameters.initial_temperature;
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
@@ -42,7 +42,7 @@ void Agent::new_start(void){
 Solution Agent::candidate_solution(void){
     // Make some variable for use in this function
     Solution candidate; // stores the candidate solution
-    std::vector<long double> w(p.n_agents, 0.0);         // Vector of weights across agents
+    std::vector<long double> w(parameters.n_agents, 0.0);         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
     long double old_fx = 0, new_fx = 0;
@@ -50,12 +50,12 @@ Solution Agent::candidate_solution(void){
 
 
     // If a random draw is lower than teh probability of interaction, then interact.
-    if(p.interaction > uniform(1.0, 0.0)) {
+    if(parameters.interaction > uniform(1.0, 0.0)) {
         // Build the weight vector
-        for(int i=0; i < p.n_agents; i++) {
+        for(int i=0; i < parameters.n_agents; i++) {
             w[i] = apply_weighting(all_current_solutions[i].quality, objective_weighting);
         }
-        wmax = vector_max(w);
+        wmax = vector_maximum(w);
 
         // Make a thing
         for (int i = 0; i < w.size(); i++) {
@@ -66,9 +66,9 @@ Solution Agent::candidate_solution(void){
         // Normalize the thing, and incorporate self-bias and quality-bias
         for (int i = 0; i < w.size(); i++) {
             w[i] /= sum_w;
-            w[i] += p.q_bias;
+            w[i] += parameters.q_bias;
         }
-        w[agent_id] += p.s_bias;
+        w[agent_id] += parameters.s_bias;
 
         j = weighted_choice(w);
         candidate = all_current_solutions[j];
@@ -86,9 +86,9 @@ Solution Agent::candidate_solution(void){
 
     // Update move operator preferences
     if (new_fx < old_fx) {
-        move_oper_pref[j] *= (1 + p.op_learn);
+        move_oper_pref[j] *= (1 + parameters.op_learn);
     } else if (new_fx > old_fx) {
-        move_oper_pref[j] *= (1 - p.op_learn);
+        move_oper_pref[j] *= (1 - parameters.op_learn);
     }
 
     // Normalize the vector so it doesn't get out of hand
@@ -120,7 +120,7 @@ void Agent::iterate(int iter){
     x_cand = candidate_solution();
     fx_cand = apply_weighting(x_cand.quality, objective_weighting);
 
-    if(p.history_length < 0) {
+    if(parameters.history_length < 0) {
         history.push_back(fx_cand);
     }
 
@@ -144,7 +144,7 @@ void Agent::iterate(int iter){
         best_solution_so_far = current_solution_quality;
     }
 
-    if(p.history_length > 0) {
+    if(parameters.history_length > 0) {
         history.push_back(current_solution_quality);
     }
 
@@ -155,39 +155,39 @@ void Agent::iterate(int iter){
 //// Updates temperature using simple stretched Cauchy schedule.
 void Agent::update_temp(void) {
 
-    if(p.n_reps == 1)
+    if(parameters.n_reps == 1)
         std::cout << temperature << ", ";
 
     // If history_length is greater than 0, use a sliding window for the update
-    if(p.history_length > 0) {
+    if(parameters.history_length > 0) {
         // If the quality history is too long, pop one out and calculate the update
-        if (history.size() > p.history_length) {
+        if (history.size() > parameters.history_length) {
             history.pop_front();
             triki_temperature = update_triki();
 
-            temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
+            temperature = parameters.satisficing_fraction* parameters.initial_temperature*(std::max(static_cast <long double> (0.0),
                                                                   best_solution_so_far - Solution::goal)/
                                                                         best_solution_so_far)
-                          + (1.0-p.satisficing_fraction)*triki_temperature;
+                          + (1.0- parameters.satisficing_fraction)*triki_temperature;
         }
     }
 
     // If history length is less than 0, use an absolute stepping scheme
-    if(p.history_length < 0) {
+    if(parameters.history_length < 0) {
         bool update = false;
 
         // See if its time to compute an update
-        if(iteration_number % p.history_length == 0) {
+        if(iteration_number % parameters.history_length == 0) {
             update = true;
         }
 
         // If adaptive and time to update, update triki and clear the cache
         if(update){
             triki_temperature = update_triki();
-            temperature = p.satisficing_fraction*p.initial_temperature*(std::max(static_cast <long double> (0.0),
+            temperature = parameters.satisficing_fraction* parameters.initial_temperature*(std::max(static_cast <long double> (0.0),
                                                                             best_solution_so_far - Solution::goal)/
                                                                         best_solution_so_far)
-                          + (1.0-p.satisficing_fraction)*triki_temperature;
+                          + (1.0- parameters.satisficing_fraction)*triki_temperature;
 
             history.clear();
         }
@@ -198,11 +198,11 @@ void Agent::update_temp(void) {
 // This function updates Triki
 long double Agent::update_triki(void){
     long double q_std = stdev(history);
-    long double update_factor = p.delt * triki_temperature / pow(q_std, 2);
+    long double update_factor = parameters.delt * triki_temperature / pow(q_std, 2);
     if (q_std > 0.0) {
         if (update_factor > 1.0) {
             // Update delt and update_factor
-            p.delt /= 2.0;
+            parameters.delt /= 2.0;
             update_factor /= 2.0;
         }
         if(update_factor > 1.0){

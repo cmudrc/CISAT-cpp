@@ -29,7 +29,7 @@ public:
     ParameterSet(void);
     void set_from_file(std::string file_name);
     void set_from_pair(std::string name, long double x);
-    void print_params(void);
+    void print_parameters(void);
     long double get_from_name(std::string name);
 
 private:
