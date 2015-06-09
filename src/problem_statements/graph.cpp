@@ -32,14 +32,14 @@ void Graph::remove_edge(int e) {
     // Remove the reference from initial node via erase/remove idiom
     int n = edges[e].initial_node;
     nodes[n].attached_edges.erase(
-            std::remove( nodes[n].attached_edges.begin(), nodes[n].attached_edges.end(), e),
+            std::remove( nodes[n].attached_edges.begin(), nodes[n].attached_edges.end(), e-1),
             nodes[n].attached_edges.end()
     );
 
     // Remove the reference from terminal node via erase/remove idiom
     n = edges[e].terminal_node;
     nodes[n].attached_edges.erase(
-            std::remove( nodes[n].attached_edges.begin(), nodes[n].attached_edges.end(), e),
+            std::remove( nodes[n].attached_edges.begin(), nodes[n].attached_edges.end(), e-1),
             nodes[n].attached_edges.end()
     );
 
