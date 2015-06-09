@@ -9,6 +9,8 @@
 
 class Graph {
 public:
+    Graph(void);
+
     // Structures
     struct Node {
         Node(void);
@@ -26,10 +28,9 @@ public:
     // Containers
     std::map<int, Node> nodes;
     std::map<int, Edge> edges;
-    std::vector< std::vector<int> > connectivity_matrix = {{0}};
 
-    int node_id_counter = 0;
-    int edge_id_counter = 0;
+    int node_id_counter;
+    int edge_id_counter;
 
     // Functions for construction
     void add_edge(int n1, int n2);
@@ -38,8 +39,6 @@ public:
     // Functions for removal
     void remove_edge(int e);
     void remove_node(int n);
-
-    void update_connectivity_matrix(void);
 };
 
 #endif

@@ -1,5 +1,10 @@
 #include "../../include/problem_statements/graph.hpp"
 
+Graph::Graph(void) {
+    node_id_counter = 0;
+    edge_id_counter = 0;
+}
+
 Graph::Node::Node(void) {};
 
 Graph::Edge::Edge(void) {};
