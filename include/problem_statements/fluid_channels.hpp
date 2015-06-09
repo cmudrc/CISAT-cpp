@@ -2,6 +2,7 @@
 #define PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
 
 #include <iostream>
+#include <cmath>
 #include "graph.hpp"
 
 class Solution : public Graph{
