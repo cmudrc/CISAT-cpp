@@ -1,8 +1,5 @@
 #include "../../include/meta_optimization/pattern.hpp"
 
-// Null initializer for search
-Search::Search(){}
-
 void Search::parse_parameter_file(std::string file_name){
     // Set the parameters to their current values in the setup file
     best_parameters.set_from_file(file_name);

@@ -6,7 +6,7 @@
 #include "../utilities/make_random.hpp"
 #include "../utilities/stats.hpp"
 #include "../utilities/custom_print.hpp"
-#include "../problem_statements/ackley.hpp"
+#include "../problem_statements/fluid_channels.hpp"
 
 class Agent {
 public:

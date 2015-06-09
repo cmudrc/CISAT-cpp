@@ -1,5 +1,5 @@
 #ifndef UTILITIES__MAKE_RANDOM_HPP
-#define UTILITIES__MAKERANDOM_HPP
+#define UTILITIES__MAKE_RANDOM_HPP
 
 #include <vector>
 #include <cstdlib>

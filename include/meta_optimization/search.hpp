@@ -3,7 +3,6 @@
 
 class Search {
 public:
-    Search();
     void parse_parameter_file(std::string file_name);
     void save_settings(std::string file_name);
 

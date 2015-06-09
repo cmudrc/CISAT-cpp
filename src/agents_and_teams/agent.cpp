@@ -198,7 +198,7 @@ void Agent::update_temp(void) {
 // This function updates Triki
 long double Agent::update_triki(void){
     long double q_std = stdev(history);
-    long double update_factor = parameters.delt * triki_temperature / pow(q_std, 2);
+    long double update_factor = parameters.delt * triki_temperature / std::pow(q_std, 2);
     if (q_std > 0.0) {
         if (update_factor > 1.0) {
             // Update delt and update_factor
