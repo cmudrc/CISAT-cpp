@@ -45,10 +45,10 @@ long double stdev(std::deque<long double> x) {
     long double s = 0;
 
     for(std::deque<long double>::iterator j=x.begin(); j!=x.end();++j){
-        s += pow((*j - mean_val), 2.0);
+        s += std::pow((*j - mean_val), 2.0);
     }
 
-    return sqrt(s/x.size());
+    return std::sqrt(s/x.size());
 }
 
 std::vector<long double> gauss(std::vector< std::vector<long double> > A) {

@@ -1,38 +1,5 @@
 #include "../../include/utilities/custom_print.hpp"
 
-//// Function to print an int
-void print(int x){
-    std::cout<<x<<std::endl;
-}
-
-//// Function to print a long double
-void print(long double x){
-    std::cout<<x<<std::endl;
-}
-
-//// Function to print the size of a vector
-void print(std::vector<long double>::size_type x){
-    std::cout<<x<<std::endl;
-}
-
-//// Function to print a vector. Black magic.
-void print(std::vector<long double> x){
-    int end = static_cast <int> (x.size()-1);
-    std::cout<<std::scientific<<"[ ";
-    for(int i=0; i<x.size(); i++){
-        if(i!=end) {
-            std::cout << x[i] << ", ";
-            if ((i + 1) % 10 == 0) {
-                std::cout << std::endl << "  ";
-            }
-        } else {
-            std::cout << x[i] << " ]" << std::endl;
-        }
-    }
-}
-
-
-
 //// Save a vector to a file
 void save_to_file(std::string file_path, std::vector<long double> x){
     // Open a file stream

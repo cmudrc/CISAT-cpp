@@ -1,11 +1,29 @@
 #include "../../include/problem_statements/graph.hpp"
 
 Graph::Graph(void) {
-    node_id_counter = 0;
-    edge_id_counter = 0;
+    node_id_counter = -1;
+    edge_id_counter = -1;
 }
 
 Graph::Node::Node(void) {};
+
+void Graph::Node::remove_incoming_edge(int e) {
+    for( std::vector<int>::iterator iter = incoming_edges.begin(); iter != incoming_edges.end(); ++iter ) {
+        if( *iter == e ) {
+            incoming_edges.erase( iter );
+            break;
+        }
+    }
+}
+
+void Graph::Node::remove_outgoing_edge(int e) {
+    for( std::vector<int>::iterator iter = outgoing_edges.begin(); iter != outgoing_edges.end(); ++iter ) {
+        if( *iter == e ) {
+            outgoing_edges.erase( iter );
+            break;
+        }
+    }
+}
 
 Graph::Edge::Edge(void) {};
 
@@ -21,8 +39,11 @@ void Graph::add_edge(int n1, int n2) {
     edges[edge_id_counter].terminal_node = n2;
 
     // Tell the nodes they're attached
-    nodes[n1].attached_edges.push_back(edge_id_counter);
-    nodes[n2].attached_edges.push_back(edge_id_counter);
+    nodes[n1].outgoing_edges.push_back(edge_id_counter);
+    nodes[n2].incoming_edges.push_back(edge_id_counter);
+
+    // Add to the connectivity map
+    connectivity_map[n1][n2] = edge_id_counter;
 }
 
 void Graph::add_node(void) {
@@ -34,19 +55,9 @@ void Graph::add_node(void) {
 }
 
 void Graph::remove_edge(int e) {
-    // Remove the reference from initial node via erase/remove idiom
-    int n = edges[e].initial_node;
-    nodes[n].attached_edges.erase(
-            std::remove( nodes[n].attached_edges.begin(), nodes[n].attached_edges.end(), e-1),
-            nodes[n].attached_edges.end()
-    );
-
-    // Remove the reference from terminal node via erase/remove idiom
-    n = edges[e].terminal_node;
-    nodes[n].attached_edges.erase(
-            std::remove( nodes[n].attached_edges.begin(), nodes[n].attached_edges.end(), e-1),
-            nodes[n].attached_edges.end()
-    );
+    // Remove the reference from initial and terminal nodes
+    nodes[edges[e].initial_node].remove_outgoing_edge(e);
+    nodes[edges[e].terminal_node].remove_incoming_edge(e);
 
     // Remove the edge itself from edgelist
     edges.erase(e);
@@ -54,14 +65,21 @@ void Graph::remove_edge(int e) {
 
 void Graph::remove_node(int n) {
     // Remove edges attached to the node
-    for(int i=0; i<nodes[n].attached_edges.size(); i++) {
-        edges.erase(nodes[n].attached_edges[i]);
+    for(int i=0; i<nodes[n].outgoing_edges.size(); i++) {
+        edges.erase(nodes[n].outgoing_edges[i]);
+    }
+    for(int i=0; i<nodes[n].incoming_edges.size(); i++) {
+        edges.erase(nodes[n].incoming_edges[i]);
     }
 
     // Remove the node itself
     nodes.erase(n);
 }
 
-void update_connectivity_matrix(void) {
-    // Make a list of nodes
+bool Graph::directed_edge_exists(int n1, int n2) {
+    return (connectivity_map.count(n1) == 1 && connectivity_map[n1].count(n2) == 1);
+}
+
+bool Graph::undirected_edge_exists(int n1, int n2) {
+    return (directed_edge_exists(n1, n2) || directed_edge_exists(n2, n1));
 }

@@ -81,7 +81,8 @@ Solution Agent::candidate_solution(void){
 
     // Save current quality, apply move operator
     old_fx = apply_weighting(candidate.quality, objective_weighting);
-    candidate.apply_move_operator(j, temperature);
+    candidate.get_valid_moves();
+    candidate.apply_move_operator(j);
     new_fx = apply_weighting(candidate.quality, objective_weighting);
 
     // Update move operator preferences

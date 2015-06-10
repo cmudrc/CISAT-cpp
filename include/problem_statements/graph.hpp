@@ -4,6 +4,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <cmath>
+#include <cfloat>
 #include <algorithm>
 #include "../utilities/custom_print.hpp"
 
@@ -14,7 +16,10 @@ public:
     // Structures
     struct Node {
         Node(void);
-        std::vector<int> attached_edges;
+        void remove_incoming_edge(int e);
+        void remove_outgoing_edge(int e);
+        std::vector<int> incoming_edges;
+        std::vector<int> outgoing_edges;
         std::map<std::string, long double> parameters;
     };
 
@@ -28,6 +33,7 @@ public:
     // Containers
     std::map<int, Node> nodes;
     std::map<int, Edge> edges;
+    std::map<int, std::map<int, int> > connectivity_map;
 
     int node_id_counter;
     int edge_id_counter;
@@ -39,6 +45,10 @@ public:
     // Functions for removal
     void remove_edge(int e);
     void remove_node(int n);
+
+    // Navigating graph
+    bool directed_edge_exists(int n1, int n2);
+    bool undirected_edge_exists(int n1, int n2);
 };
 
 #endif
