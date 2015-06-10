@@ -57,6 +57,7 @@ void Solution::compute_quality(void) {
     }
 }
 
+
 void Solution::get_valid_moves(void) {
     std::vector<int> order;
 
@@ -201,9 +202,11 @@ void Solution::print_surface_characteristics(void) {
     std::cout << "\tNumber of move operators: " << number_of_move_ops << std::endl;
 }
 
+
 void Solution::is_valid(void) {
     // Used breadth first search
 }
+
 
 long double Solution::euclidean_distance(int n1, int n2) {
     return std::sqrt(
