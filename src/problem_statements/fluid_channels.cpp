@@ -46,7 +46,7 @@ void Solution::get_valid_moves(void) {
     std::vector<int> order;
 
     // Adding a node is always an option
-    print("\n");
+    move_options.clear();
     move_options.push_back(std::vector<int> {0, 0, 0});
 
     // Pull valid edge addition moves
@@ -55,19 +55,25 @@ void Solution::get_valid_moves(void) {
             if (!undirected_edge_exists((it1->first), (it2->first))) {
                 if((it2->first) != (it1->first)) {
                     order = {1, (it1->first), (it2->first)};
-                    print(order);
                     move_options.push_back(order);
                 }
             }
         }
     }
-    print("\n");
 }
 
 void Solution::apply_move_operator(int n) {
-    int n1 = uniform_int(static_cast<int>(nodes.size()-1), 0);
-    int n2 = uniform_int(static_cast<int>(nodes.size()-1), 0);
-    add_pipe(n1, n2, 0.1, 0.1);
+    std::vector<int> selected_order = move_options[n];
+
+    switch(selected_order[0]) {
+        case 0:
+            break;
+        case 1:
+            add_pipe(selected_order[1], selected_order[2], 0.1, 0.1);
+            break;
+        default:
+            break;
+    }
 
     // Compute the quality
     compute_quality();
@@ -95,14 +101,24 @@ void Solution::add_junction(long double x, long double y, long double z) {
     nodes[node_id_counter].parameters["z"] = z;
 }
 
-////////////////////////////////////////////
-///////////// Need to complete /////////////
-void Solution::add_junction(int e) {
+void Solution::add_midpoint_junction(int e) {
+    // Save the indices of the endpoints
     int n1 = edges[e].initial_node;
     int n2 = edges[e].terminal_node;
+
+    // Remove the edge
+    remove_edge(e);
+
+    // Add a new node
+    add_node();
+    nodes[node_id_counter].parameters["x"] = (nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2;
+    nodes[node_id_counter].parameters["y"] = (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2;
+    nodes[node_id_counter].parameters["z"] = (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2;
+
+    // Add new edges
+    add_edge(n1, node_id_counter);
+    add_edge(n2, node_id_counter);
 }
-///////////// Need to complete /////////////
-////////////////////////////////////////////
 
 void Solution::print_surface_characteristics(void) {
     print("Problem Characteristics");
@@ -117,8 +133,8 @@ void Solution::is_valid(void) {
 
 long double Solution::euclidean_distance(int n1, int n2) {
     return std::sqrt(
-                       std::pow(nodes[n1].parameters["x"] - nodes[n2].parameters["x"], 2)
-                     + std::pow(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], 2)
-                     + std::pow(nodes[n1].parameters["z"] - nodes[n2].parameters["z"], 2)
+                  std::pow(nodes[n1].parameters["x"] - nodes[n2].parameters["x"], 2)
+                + std::pow(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], 2)
+                + std::pow(nodes[n1].parameters["z"] - nodes[n2].parameters["z"], 2)
     );
 }

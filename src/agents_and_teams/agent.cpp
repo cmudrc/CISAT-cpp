@@ -79,10 +79,13 @@ Solution Agent::candidate_solution(void){
     // Choose which move operator to apply
     j = weighted_choice(move_oper_pref);
 
-    // Save current quality, apply move operator
+    // [1] Save current quality, [2] apply move operator, [3] check new quality
+    // [1]
     old_fx = apply_weighting(candidate.quality, objective_weighting);
+    // [2]
     candidate.get_valid_moves();
-    candidate.apply_move_operator(j);
+    candidate.apply_move_operator(uniform_int(static_cast <int> (candidate.move_options.size()-1), 0));
+    // [3]
     new_fx = apply_weighting(candidate.quality, objective_weighting);
 
     // Update move operator preferences
@@ -133,7 +136,7 @@ void Agent::iterate(int iter){
     } else {
         // If not, accept with some probability
         p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
-        if(uniform(0.0, 1.0) < p_accept){
+        if(uniform(1.0, 0.0) < p_accept){
             // Save locally
             current_solution = x_cand;
             current_solution_quality = fx_cand;

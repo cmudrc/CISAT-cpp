@@ -41,7 +41,7 @@ private:
     void compute_quality(void);
     void add_pipe(int n1, int n2, long double d1, long double d2);
     void add_junction(long double x, long double y, long double z);
-    void add_junction(int e);
+    void add_midpoint_junction(int e);
     void is_valid(void);
     long double euclidean_distance(int n1, int n2);
 
