@@ -36,5 +36,7 @@ long double MultipleTeams::solve(void){
         cdf.push_back(this_team.best_solution.back());
     }
 
+    std::sort(cdf.begin(), cdf.end());
+
     return mean(cdf);
 }

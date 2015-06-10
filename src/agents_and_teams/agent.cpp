@@ -46,7 +46,7 @@ Solution Agent::candidate_solution(void){
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
     long double old_fx = 0, new_fx = 0;
-    int j;                    // Index for random draw
+    int j, k;                    // Index for random draw
 
 
     // If a random draw is lower than teh probability of interaction, then interact.
@@ -76,16 +76,24 @@ Solution Agent::candidate_solution(void){
         candidate = current_solution;
     }
 
-    // Choose which move operator to apply
-    j = weighted_choice(move_oper_pref);
-
-    // [1] Save current quality, [2] apply move operator, [3] check new quality
-    // [1]
+    // Save the old quality
     old_fx = apply_weighting(candidate.quality, objective_weighting);
-    // [2]
+
+    // Choose which move operator to apply
     candidate.get_valid_moves();
-    candidate.apply_move_operator(uniform_int(static_cast <int> (candidate.move_options.size()-1), 0));
-    // [3]
+    bool no_moves_available = true;
+    while (no_moves_available){
+        j = weighted_choice(move_oper_pref);
+        if (candidate.move_options[j].size() != 0) {
+            no_moves_available = false;
+            k = uniform_int(static_cast <int> (candidate.move_options[j].size()-1), 0);
+        }
+    }
+
+    // Apply teh move operator
+    candidate.apply_move_operator(j, k);
+
+    // Keep track of what happened
     new_fx = apply_weighting(candidate.quality, objective_weighting);
 
     // Update move operator preferences

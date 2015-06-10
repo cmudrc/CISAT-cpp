@@ -39,7 +39,7 @@ int weighted_choice(std::vector<long double> x){
         sum += *j;
 
     // Get a random value somewhere within the vector CDF
-    sum *= uniform(0.0, 1.0);
+    sum *= uniform(1.0, 0.0);
 
     // Step through the vector (i.e. spin the wheel)
     for(int i=0; i < x.size(); i++) {

@@ -55,6 +55,9 @@ void Graph::add_node(void) {
 }
 
 void Graph::remove_edge(int e) {
+    // Remove from connectivity map
+    connectivity_map[edges[e].initial_node].erase(edges[e].initial_node);
+
     // Remove the reference from initial and terminal nodes
     nodes[edges[e].initial_node].remove_outgoing_edge(e);
     nodes[edges[e].terminal_node].remove_incoming_edge(e);
@@ -64,6 +67,16 @@ void Graph::remove_edge(int e) {
 }
 
 void Graph::remove_node(int n) {
+    // Remove from connectivity map
+    connectivity_map.erase(n);
+
+    // Pull valid junction addition and edge deletion moves
+    int k;
+    for (std::map<int, Node>::iterator it1 =nodes.begin(); it1 !=nodes.end(); it1++) {
+        k = (it1->first);
+        connectivity_map[k].erase(n);
+    }
+
     // Remove edges attached to the node
     for(int i=0; i<nodes[n].outgoing_edges.size(); i++) {
         edges.erase(nodes[n].outgoing_edges[i]);

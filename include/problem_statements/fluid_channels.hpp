@@ -15,12 +15,12 @@ public:
 
     // Variables
     std::vector<long double> quality;
-    std::vector< std::vector<int> > move_options;
+    std::vector<std::vector< std::vector<int> > > move_options;
 
     // Functions
     Solution(void);
     void get_valid_moves(void);
-    void apply_move_operator(int n);
+    void apply_move_operator(int move_type, int move_number);
     static void print_surface_characteristics(void);
 
 private:
@@ -39,9 +39,14 @@ private:
 
     // Functions
     void compute_quality(void);
+
+    // Move operators
     void add_pipe(int n1, int n2, long double d1, long double d2);
-    void add_junction(long double x, long double y, long double z);
+    void add_junction(long double x, long double y, long double z, bool moveable);
     void add_midpoint_junction(int e);
+    void remove_pipe(int e);
+    void remove_junction(int n);
+
     void is_valid(void);
     long double euclidean_distance(int n1, int n2);
 
