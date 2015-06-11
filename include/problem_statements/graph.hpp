@@ -49,6 +49,10 @@ public:
     // Navigating graph
     bool directed_edge_exists(int n1, int n2);
     bool undirected_edge_exists(int n1, int n2);
+
+    // Breadth-first search
+    bool breadth_first_search(int n1, int n2);
+    bool depth_first_search(int n1, int n2);
 };
 
 #endif

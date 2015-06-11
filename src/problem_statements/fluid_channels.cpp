@@ -8,11 +8,15 @@ const std::string Solution::name = "Fluid Problem";
 const long double Solution::goal = 0.1;
 
 // Problem definition
-const std::vector< std::vector<long double>> Solution::in_xyz = {{7, 8, 9}, {10, 11, 12}};
-const std::vector< std::vector<long double>> Solution::out_xyz = {{1, 2, 3}, {4, 5, 6}};
-const std::vector<long double> Solution::in_flow = {0.25, 0.15};
-const std::vector<long double> Solution::out_flow = {0.25, 0.15};
+std::vector< std::map<std::string, long double> > Solution::inlet_parameters = {
+        {{"x",  7.00}, {"y",  8.00}, {"z",  9.00}, {"q_in", 0.25}},
+        {{"x", 10.00}, {"y", 11.00}, {"z", 12.00}, {"q_in", 0.15}}
+};
 
+std::vector< std::map<std::string, long double> > Solution::outlet_parameters = {
+        {{"x", 1.00}, {"y", 2.00}, {"z", 3.00}, {"q_out", 0.25}},
+        {{"x", 4.00}, {"y", 5.00}, {"z", 6.00}, {"q_out", 0.15}}
+};
 
 Solution::Solution(void) {
     // Give the solution a unique ID and increment the counter
@@ -20,27 +24,13 @@ Solution::Solution(void) {
     solution_counter++;
 
     // Create nodes at each of the specified locations
-    for(int i=0; i < out_xyz.size(); i++) {
-        add_junction(out_xyz[i][0], out_xyz[i][1], out_xyz[i][2], false);
+    for(int i=0; i < inlet_parameters.size(); i++) {
+        add_junction(inlet_parameters[i]["x"], inlet_parameters[i]["y"], inlet_parameters[i]["z"], false);
+        inlet_keys.push_back(node_id_counter);
     }
-    for(int i=0; i < out_xyz.size(); i++) {
-        add_junction(in_xyz[i][0], in_xyz[i][1], in_xyz[i][2], false);
-    }
-
-    // Add a node to the average position, and connect all edges
-    long double sum_x=0, sum_y=0, sum_z=0;
-    unsigned long n = nodes.size();
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        sum_x += nodes[it1->first].parameters["x"];
-        sum_y += nodes[it1->first].parameters["y"];
-        sum_z += nodes[it1->first].parameters["z"];
-    }
-
-    add_junction(sum_x/n, sum_y/n, sum_z/n, true);
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        if((it1->first) != node_id_counter) {
-            add_edge(it1->first, node_id_counter);
-        }
+    for(int i=0; i < outlet_parameters.size(); i++) {
+        add_junction(outlet_parameters[i]["x"], outlet_parameters[i]["y"], outlet_parameters[i]["z"], false);
+        outlet_keys.push_back(node_id_counter);
     }
 
     // Initialize quality
@@ -64,7 +54,7 @@ void Solution::get_valid_moves(void) {
     // Adding a node is always an option
     move_options.clear();
     move_options.assign(5, std::vector< std::vector<int> > ());
-    move_options[0].push_back(std::vector<int> {0, 0, 0});
+    move_options[0].push_back(std::vector<int> (3));
 
     // Pull valid edge addition moves and node deletion moves
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
@@ -203,8 +193,27 @@ void Solution::print_surface_characteristics(void) {
 }
 
 
-void Solution::is_valid(void) {
-    // Used breadth first search
+// Function to ensure that the solution is valid
+// TODO: Complete function to compute validity
+bool Solution::is_valid(void) {
+    // Define a vector to hold connections
+    std::vector< std::vector<bool> > valid(inlet_keys.size(), std::vector<bool> (outlet_keys.size(), false));
+
+    // Sweep through and search
+    for(int i=0; i<valid.size(); i++) {
+        for(int j=0; j<valid[0].size(); j++) {
+            valid[i][j] = breadth_first_search(inlet_keys[i], outlet_keys[j]);
+        }
+    }
+
+    // Check results
+    for(int i=0; i<valid.size(); i++) {
+        for(int j=0; j<valid[0].size(); j++) {
+            valid[i][j] = breadth_first_search(inlet_keys[i], outlet_keys[j]);
+        }
+    }
+
+    return true;
 }
 
 

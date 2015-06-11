@@ -32,10 +32,10 @@ private:
     static int solution_counter;
 
     // Inlet location
-    static const std::vector< std::vector<long double>> in_xyz;
-    static const std::vector< std::vector<long double>> out_xyz;
-    static const std::vector<long double> in_flow;
-    static const std::vector<long double> out_flow;
+    static std::vector< std::map<std::string, long double> > inlet_parameters;
+    static std::vector< std::map<std::string, long double> > outlet_parameters;
+    std::vector<int> inlet_keys;
+    std::vector<int> outlet_keys;
 
     // Functions
     void compute_quality(void);
@@ -47,7 +47,7 @@ private:
     void remove_pipe(int e);
     void remove_junction(int n);
 
-    void is_valid(void);
+    bool is_valid(void);
     long double euclidean_distance(int n1, int n2);
 
 };

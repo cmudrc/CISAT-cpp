@@ -80,6 +80,7 @@ Solution Agent::candidate_solution(void){
     old_fx = apply_weighting(candidate.quality, objective_weighting);
 
     // Choose which move operator to apply
+    // TODO: Add a contextually sensitive learning module (instead of just operationally sensitive).
     candidate.get_valid_moves();
     bool no_moves_available = true;
     while (no_moves_available){
