@@ -2,6 +2,8 @@
 #define UTILITIES__OPTIMIZATION_HPP
 
 #include <vector>
+#include "./stats.hpp"
+#include "./matrix_operations.hpp"
 
 // Compute the x value of the optimium of a linear regression
 std::vector<long double> quad_max(std::vector<long double> x, std::vector<long double> y);

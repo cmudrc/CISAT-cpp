@@ -23,8 +23,6 @@ long double stdev(std::deque<long double> x);
 // Compute standard deviation of a list
 long double stdev(std::deque<long double> x);
 
-std::vector<long double> gauss(std::vector< std::vector<long double> > A);
-
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b);
 
 #endif

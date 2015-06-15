@@ -30,7 +30,7 @@ void Agent::new_start(void){
     all_current_objective_weightings[agent_id] = objective_weighting;
 
     // Select a random starting point and evaluate it
-    current_solution = Solution();
+    current_solution = Solution(true);
     current_solution_quality = apply_weighting(current_solution.quality, objective_weighting);
     best_solution_so_far = current_solution_quality;
 
@@ -41,7 +41,7 @@ void Agent::new_start(void){
 //// Generated a candidate solution using Cauchy distribution.
 Solution Agent::candidate_solution(void){
     // Make some variable for use in this function
-    Solution candidate; // stores the candidate solution
+    Solution candidate = current_solution; // stores the candidate solution
     std::vector<long double> w(parameters.n_agents, 0.0);         // Vector of weights across agents
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
@@ -72,8 +72,6 @@ Solution Agent::candidate_solution(void){
 
         j = weighted_choice(w);
         candidate = all_current_solutions[j];
-    } else{
-        candidate = current_solution;
     }
 
     // Save the old quality
@@ -124,14 +122,11 @@ void Agent::iterate(int iter){
     iteration_number = iter;
 
     // Vector for saving new candidate solution
-    Solution x_cand;
+    Solution x_cand = candidate_solution();
 
     // Objective function value of current solution, and probability of accepting new solution
-    long double fx_cand, p_accept;
+    long double fx_cand = apply_weighting(x_cand.quality, objective_weighting);
 
-    // Generate a new solution
-    x_cand = candidate_solution();
-    fx_cand = apply_weighting(x_cand.quality, objective_weighting);
 
     if(parameters.history_length < 0) {
         history.push_back(fx_cand);
@@ -144,7 +139,7 @@ void Agent::iterate(int iter){
         current_solution_quality = fx_cand;
     } else {
         // If not, accept with some probability
-        p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
+        long double p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
         if(uniform(1.0, 0.0) < p_accept){
             // Save locally
             current_solution = x_cand;
@@ -160,6 +155,8 @@ void Agent::iterate(int iter){
     if(parameters.history_length > 0) {
         history.push_back(current_solution_quality);
     }
+
+    current_solution.print_undirected_connectivity_matrix("type");
 
     //Update the temperature
     update_temp();

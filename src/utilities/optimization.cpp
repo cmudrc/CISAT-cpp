@@ -1,5 +1,4 @@
 #include "../../include/utilities/optimization.hpp"
-#include "../../include/utilities/stats.hpp"
 
 // Compute the x value fo the optimium of a linear regression
 std::vector<long double> quad_max(std::vector<long double> x, std::vector<long double> y){

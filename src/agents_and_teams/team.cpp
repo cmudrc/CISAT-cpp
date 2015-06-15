@@ -35,7 +35,7 @@ void Team::new_start(void){
 
 //// Iterate the team
 void Team::iterate(int iter){
-    // Iterate each agent
+    // Iterate each agentf
     for(int i=0; i<agent_list.size(); i++){
         agent_list[i].iterate(iter);
     }

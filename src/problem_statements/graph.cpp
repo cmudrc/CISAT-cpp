@@ -5,7 +5,6 @@ Graph::Graph(void) {
     edge_id_counter = -1;
 }
 
-
 Graph::Node::Node(void) {};
 
 
@@ -109,6 +108,31 @@ bool Graph::undirected_edge_exists(int n1, int n2) {
     return (directed_edge_exists(n1, n2) || directed_edge_exists(n2, n1));
 }
 
+bool Graph::is_connected(void) {
+    std::vector< std::vector<int> > full_con_mat(nodes.size(), std::vector<int> (nodes.size(), 0));
+    int i=0;
+    int j=0;
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
+            if (undirected_edge_exists(it1->first, it2->first)) {
+                full_con_mat[j][i] = 1;
+            }
+            i++;
+        }
+        i=0;
+        j++;
+    }
+    full_con_mat = matrix_power(full_con_mat, nodes.size());
+
+    for(i=0; i<full_con_mat.size(); i++) {
+        for(j=0; j<full_con_mat[0].size(); j++) {
+            if (full_con_mat[i][j] == 0)
+                return false;
+        }
+    }
+    return true;
+}
+
 
 // Breadth first search for path between two nodes
 bool Graph::breadth_first_search(int n1, int n2) {
@@ -121,4 +145,33 @@ bool Graph::breadth_first_search(int n1, int n2) {
 bool Graph::depth_first_search(int n1, int n2) {
     // TODO: Define DFS algorithm
     return true;
+}
+
+
+void Graph::print_undirected_connectivity_matrix(std::string label) {
+    std::cout << std::endl << "    ";
+    for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
+        std::cout << nodes[it2->first].parameters[label] << " ";
+    }
+    std::cout << std::endl << "    ";
+    for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
+        std::cout << "| ";
+    }
+    std::cout << std::endl;
+
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        std::cout << nodes[it1->first].parameters[label] << " — ";
+        for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
+            if((it1->first) == (it2->first)) {
+                std::cout << "\\ ";
+            }
+            else if(undirected_edge_exists(it1->first, it2->first)) {
+                std::cout << "1 ";
+            } else {
+                std::cout << "0 ";
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }

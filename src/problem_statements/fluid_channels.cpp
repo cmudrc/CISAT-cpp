@@ -1,37 +1,57 @@
 #include "../../include/problem_statements/fluid_channels.hpp"
 
-// Integer to assign unique IDs to solutions
-int Solution::solution_counter = 0;
-const unsigned long Solution::number_of_move_ops = 5;
-const unsigned long Solution::number_of_objectives = 1;
-const std::string Solution::name = "Fluid Problem";
-const long double Solution::goal = 0.1;
+const  unsigned long  Solution::number_of_move_ops   = 4;
+const  unsigned long  Solution::number_of_objectives = 1;
+const  std::string    Solution::name                 = "Fluid Problem";
+const  long double    Solution::goal                 = 900;
+
+enum NodeTypes {INLET, INTERMEDIATE, OUTLET};
 
 // Problem definition
-std::vector< std::map<std::string, long double> > Solution::inlet_parameters = {
-        {{"x",  7.00}, {"y",  8.00}, {"z",  9.00}, {"q_in", 0.25}},
-        {{"x", 10.00}, {"y", 11.00}, {"z", 12.00}, {"q_in", 0.15}}
+std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
+        {
+                {"x", 1.00},
+                {"y", 1.00},
+                {"z", 0.00},
+                {"q", 0.25},
+                {"type", INLET}
+        }, {
+                {"x", -1.00},
+                {"y", -1.00},
+                {"z",  0.00},
+                {"q",  0.15},
+                {"type", INLET}
+        }, {
+                {"x", -1.00},
+                {"y",  1.00},
+                {"z",  0.00},
+                {"q", 0.05},
+                {"type", OUTLET}
+        }, {
+                {"x", 1.00},
+                {"y", -1.00},
+                {"z", 0.00},
+                {"q", 0.35},
+                {"type", OUTLET}
+        }
 };
 
-std::vector< std::map<std::string, long double> > Solution::outlet_parameters = {
-        {{"x", 1.00}, {"y", 2.00}, {"z", 3.00}, {"q_out", 0.25}},
-        {{"x", 4.00}, {"y", 5.00}, {"z", 6.00}, {"q_out", 0.15}}
-};
 
-Solution::Solution(void) {
+// Integer to assign unique IDs to solutions
+int Solution::solution_counter = 0;
+
+
+// Null constructor
+Solution::Solution(void) {}
+
+// A real constructor
+Solution::Solution(bool) {
     // Give the solution a unique ID and increment the counter
     solution_id = solution_counter;
     solution_counter++;
 
-    // Create nodes at each of the specified locations
-    for(int i=0; i < inlet_parameters.size(); i++) {
-        add_junction(inlet_parameters[i]["x"], inlet_parameters[i]["y"], inlet_parameters[i]["z"], false);
-        inlet_keys.push_back(node_id_counter);
-    }
-    for(int i=0; i < outlet_parameters.size(); i++) {
-        add_junction(outlet_parameters[i]["x"], outlet_parameters[i]["y"], outlet_parameters[i]["z"], false);
-        outlet_keys.push_back(node_id_counter);
-    }
+    // Create seed graph
+    create_seed_graph();
 
     // Initialize quality
     quality.assign(number_of_objectives, LDBL_MAX);
@@ -39,34 +59,59 @@ Solution::Solution(void) {
 }
 
 
+void Solution::create_seed_graph(void) {
+    // Create nodes at each of the specified locations
+    for(int i=0; i < seed_graph_parameters.size(); i++) {
+        add_junction(seed_graph_parameters[i]["x"],
+                     seed_graph_parameters[i]["y"],
+                     seed_graph_parameters[i]["z"],
+                     false);
+        nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
+        if(seed_graph_parameters[i]["type"] == INLET) {
+            inlet_keys.push_back(node_id_counter);
+        } else {
+            outlet_keys.push_back(node_id_counter);
+        }
+    }
+}
+
+
 void Solution::compute_quality(void) {
     // For now, just sum the length
     quality[0] = 1000;
-    for(int i=0; i<edges.size(); i++) {
-        quality[0] -= edges[i].parameters["L"];
+    if (is_valid()){
+        for(int i=0; i<edges.size(); i++) {
+            quality[0] -= edges[i].parameters["L"];
+        }
     }
+    quality[0] += nodes.size();
 }
 
 
 void Solution::get_valid_moves(void) {
     std::vector<int> order;
 
-    // Adding a node is always an option
+    // Clear the options vector, and then instantiate it
     move_options.clear();
-    move_options.assign(5, std::vector< std::vector<int> > ());
-    move_options[0].push_back(std::vector<int> (3));
+    move_options.assign(4, std::vector< std::vector<int> > ());
 
     // Pull valid edge addition moves and node deletion moves
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         if(nodes[it1->first].parameters["moveable"] == true){
-            order = {4, it1->first, 0};
-            move_options[4].push_back(order);
+            // Define the move
+            order = {3, it1->first, 0};
+
+            // Add it to the vector of options
+            move_options[3].push_back(order);
         }
         for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
             if (!undirected_edge_exists((it1->first), (it2->first))) {
                 if((it2->first) != (it1->first)) {
-                    order = {1, (it1->first), (it2->first)};
-                    move_options[1].push_back(order);
+                    // Define the move
+                    order = {0, (it1->first), (it2->first)};
+
+                    // Add it to the vector of options
+                    move_options[0].push_back(order);
                 }
             }
         }
@@ -74,9 +119,12 @@ void Solution::get_valid_moves(void) {
 
     // Pull valid junction addition and edge deletion moves
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        // Define the junction addition move and add it
+        order = {1, it1->first, 0};
+        move_options[1].push_back(order);
+
+        // Define the edge deletion move and add it
         order = {2, it1->first, 0};
-        move_options[2].push_back(order);
-        order = {3, it1->first, 0};
         move_options[2].push_back(order);
     }
 }
@@ -85,36 +133,18 @@ void Solution::get_valid_moves(void) {
 void Solution::apply_move_operator(int move_type, int move_number) {
     std::vector<int> selected_order = move_options[move_type][move_number];
 
-    // Switch statement based on first part of order
-    // 0  Add a junction somewhere in the space.
-    // 1  Add a pipe between junctions order[1] and order[2]
-    // 2  Add a junction on the edge order[1]
+
     switch(selected_order[0]) {
         case 0:
-            // Create a junction by taking a random affine combination fo two nodes
-            {
-            long double r = uniform(1.0, 0.0);
-            int n1 = uniform_int(static_cast<int> (nodes.size() - 1), 0);
-            int n2 = uniform_int(static_cast<int> (nodes.size() - 1), 0);
-
-            add_junction(
-                    r * nodes[n1].parameters["x"] + (1 - r) * nodes[n2].parameters["x"],
-                    r * nodes[n1].parameters["y"] + (1 - r) * nodes[n2].parameters["y"],
-                    r * nodes[n1].parameters["z"] + (1 - r) * nodes[n2].parameters["z"],
-                    false
-            );
-            }
-            break;
-        case 1:
             add_pipe(selected_order[1], selected_order[2], 0.1, 0.1);
             break;
-        case 2:
+        case 1:
             add_midpoint_junction(selected_order[1]);
             break;
-        case 3:
+        case 2:
             remove_pipe(selected_order[1]);
             break;
-        case 4:
+        case 3:
             remove_junction(selected_order[1]);
             break;
         default:
@@ -123,6 +153,7 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 
     // Compute the quality
     compute_quality();
+    std::cout << std::endl << selected_order[0] << std::endl;
 }
 
 
@@ -150,6 +181,7 @@ void Solution::add_junction(long double x, long double y, long double z, bool mo
 
     // Moveable or not
     nodes[node_id_counter].parameters["moveable"] = moveable;
+    nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
 }
 
 
@@ -194,26 +226,8 @@ void Solution::print_surface_characteristics(void) {
 
 
 // Function to ensure that the solution is valid
-// TODO: Complete function to compute validity
 bool Solution::is_valid(void) {
-    // Define a vector to hold connections
-    std::vector< std::vector<bool> > valid(inlet_keys.size(), std::vector<bool> (outlet_keys.size(), false));
-
-    // Sweep through and search
-    for(int i=0; i<valid.size(); i++) {
-        for(int j=0; j<valid[0].size(); j++) {
-            valid[i][j] = breadth_first_search(inlet_keys[i], outlet_keys[j]);
-        }
-    }
-
-    // Check results
-    for(int i=0; i<valid.size(); i++) {
-        for(int j=0; j<valid[0].size(); j++) {
-            valid[i][j] = breadth_first_search(inlet_keys[i], outlet_keys[j]);
-        }
-    }
-
-    return true;
+    return is_connected();
 }
 
 

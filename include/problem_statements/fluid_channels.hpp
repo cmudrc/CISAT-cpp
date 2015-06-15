@@ -18,6 +18,7 @@ public:
     std::vector<std::vector< std::vector<int> > > move_options;
 
     // Functions
+    Solution(bool);
     Solution(void);
     void get_valid_moves(void);
     void apply_move_operator(int move_type, int move_number);
@@ -32,13 +33,13 @@ private:
     static int solution_counter;
 
     // Inlet location
-    static std::vector< std::map<std::string, long double> > inlet_parameters;
-    static std::vector< std::map<std::string, long double> > outlet_parameters;
+    static std::vector< std::map<std::string, long double> > seed_graph_parameters;
     std::vector<int> inlet_keys;
     std::vector<int> outlet_keys;
 
     // Functions
     void compute_quality(void);
+    void create_seed_graph(void);
 
     // Move operators
     void add_pipe(int n1, int n2, long double d1, long double d2);

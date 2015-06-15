@@ -8,6 +8,7 @@
 #include <cfloat>
 #include <algorithm>
 #include "../utilities/custom_print.hpp"
+#include "../utilities/matrix_operations.hpp"
 
 class Graph {
 public:
@@ -49,10 +50,14 @@ public:
     // Navigating graph
     bool directed_edge_exists(int n1, int n2);
     bool undirected_edge_exists(int n1, int n2);
+    bool is_connected(void);
 
     // Breadth-first search
     bool breadth_first_search(int n1, int n2);
     bool depth_first_search(int n1, int n2);
+
+    // Sharing graph
+    void print_undirected_connectivity_matrix(std::string label);
 };
 
 #endif
