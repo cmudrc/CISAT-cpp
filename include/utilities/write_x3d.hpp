@@ -7,12 +7,12 @@
 #include <string>
 
 // TODO: Write a class prototype to add components to a vrml file
-class WriteVRML {
+class WriteX3D {
 public:
 
     // Constructors
-    WriteVRML(void);
-    WriteVRML(std::string file_path);
+    WriteX3D(void);
+    WriteX3D(std::string file_path);
     void open_file(std::string file_path);
     void close_file(void);
 
