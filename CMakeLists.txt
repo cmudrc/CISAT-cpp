@@ -28,6 +28,7 @@ set(SOURCE_FILES_MAIN
     include/utilities/stats.hpp
     include/utilities/optimization.hpp
     include/utilities/matrix_operations.hpp
+    include/utilities/write_vrml.hpp
     src/agents_and_teams/agent.cpp
     src/agents_and_teams/team.cpp
     src/agents_and_teams/multiple_teams.cpp
@@ -39,7 +40,8 @@ set(SOURCE_FILES_MAIN
     src/utilities/custom_print.cpp
     src/utilities/stats.cpp
     src/utilities/optimization.cpp
-    src/utilities/matrix_operations.cpp)
+    src/utilities/matrix_operations.cpp
+    src/utilities/write_vrml.cpp)
 
 
 add_executable(cisat ${SOURCE_FILES_MAIN})

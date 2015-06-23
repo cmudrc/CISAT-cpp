@@ -28,6 +28,10 @@ private:
     // Constants
     static const std::string name;
 
+    // Fluid constants
+    static const long double fluid_n;
+    static const long double fluid_C;
+
     // Variables
     int solution_id;
     static int solution_counter;
@@ -42,16 +46,23 @@ private:
     void create_seed_graph(void);
 
     // Move operators
-    void add_pipe(int n1, int n2, long double d1, long double d2);
+    void add_pipe(int n1, int n2, long double d);
     void add_junction(long double x, long double y, long double z, bool moveable);
     void add_midpoint_junction(int e);
     void remove_pipe(int e);
     void remove_junction(int n);
 
-    bool is_valid(void);
+    int is_valid(void);
     long double euclidean_distance(int n1, int n2);
 
 };
+
+
+// This function returns a thing important for hardy cross method
+template <typename Type1, typename Type2>
+Type1 fluid_pow(Type1 Q, Type2 n) {
+    return Q * std::pow(std::abs(Q), n-1);
+}
 
 
 #endif

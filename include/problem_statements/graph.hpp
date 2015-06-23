@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cfloat>
 #include <algorithm>
+#include <cstdlib>
 #include "../utilities/custom_print.hpp"
 #include "../utilities/matrix_operations.hpp"
 
@@ -25,7 +26,8 @@ public:
     };
 
     struct Edge {
-        Edge(void);
+        Edge();
+        Edge(int n1, int n2);
         int initial_node;
         int terminal_node;
         std::map<std::string, long double> parameters;
@@ -36,6 +38,9 @@ public:
     std::map<int, Edge> edges;
     std::map<int, std::map<int, int> > connectivity_map;
 
+    // Counters
+    int number_of_nodes;
+    int number_of_edges;
     int node_id_counter;
     int edge_id_counter;
 
@@ -50,14 +55,17 @@ public:
     // Navigating graph
     bool directed_edge_exists(int n1, int n2);
     bool undirected_edge_exists(int n1, int n2);
-    bool is_connected(void);
+    int is_connected(void);
 
     // Breadth-first search
     bool breadth_first_search(int n1, int n2);
     bool depth_first_search(int n1, int n2);
 
-    // Sharing graph
+    // Displaying graph
     void print_undirected_connectivity_matrix(std::string label);
+    void print_directed_edge_list(void);
+    void write_directed_vrml(std::string file_name);
+    void write_undirected_vrml(std::string file_name);
 };
 
 #endif

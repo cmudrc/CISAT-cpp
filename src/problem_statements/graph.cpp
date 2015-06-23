@@ -3,6 +3,8 @@
 Graph::Graph(void) {
     node_id_counter = -1;
     edge_id_counter = -1;
+    number_of_nodes = 0;
+    number_of_edges = 0;
 }
 
 Graph::Node::Node(void) {};
@@ -28,19 +30,20 @@ void Graph::Node::remove_outgoing_edge(int e) {
 }
 
 
-Graph::Edge::Edge(void) {};
+Graph::Edge::Edge() {};
+Graph::Edge::Edge(int n1, int n2) {
+    initial_node = n1;
+    terminal_node = n2;
+};
 
 
 void Graph::add_edge(int n1, int n2) {
     // Increment counter
     edge_id_counter++;
+    number_of_edges++;
 
     // Make the edge
-    edges[edge_id_counter] = Edge();
-
-    // Attach it to nodes
-    edges[edge_id_counter].initial_node = n1;
-    edges[edge_id_counter].terminal_node = n2;
+    edges[edge_id_counter] = Edge(n1, n2);
 
     // Tell the nodes they're attached
     nodes[n1].outgoing_edges.push_back(edge_id_counter);
@@ -54,6 +57,7 @@ void Graph::add_edge(int n1, int n2) {
 void Graph::add_node(void) {
     // Increment teh counter
     node_id_counter++;
+    number_of_nodes++;
 
     // Add the node
     nodes[node_id_counter] = Node();
@@ -62,14 +66,15 @@ void Graph::add_node(void) {
 
 void Graph::remove_edge(int e) {
     // Remove from connectivity map
-    connectivity_map[edges[e].initial_node].erase(edges[e].initial_node);
+    connectivity_map[edges[e].initial_node].erase(edges[e].terminal_node);
 
     // Remove the reference from initial and terminal nodes
-    nodes[edges[e].initial_node].remove_outgoing_edge(e);
-    nodes[edges[e].terminal_node].remove_incoming_edge(e);
+    nodes.at(edges[e].initial_node).remove_outgoing_edge(e);
+    nodes.at(edges[e].terminal_node).remove_incoming_edge(e);
 
     // Remove the edge itself from edgelist
     edges.erase(e);
+    number_of_edges--;
 }
 
 
@@ -94,6 +99,7 @@ void Graph::remove_node(int n) {
 
     // Remove the node itself
     nodes.erase(n);
+    number_of_nodes--;
 }
 
 
@@ -108,10 +114,14 @@ bool Graph::undirected_edge_exists(int n1, int n2) {
     return (directed_edge_exists(n1, n2) || directed_edge_exists(n2, n1));
 }
 
-bool Graph::is_connected(void) {
-    std::vector< std::vector<int> > full_con_mat(nodes.size(), std::vector<int> (nodes.size(), 0));
+int Graph::is_connected(void) {
+    int penalty = 0;
+
+    std::vector< std::vector<int> > full_con_mat(static_cast <unsigned long> (number_of_nodes),
+                                                 std::vector<int> (static_cast<unsigned long> (number_of_nodes), 0));
     int i=0;
     int j=0;
+
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
             if (undirected_edge_exists(it1->first, it2->first)) {
@@ -122,15 +132,15 @@ bool Graph::is_connected(void) {
         i=0;
         j++;
     }
-    full_con_mat = matrix_power(full_con_mat, nodes.size());
+    full_con_mat = matrix_power(full_con_mat, number_of_nodes);
 
-    for(i=0; i<full_con_mat.size(); i++) {
-        for(j=0; j<full_con_mat[0].size(); j++) {
-            if (full_con_mat[i][j] == 0)
-                return false;
+    for(i=0; i<number_of_nodes; i++) {
+        for(j=0; j<number_of_nodes; j++) {
+            if (full_con_mat[i][j] == 0) penalty ++;
         }
     }
-    return true;
+
+    return penalty;
 }
 
 
@@ -174,4 +184,20 @@ void Graph::print_undirected_connectivity_matrix(std::string label) {
         std::cout << std::endl;
     }
     std::cout << std::endl;
+}
+
+void Graph::print_directed_edge_list(void) {
+    for(std::map<int, Edge>::iterator iter= edges.begin(); iter != edges.end(); ++iter) {
+        std::cout << iter->first << "\t" << edges[iter->first].initial_node << "\t" << edges[iter->first].terminal_node << std::endl;
+    }
+}
+
+// TODO: Complete these functions to write graph VRMLs using VRML utility
+void write_directed_vrml(std::string file_name) {
+
+}
+
+
+void write_undirected_vrml(std::string file_name) {
+
 }
