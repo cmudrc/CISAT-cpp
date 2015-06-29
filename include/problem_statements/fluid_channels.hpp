@@ -5,6 +5,7 @@
 #include <cmath>
 #include "graph.hpp"
 #include "../utilities/make_random.hpp"
+#include "../utilities/write_x3d.hpp"
 
 class Solution : public Graph{
 public:
@@ -23,6 +24,7 @@ public:
     void get_valid_moves(void);
     void apply_move_operator(int move_type, int move_number);
     static void print_surface_characteristics(void);
+    void save_as_x3d(std::string save_to_file);
 
 private:
     // Constants

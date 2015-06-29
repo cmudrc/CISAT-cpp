@@ -64,8 +64,6 @@ public:
     // Displaying graph
     void print_undirected_connectivity_matrix(std::string label);
     void print_directed_edge_list(void);
-    void write_directed_vrml(std::string file_name);
-    void write_undirected_vrml(std::string file_name);
 };
 
 #endif

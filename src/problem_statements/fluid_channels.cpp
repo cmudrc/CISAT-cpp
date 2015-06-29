@@ -172,6 +172,10 @@ void Solution::apply_move_operator(int move_type, int move_number) {
     // Compute the quality
     compute_quality();
     std::cout << std::endl << selected_order[0] << std::endl;
+
+    // asdf
+    solution_counter++;
+    solution_id++;
 }
 
 
@@ -256,4 +260,24 @@ long double Solution::euclidean_distance(int n1, int n2) {
                 + std::pow(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], 2)
                 + std::pow(nodes[n1].parameters["z"] - nodes[n2].parameters["z"], 2)
     );
+}
+
+void Solution::save_as_x3d(std::string save_to_file) {
+    WriteX3D x3d;
+    int n1, n2;
+
+    x3d.open_file(save_to_file);
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 1);
+    }
+
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        n1 = edges[it1->first].initial_node;
+        n2 = edges[it1->first].terminal_node;
+        x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
+                       nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"]);
+    }
+
+
+    x3d.close_file();
 }

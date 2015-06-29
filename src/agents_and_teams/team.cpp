@@ -74,6 +74,14 @@ void Team::pull_best_solution(int iter) {
     }
 
     for(int i=0; i<agent_list.size(); i++) {
+
+        std::string name = "./data/asdf_";
+        name.append(std::to_string(iter));
+        name.append("_");
+        name.append(std::to_string(i));
+        name.append(".html");
+        agent_list[i].current_solution.save_as_x3d(name);
+
         temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0/num));
         if (temp < best_solution[iter]) {
             best_solution[iter] = temp;

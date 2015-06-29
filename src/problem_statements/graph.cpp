@@ -191,13 +191,3 @@ void Graph::print_directed_edge_list(void) {
         std::cout << iter->first << "\t" << edges[iter->first].initial_node << "\t" << edges[iter->first].terminal_node << std::endl;
     }
 }
-
-// TODO: Complete these functions to write graph VRMLs using VRML utility
-void write_directed_vrml(std::string file_name) {
-
-}
-
-
-void write_undirected_vrml(std::string file_name) {
-
-}
