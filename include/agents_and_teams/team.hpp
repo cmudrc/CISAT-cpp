@@ -19,6 +19,7 @@ public:
 
 private:
     // nothing yet
+    unsigned long team_id;
 };
 
 #endif

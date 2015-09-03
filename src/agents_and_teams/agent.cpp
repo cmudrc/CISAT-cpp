@@ -78,7 +78,8 @@ Solution Agent::candidate_solution(void){
     old_fx = apply_weighting(candidate.quality, objective_weighting);
 
     // Choose which move operator to apply
-    // TODO: Add a contextually sensitive learning module (instead of just operationally sensitive).
+    // TODO: Add a contextually sensitive learning module (i.e. operation chosen based on degree of nodes, edge weight, etc.).
+    // TODO: Add a heuristic learning mdule that recognizes beneficial chains of moves.
     candidate.get_valid_moves();
     bool no_moves_available = true;
     while (no_moves_available){

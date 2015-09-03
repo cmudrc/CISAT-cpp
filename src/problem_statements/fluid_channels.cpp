@@ -13,6 +13,9 @@ const  long double    Solution::goal                 = 0.0;
 const  long double    Solution::fluid_n              = 1.85;
 const  long double    Solution::fluid_C              = 100;
 
+//Available pipe sizes
+const std::vector< long double > Solution::pipe_radii = {0.01, 0.02, 0.03, 0.04, 0.05};
+
 enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
 
 // Problem definition
@@ -80,6 +83,26 @@ void Solution::create_seed_graph(void) {
         } else {
             outlet_keys.push_back(node_id_counter);
         }
+    }
+
+    // Create a central junction
+    double cx=0, cy=0, cz=0;
+    for(int i=0; i<seed_graph_parameters.size(); i++) {
+        cx += seed_graph_parameters[i]["x"];
+        cy += seed_graph_parameters[i]["x"];
+        cz += seed_graph_parameters[i]["x"];
+    }
+    cx /= seed_graph_parameters.size();
+    cy /= seed_graph_parameters.size();
+    cz /= seed_graph_parameters.size();
+    add_junction(cx, cy, cz, true);
+
+    // Connect the central junction to everything
+    for(int i=0; i<inlet_keys.size(); i++) {
+        add_pipe(inlet_keys[i], node_id_counter, 0);
+    }
+    for(int i=0; i<outlet_keys.size(); i++) {
+        add_pipe(node_id_counter, outlet_keys[i], 0);
     }
 }
 
@@ -154,7 +177,7 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 
     switch(selected_order[0]) {
         case 0:
-            add_pipe(selected_order[1], selected_order[2], 0.1);
+            add_pipe(selected_order[1], selected_order[2], 0);
             break;
         case 1:
             add_midpoint_junction(selected_order[1]);
@@ -179,7 +202,7 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 }
 
 
-void Solution::add_pipe(int n1, int n2, long double d) {
+void Solution::add_pipe(int n1, int n2, int d) {
     // Add an edge
     add_edge(n1, n2);
 
@@ -208,10 +231,31 @@ void Solution::add_junction(long double x, long double y, long double z, bool mo
 }
 
 
+void Solution::remove_pipe(int e) {
+    remove_edge(e);
+}
+
+
+void Solution::remove_junction(int n) {
+    remove_node(n);
+}
+
+
+void Solution::increase_pipe_size(int e) {
+    edges[e].parameters["d"]++;
+}
+
+
+void Solution::decrease_pipe_size(int e) {
+    edges[e].parameters["d"]--;
+}
+
+
 void Solution::add_midpoint_junction(int e) {
     // Save the indices of the endpoints
     int n1 = edges[e].initial_node;
     int n2 = edges[e].terminal_node;
+    int d = static_cast <int> (edges[e].parameters["d"]);
 
     // Remove the edge
     remove_pipe(e);
@@ -221,22 +265,12 @@ void Solution::add_midpoint_junction(int e) {
             (nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
             (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
             (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
-      false
+            false
     );
 
     // Add new edges
-    add_pipe(n1, node_id_counter, 0.1);
-    add_pipe(n2, node_id_counter, 0.1);
-}
-
-
-void Solution::remove_pipe(int e) {
-    remove_edge(e);
-}
-
-
-void Solution::remove_junction(int n) {
-    remove_node(n);
+    add_pipe(n1, node_id_counter, d);
+    add_pipe(n2, node_id_counter, d);
 }
 
 

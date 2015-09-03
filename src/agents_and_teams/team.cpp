@@ -9,6 +9,7 @@ Team::Team(ParameterSet x){
 
 //// Give the team a new start
 void Team::new_start(void){
+    team_id = static_cast <unsigned long> (time(0));
 
     // If 
     if(agent_list.size() > 0){
@@ -75,7 +76,10 @@ void Team::pull_best_solution(int iter) {
 
     for(int i=0; i<agent_list.size(); i++) {
 
-        std::string name = "./data/asdf_";
+        // TODO: Rewrite with sprintf() for leading 0's
+        std::string name = "./data/";
+        name.append(std::to_string(team_id));
+        name.append("_");
         name.append(std::to_string(iter));
         name.append("_");
         name.append(std::to_string(i));

@@ -34,6 +34,9 @@ private:
     static const long double fluid_n;
     static const long double fluid_C;
 
+    // Pipe diameters
+    static const std::vector< long double > pipe_radii;
+
     // Variables
     int solution_id;
     static int solution_counter;
@@ -48,11 +51,13 @@ private:
     void create_seed_graph(void);
 
     // Move operators
-    void add_pipe(int n1, int n2, long double d);
+    void add_pipe(int n1, int n2, int d);
     void add_junction(long double x, long double y, long double z, bool moveable);
-    void add_midpoint_junction(int e);
     void remove_pipe(int e);
     void remove_junction(int n);
+    void increase_pipe_size(int e);
+    void decrease_pipe_size(int e);
+    void add_midpoint_junction(int e);
 
     int is_valid(void);
     long double euclidean_distance(int n1, int n2);

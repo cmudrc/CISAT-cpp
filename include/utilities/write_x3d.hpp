@@ -8,12 +8,12 @@
 #include <vector>
 #include <cmath>
 
-// TODO: Write a class prototype to add components to a vrml file
 class WriteX3D {
 public:
-
-    // Constructors
+    // Constructor
     WriteX3D(void);
+
+    // Open and close file
     void open_file(std::string file_path);
     void close_file(void);
     void write_sphere(long double x, long double y, long double z, long double radius);
