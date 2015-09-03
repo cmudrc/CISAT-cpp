@@ -23,7 +23,7 @@ Agent::Agent(int ID, ParameterSet x){
 //// A function that selects a random starting point, and pushes it to other agents.
 void Agent::new_start(void){
     // Define initial move operator preferences
-    move_oper_pref.assign(Solution::number_of_move_ops, 1.0);
+    move_oper_pref.assign(Solution::number_of_move_ops, 1.0/Solution::number_of_move_ops);
 
     // Define objective weighting
     objective_weighting.assign(Solution::number_of_objectives, 1.0);
