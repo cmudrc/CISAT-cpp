@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 // Template for printing a single thing
@@ -15,6 +16,11 @@ void print(Type x) {
 // Template for printing multiple things in a vector
 template <typename Type>
 void print(std::vector<Type> x){
+    // Save the current state of the ostream
+    std::ios  state(NULL);
+    state.copyfmt(std::cout);
+
+    // Print the damn thing
     int end = static_cast <int> (x.size()-1);
     std::cout<<std::scientific<<"[ ";
     for(int i=0; i<x.size(); i++){
@@ -27,13 +33,22 @@ void print(std::vector<Type> x){
             std::cout << x[i] << " ]" << std::endl;
         }
     }
+
+    // Restore the state of the ostream
+    std::cout.copyfmt(state);
+
 }
 
 // Template for printing SO MANY things in a vector of vectors
 template <typename Type>
 void print(std::vector< std::vector<Type> >x){
-    int end = static_cast <int> (x.size()-1);
 
+    // Save the current state of the ostream
+    std::ios  state(NULL);
+    state.copyfmt(std::cout);
+
+    // Print the damn thing
+    int end = static_cast <int> (x.size()-1);
     std::cout<<std::scientific<<"[ ";
     for(int i=0; i<x.size(); i++){
         if(i!=end) {
@@ -45,6 +60,9 @@ void print(std::vector< std::vector<Type> >x){
             std::cout << x[i] << " ]" << std::endl;
         }
     }
+
+    // Restore the state of the ostream
+    std::cout.copyfmt(state);
 }
 
 

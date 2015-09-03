@@ -18,6 +18,9 @@ Agent::Agent(int ID, ParameterSet x){
     // Set initial temperature
     triki_temperature = parameters.initial_temperature;
     temperature = parameters.initial_temperature;
+
+    // Set last operation to -1 so we know what's up.
+    last_operation = -1;
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
@@ -111,6 +114,8 @@ Solution Agent::candidate_solution(void){
     for (int i=0; i < move_oper_pref.size(); i++) {
         move_oper_pref[i]/=sum_w;
     }
+
+    print(move_oper_pref);
 
     return candidate;
 

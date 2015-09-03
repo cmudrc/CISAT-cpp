@@ -23,6 +23,7 @@ public:
     ParameterSet parameters;             // A parameters structure that holds much of the SA info
     int agent_id;                   // Agent ID, tells it where to store info in static vectors.
     int iteration_number;     // The number of the current iteration
+    int last_operation;       // The last operation performed by the agent
     long double temperature;  // The current temperature
     long double triki_temperature;
     long double current_solution_quality;        // The function value of the current solution
