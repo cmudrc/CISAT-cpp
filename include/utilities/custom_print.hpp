@@ -41,7 +41,7 @@ void print(std::vector<Type> x){
 
 // Template for printing SO MANY things in a vector of vectors
 template <typename Type>
-void print(std::vector< std::vector<Type> >x){
+void print(std::vector< std::vector<Type> > x){
 
     // Save the current state of the ostream
     std::ios  state(NULL);

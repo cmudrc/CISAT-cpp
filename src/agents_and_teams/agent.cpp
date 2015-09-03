@@ -20,13 +20,15 @@ Agent::Agent(int ID, ParameterSet x){
     temperature = parameters.initial_temperature;
 
     // Set last operation to -1 so we know what's up.
-    last_operation = -1;
+    last_operation = 1;
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
 void Agent::new_start(void){
     // Define initial move operator preferences
-    move_oper_pref.assign(Solution::number_of_move_ops, 1.0/Solution::number_of_move_ops);
+    move_oper_pref.assign(Solution::number_of_move_ops,
+                          std::vector<long double> (Solution::number_of_move_ops,
+                                                    1.0/std::pow(Solution::number_of_move_ops,2)));
 
     // Define objective weighting
     objective_weighting.assign(Solution::number_of_objectives, 1.0);
@@ -82,11 +84,11 @@ Solution Agent::candidate_solution(void){
 
     // Choose which move operator to apply
     // TODO: Add a contextually sensitive learning module (i.e. operation chosen based on degree of nodes, edge weight, etc.).
-    // TODO: Add a heuristic learning mdule that recognizes beneficial chains of moves.
+    // TODO: Fix so no update happens after an interaction
     candidate.get_valid_moves();
     bool no_moves_available = true;
     while (no_moves_available){
-        j = weighted_choice(move_oper_pref);
+        j = weighted_choice(move_oper_pref[last_operation]);
         if (candidate.move_options[j].size() != 0) {
             no_moves_available = false;
             k = uniform_int(static_cast <int> (candidate.move_options[j].size()-1), 0);
@@ -101,21 +103,26 @@ Solution Agent::candidate_solution(void){
 
     // Update move operator preferences
     if (new_fx < old_fx) {
-        move_oper_pref[j] *= (1 + parameters.op_learn);
+        move_oper_pref[last_operation][j] *= (1 + parameters.op_learn);
     } else if (new_fx > old_fx) {
-        move_oper_pref[j] *= (1 - parameters.op_learn);
+        move_oper_pref[last_operation][j] *= (1 - parameters.op_learn);
     }
 
     // Normalize the vector so it doesn't get out of hand
     sum_w = 0;
-    for (int i=0; i < move_oper_pref.size(); i++) {
-        sum_w += move_oper_pref[i];
+    for (int i=0; i < Solution::number_of_move_ops; i++) {
+        sum_w += move_oper_pref[last_operation][i];
     }
-    for (int i=0; i < move_oper_pref.size(); i++) {
-        move_oper_pref[i]/=sum_w;
+    for (int i=0; i < Solution::number_of_move_ops; i++) {
+        move_oper_pref[last_operation][i]/=sum_w;
     }
 
-    print(move_oper_pref);
+    for (int i=0; i < Solution::number_of_move_ops; i++) {
+        print(move_oper_pref[i]);
+    }
+
+    // Update the last operation
+    last_operation = j;
 
     return candidate;
 

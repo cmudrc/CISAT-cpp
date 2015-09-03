@@ -30,7 +30,7 @@ public:
     long double best_solution_so_far;
     std::vector<long double> objective_weighting;
     Solution current_solution; // The value of the current solution
-    std::vector<long double> move_oper_pref; // preference for different move operators
+    std::vector< std::vector<long double> > move_oper_pref; // preference for different move operators
     std::deque<long double> history;   // History of quality
 
     //// Accessible everywhere
