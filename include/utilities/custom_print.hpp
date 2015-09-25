@@ -65,8 +65,6 @@ void print(std::vector< std::vector<Type> > x){
     std::cout.copyfmt(state);
 }
 
-
-
 // Write to file
 void save_to_file(std::string file_path, std::vector<long double>);
 void save_to_file(std::string file_path, std::vector< std::vector<long double> >);

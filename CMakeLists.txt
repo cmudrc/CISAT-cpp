@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8.4)
-project(HSAT)
+project(CISAT)
 
-set(CMAKE_C_COMPILER "gcc")
-set(CMAKE_CXX_COMPILER "g++")
+#Throws error when uncommented:
+#error: ambiguous instructions require an explicit suffix (could be 'filds', or 'fildl')
+#set(CMAKE_C_COMPILER "gcc")
+#set(CMAKE_CXX_COMPILER "g++")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
