@@ -1,3 +1,8 @@
+//    ┌─┬─────┐
+//    ├─┼─────┤ CISAT Modeling Framework
+//    │ │ McC │ Cognitively-Inspired Simulated Annealing Teams
+//    └─┴─────┘
+
 #include "./include/agents_and_teams/multiple_teams.hpp"
 #include "./include/meta_optimization/univariate.hpp"
 #include "./include/meta_optimization/pattern.hpp"

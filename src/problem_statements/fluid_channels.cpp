@@ -1,3 +1,8 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  fluid_channels.cpp
+//  └─┴─────┘  ││  source file
+
 #include "../../include/problem_statements/fluid_channels.hpp"
 
 
@@ -7,14 +12,11 @@ const  unsigned long  Solution::number_of_objectives = 1;
 const  std::string    Solution::name                 = "Gravity Fed Fluid Network";
 const  long double    Solution::goal                 = 0.0;
 
-//TODO: Add a vector that contains pipe sizes
-
 // Fluid constants
-const  long double    Solution::fluid_n              = 1.85;
-const  long double    Solution::fluid_C              = 100;
+const  long double    Solution::fluid_u              = 0.3;
 
 //Available pipe sizes
-const std::vector< long double > Solution::pipe_radii = {0.01, 0.02, 0.03, 0.04, 0.05};
+const std::vector< long double > Solution::pipe_radii = {0.02, 0.04, 0.06, 0.08, 0.10};
 
 enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
 
@@ -23,25 +25,26 @@ std::vector< std::map<std::string, long double> > Solution::seed_graph_parameter
         {
                 {"x",  0.00},
                 {"y",  0.00},
-                {"z", 25.00},
+                {"z",  0.00},
+                {"p",  35000},
                 {"type", INLET}
         }, {
                 {"x", 25.00},
                 {"y",  0.00},
                 {"z",  0.00},
-                {"q",  0.00},
+                {"p",  35000},
                 {"type", OUTLET}
         }, {
                 {"x", 25.00},
                 {"y", 25.00},
                 {"z",  0.00},
-                {"q",  0.00},
+                {"p",  35000},
                 {"type", OUTLET}
         }, {
                 {"x",  0.00},
                 {"y", 25.00},
                 {"z",  0.00},
-                {"q",  0.00},
+                {"p",  35000},
                 {"type", OUTLET}
         }
 };
@@ -89,8 +92,8 @@ void Solution::create_seed_graph(void) {
     double cx=0, cy=0, cz=0;
     for(int i=0; i<seed_graph_parameters.size(); i++) {
         cx += seed_graph_parameters[i]["x"];
-        cy += seed_graph_parameters[i]["x"];
-        cz += seed_graph_parameters[i]["x"];
+        cy += seed_graph_parameters[i]["y"];
+        cz += seed_graph_parameters[i]["z"];
     }
     cx /= seed_graph_parameters.size();
     cy /= seed_graph_parameters.size();
@@ -117,15 +120,6 @@ void Solution::compute_quality(void) {
     quality[0] += 0.2*number_of_nodes;
     quality[0] += 10*validity;
 
-    // TODO: Real quality computation
-    // update_geometry();
-    // solve_flow();
-    // for(int i=0; i<outlet_keys.size(); i++) {
-    //     quality[0] = std::pow(0.05 - nodes[i].parameters["q"], 2);
-    // }
-    // for(std::map<int, Edge>::iterator iter = edges.begin(); iter != edges.end(); ++iter) {
-    //     quality[1] += edges[iter->first].parameters["m"];
-    // }
 }
 
 
@@ -212,7 +206,6 @@ void Solution::add_pipe(int n1, int n2, int d) {
     // Compute the length
     edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
     edges[edge_id_counter].parameters["Q"] = 0.0;
-    edges[edge_id_counter].parameters["k"] = 10.67/(std::pow(fluid_C, fluid_n) * std::pow(d, 4.87));
 }
 
 

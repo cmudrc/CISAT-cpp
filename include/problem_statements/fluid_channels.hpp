@@ -1,3 +1,8 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  fluid_channels.hpp
+//  └─┴─────┘  ││  header file
+
 #ifndef PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
 #define PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
 
@@ -31,8 +36,7 @@ private:
     static const std::string name;
 
     // Fluid constants
-    static const long double fluid_n;
-    static const long double fluid_C;
+    static const long double fluid_u;
 
     // Pipe diameters
     static const std::vector< long double > pipe_radii;
@@ -63,13 +67,5 @@ private:
     long double euclidean_distance(int n1, int n2);
 
 };
-
-
-// This function returns a thing important for hardy cross method
-template <typename Type1, typename Type2>
-Type1 fluid_pow(Type1 Q, Type2 n) {
-    return Q * std::pow(std::abs(Q), n-1);
-}
-
 
 #endif
