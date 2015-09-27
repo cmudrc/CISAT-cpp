@@ -120,6 +120,20 @@ void Solution::compute_quality(void) {
     quality[0] += 0.2*number_of_nodes;
     quality[0] += 10*validity;
 
+    // Define the global stiffness matrix
+    std::vector< std::vector<long double> > k_global(static_cast<unsigned long>(number_of_nodes), std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0.0));
+
+    // For every existing element, add to the global matrix
+    for(int i=0; i<number_of_edges; i++) {
+        long double R = M_PI*std::pow(edges[i].parameters["D"], 4)/(128.0*edges[i].parameters["L"]*fluid_u);
+        int index_start = 1;
+        int index_end = 1;
+    }
+
+    // Add boundary conditions for each inlet and outlet
+
+    // Solve the matrix and find the elemental flow rates
+
 }
 
 
