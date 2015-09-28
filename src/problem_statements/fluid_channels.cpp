@@ -32,19 +32,19 @@ std::vector< std::map<std::string, long double> > Solution::seed_graph_parameter
                 {"x",  0.00},
                 {"y",  25.00},
                 {"z",  0.00},
-                {"p",  0.00},
+                {"p", -1.00}, // [Pa]
                 {"type", OUTLET}
         }, {
                 {"x", 25.00},
                 {"y", 25.00},
                 {"z",  0.00},
-                {"p",  0.00},
+                {"p", -1.00}, // [Pa]
                 {"type", OUTLET}
         }, {
                 {"x", 50.00},
                 {"y", 25.00},
                 {"z",  0.00},
-                {"p",  0.00},
+                {"p", -1.00}, // [Pa]
                 {"type", OUTLET}
         }
 };
@@ -80,13 +80,25 @@ void Solution::create_seed_graph(void) {
                      seed_graph_parameters[i]["y"],
                      seed_graph_parameters[i]["z"],
                      false);
-        nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
-        nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
+
+
+        nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
         if(seed_graph_parameters[i]["type"] == INLET) {
-            inlet_keys.push_back(node_id_counter);
+            add_junction(seed_graph_parameters[i]["x"],
+                         seed_graph_parameters[i]["y"],
+                         seed_graph_parameters[i]["z"]+5.1,
+                         false);
+            nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
+            nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
         } else {
-            outlet_keys.push_back(node_id_counter);
+            add_junction(seed_graph_parameters[i]["x"],
+                         seed_graph_parameters[i]["y"],
+                         seed_graph_parameters[i]["z"]-5.1,
+                         false);
+            nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
+            nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
         }
+        add_pipe(node_id_counter, node_id_counter-1, 0, false);
     }
 
     // Create a central junction
@@ -101,25 +113,26 @@ void Solution::create_seed_graph(void) {
     cz /= seed_graph_parameters.size();
     add_junction(cx, cy, cz, true);
 
-    // Connect the central junction to everything
-    for(int i=0; i<inlet_keys.size(); i++) {
-        add_pipe(inlet_keys[i], node_id_counter, 0);
-    }
-    for(int i=0; i<outlet_keys.size(); i++) {
-        add_pipe(node_id_counter, outlet_keys[i], 0);
+    // Connect the central junction to all intermediate nodes
+    int k = -1;
+    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+        k = (it->first);
+        if(nodes[k].parameters["type"] == INTERMEDIATE && k != node_id_counter){
+            add_pipe(k, node_id_counter, 0, true);
+        }
     }
 }
 
 
 void Solution::compute_quality(void) {
-    // For now, just sum the length
-    quality[0] = 1000;
-    int validity = is_valid();
-    for(std::map<int, Edge>::iterator iter = edges.begin(); iter != edges.end(); ++iter) {
-        quality[0] -= edges[iter->first].parameters["L"];
-    }
-    quality[0] += 0.2*number_of_nodes;
-    quality[0] += 10*validity;
+//    // For now, just sum the length
+//    quality[0] = 1000;
+//    int validity = is_valid();
+//    for(std::map<int, Edge>::iterator iter = edges.begin(); iter != edges.end(); ++iter) {
+//        quality[0] -= edges[iter->first].parameters["L"];
+//    }
+//    quality[0] += 0.2*number_of_nodes;
+//    quality[0] += 10*validity;
 
     // Define the global stiffness matrix
     std::vector< std::vector<long double> > k_global(static_cast<unsigned long>(number_of_nodes), std::vector<long double>(static_cast<unsigned long>(number_of_nodes+1), 0.0));
@@ -168,10 +181,14 @@ void Solution::compute_quality(void) {
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
         edges[k].parameters["Q"] = edges[k].parameters["R"]*(p[idx1] - p[idx2]);
-        print(edges[k].parameters["Q"]);
     }
 
-
+    quality[0] = 0;
+    for(int i=0; i<4; i++) {
+        print(edges[i].parameters["Q"]);
+        quality[0] += 100000*std::pow((0.001 + edges[i].parameters["Q"]), 2);
+    }
+    quality[0] += 10*is_valid();
 
 }
 
@@ -184,16 +201,23 @@ void Solution::get_valid_moves(void) {
     move_options.assign(4, std::vector< std::vector<int> > ());
 
     // Pull valid edge addition moves and node deletion moves
+    int idx1 = 0;
+    int idx2 = 0;
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        if(nodes[it1->first].parameters["moveable"] == true){
+        idx1 = (it1->first);
+        if(nodes[idx1].parameters["editable"] == true){
             // Define the move
-            order = {3, it1->first, 0};
+            order = {3, idx1, 0};
 
             // Add it to the vector of options
             move_options[3].push_back(order);
         }
         for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
-            if (!undirected_edge_exists((it1->first), (it2->first))) {
+            idx2 = (it2->first);
+            if (!undirected_edge_exists(idx1, idx2) && nodes[idx1].parameters["type"]!=INLET
+                                                    && nodes[idx2].parameters["type"]!=INLET
+                                                    && nodes[idx1].parameters["type"]!=OUTLET
+                                                    && nodes[idx2].parameters["type"]!=OUTLET) {
                 if((it2->first) != (it1->first)) {
                     // Define the move
                     order = {0, (it1->first), (it2->first)};
@@ -207,13 +231,15 @@ void Solution::get_valid_moves(void) {
 
     // Pull valid junction addition and edge deletion moves
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        // Define the junction addition move and add it
-        order = {1, it1->first, 0};
-        move_options[1].push_back(order);
+        if(edges[it1->first].parameters["editable"]) {
+            // Define the junction addition move and add it
+            order = {1, it1->first, 0};
+            move_options[1].push_back(order);
 
-        // Define the edge deletion move and add it
-        order = {2, it1->first, 0};
-        move_options[2].push_back(order);
+            // Define the edge deletion move and add it
+            order = {2, it1->first, 0};
+            move_options[2].push_back(order);
+        }
     }
 }
 
@@ -224,7 +250,7 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 
     switch(selected_order[0]) {
         case 0:
-            add_pipe(selected_order[1], selected_order[2], 0);
+            add_pipe(selected_order[1], selected_order[2], 0, true);
             break;
         case 1:
             add_midpoint_junction(selected_order[1]);
@@ -241,7 +267,6 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 
     // Compute the quality
     compute_quality();
-//    std::cout << std::endl << selected_order[0] << std::endl;
 
     // asdf
     solution_counter++;
@@ -249,20 +274,22 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 }
 
 
-void Solution::add_pipe(int n1, int n2, int d) {
+void Solution::add_pipe(int n1, int n2, int d, bool editable) {
     // Add an edge
     add_edge(n1, n2);
 
     // Add parameters for the edges
+    edges[edge_id_counter].parameters["editable"] = editable;
     edges[edge_id_counter].parameters["D"] = d;
+    edges[edge_id_counter].parameters["Q"] = 0.0;
+    edges[edge_id_counter].parameters["p"] = 0.0;
 
     // Compute the length
     edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
-    edges[edge_id_counter].parameters["Q"] = 0.0;
 }
 
 
-void Solution::add_junction(long double x, long double y, long double z, bool moveable) {
+void Solution::add_junction(long double x, long double y, long double z, bool editable) {
     // Add the node
     add_node();
 
@@ -272,7 +299,7 @@ void Solution::add_junction(long double x, long double y, long double z, bool mo
     nodes[node_id_counter].parameters["z"] = z;
 
     // Moveable or not
-    nodes[node_id_counter].parameters["moveable"] = moveable;
+    nodes[node_id_counter].parameters["editable"] = editable;
     nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
 }
 
@@ -315,8 +342,8 @@ void Solution::add_midpoint_junction(int e) {
     );
 
     // Add new edges
-    add_pipe(n1, node_id_counter, d);
-    add_pipe(n2, node_id_counter, d);
+    add_pipe(n1, node_id_counter, d, true);
+    add_pipe(n2, node_id_counter, d, true);
 }
 
 

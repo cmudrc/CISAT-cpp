@@ -57,8 +57,8 @@ private:
     void create_seed_graph(void);
 
     // Move operators
-    void add_pipe(int n1, int n2, int d);
-    void add_junction(long double x, long double y, long double z, bool moveable);
+    void add_pipe(int n1, int n2, int d, bool editable);
+    void add_junction(long double x, long double y, long double z, bool editable);
     void remove_pipe(int e);
     void remove_junction(int n);
     void increase_pipe_size(int e);
