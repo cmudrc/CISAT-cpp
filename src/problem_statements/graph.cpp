@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  src
+//  └─┴─────┘  ││   └─problem_statements
+//             ││      └─graph.cpp
+
 #include "../../include/problem_statements/graph.hpp"
 
 Graph::Graph(void) {

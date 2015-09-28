@@ -1,7 +1,8 @@
 //  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
 //  ├─┼─────┤  ││         Annealing Teams Modeling Framework
-//  │ │ McC │  ││  fluid_channels.hpp
-//  └─┴─────┘  ││  header file
+//  │ │ McC │  ││  include
+//  └─┴─────┘  ││   └─problem_statements
+//             ││      └─fluid_channels.hpp
 
 #ifndef PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
 #define PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
