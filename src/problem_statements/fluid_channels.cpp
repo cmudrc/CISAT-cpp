@@ -5,7 +5,6 @@
 
 #include "../../include/problem_statements/fluid_channels.hpp"
 
-
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 4;
 const  unsigned long  Solution::number_of_objectives = 1;
@@ -13,7 +12,7 @@ const  std::string    Solution::name                 = "Gravity Fed Fluid Networ
 const  long double    Solution::goal                 = 0.0;
 
 // Fluid constants
-const  long double    Solution::fluid_u              = 0.3;
+const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
 
 //Available pipe sizes
 const std::vector< long double > Solution::pipe_radii = {0.02, 0.04, 0.06, 0.08, 0.10};
@@ -23,28 +22,28 @@ enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
         {
-                {"x",  0.00},
-                {"y",  0.00},
-                {"z",  0.00},
-                {"p",  35000},
+                {"x",      0.00}, // [m]
+                {"y",      0.00}, // [m]
+                {"z",      0.00}, // [m]
+                {"p",  35000.00}, // [Pa]
                 {"type", INLET}
         }, {
-                {"x", 25.00},
-                {"y",  0.00},
-                {"z",  0.00},
-                {"p",  35000},
-                {"type", OUTLET}
-        }, {
-                {"x", 25.00},
-                {"y", 25.00},
-                {"z",  0.00},
-                {"p",  35000},
-                {"type", OUTLET}
-        }, {
                 {"x",  0.00},
+                {"y",  25.00},
+                {"z",  0.00},
+                {"p",  0.00},
+                {"type", OUTLET}
+        }, {
+                {"x", 25.00},
                 {"y", 25.00},
                 {"z",  0.00},
-                {"p",  35000},
+                {"p",  0.00},
+                {"type", OUTLET}
+        }, {
+                {"x", 50.00},
+                {"y", 25.00},
+                {"z",  0.00},
+                {"p",  0.00},
                 {"type", OUTLET}
         }
 };
@@ -81,6 +80,7 @@ void Solution::create_seed_graph(void) {
                      seed_graph_parameters[i]["z"],
                      false);
         nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
+        nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
         if(seed_graph_parameters[i]["type"] == INLET) {
             inlet_keys.push_back(node_id_counter);
         } else {
@@ -121,18 +121,56 @@ void Solution::compute_quality(void) {
     quality[0] += 10*validity;
 
     // Define the global stiffness matrix
-    std::vector< std::vector<long double> > k_global(static_cast<unsigned long>(number_of_nodes), std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0.0));
+    std::vector< std::vector<long double> > k_global(static_cast<unsigned long>(number_of_nodes), std::vector<long double>(static_cast<unsigned long>(number_of_nodes+1), 0.0));
 
-    // For every existing element, add to the global matrix
-    for(int i=0; i<number_of_edges; i++) {
-        long double R = M_PI*std::pow(edges[i].parameters["D"], 4)/(128.0*edges[i].parameters["L"]*fluid_u);
-        int index_start = 1;
-        int index_end = 1;
+    // Get the vector that will relate entries in the node map to entries in the global stiffness matrix
+    std::map<int, int> node_id_map;
+    int counter = 0;
+    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        node_id_map[(it->first)] = counter;
+        counter++;
     }
 
-    // Add boundary conditions for each inlet and outlet
+    // For every existing element, add to the global matrix
+    int k;
+    long double R=0;
+    int idx1 = 0;
+    int idx2 = 0;
+    for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
+        k = (it->first);
+        idx1 = node_id_map[edges[k].initial_node];
+        idx2 = node_id_map[edges[k].terminal_node];
+        edges[k].parameters["R"] = M_PI*std::pow(pipe_radii[edges[k].parameters["D"]], 4)/(128.0*edges[k].parameters["L"]*fluid_u);
+        k_global[idx1][idx1] += edges[k].parameters["R"];
+        k_global[idx1][idx2] -= edges[k].parameters["R"];
+        k_global[idx2][idx1] -= edges[k].parameters["R"];
+        k_global[idx2][idx2] += edges[k].parameters["R"];
+    }
+
+    // Add boundary conditions for each inlet and outlet, make pressure vector
+    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        k = (it->first);
+        idx1 = node_id_map[k];
+        if(nodes[k].parameters["type"] == INLET || nodes[k].parameters["type"] == OUTLET) {
+            for (int i = 0; i < k_global[idx1].size(); i++) {
+                k_global[idx1][i] = 0.0;
+            }
+            k_global[idx1][idx1] = 1.0;
+            k_global[idx1][number_of_nodes] = nodes[k].parameters["p"];
+        }
+    }
 
     // Solve the matrix and find the elemental flow rates
+    std::vector<long double> p = gauss(k_global);
+    for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
+        k = (it->first);
+        idx1 = node_id_map[edges[k].initial_node];
+        idx2 = node_id_map[edges[k].terminal_node];
+        edges[k].parameters["Q"] = edges[k].parameters["R"]*(p[idx1] - p[idx2]);
+        print(edges[k].parameters["Q"]);
+    }
+
+
 
 }
 
@@ -202,7 +240,7 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 
     // Compute the quality
     compute_quality();
-    std::cout << std::endl << selected_order[0] << std::endl;
+//    std::cout << std::endl << selected_order[0] << std::endl;
 
     // asdf
     solution_counter++;

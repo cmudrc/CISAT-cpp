@@ -117,10 +117,6 @@ Solution Agent::candidate_solution(void){
         move_oper_pref[last_operation][i]/=sum_w;
     }
 
-    for (int i=0; i < Solution::number_of_move_ops; i++) {
-        print(move_oper_pref[i]);
-    }
-
     // Update the last operation
     last_operation = j;
 
@@ -178,8 +174,8 @@ void Agent::iterate(int iter){
 //// Updates temperature using simple stretched Cauchy schedule.
 void Agent::update_temp(void) {
 
-    if(parameters.n_reps == 1)
-        std::cout << temperature << ", ";
+//    if(parameters.n_reps == 1)
+//        std::cout << temperature << ", ";
 
     // If history_length is greater than 0, use a sliding window for the update
     if(parameters.history_length > 0) {

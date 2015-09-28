@@ -48,17 +48,13 @@ void print(std::vector< std::vector<Type> > x){
     state.copyfmt(std::cout);
 
     // Print the damn thing
-    int end = static_cast <int> (x.size()-1);
-    std::cout<<std::scientific<<"[ ";
+    std::cout << std::endl;
     for(int i=0; i<x.size(); i++){
-        if(i!=end) {
-            std::cout << x[i] << ", ";
-            if ((i + 1) % 10 == 0) {
-                std::cout << std::endl << "  ";
-            }
-        } else {
-            std::cout << x[i] << " ]" << std::endl;
+        std::cout <<std::scientific<<std::showpos<< "[" ;
+        for(int j=0; j<x[i].size(); j++) {
+            std::cout << x[i][j] << " ";
         }
+        std::cout << "]" << std::endl;
     }
 
     // Restore the state of the ostream

@@ -11,6 +11,7 @@
 #include "graph.hpp"
 #include "../utilities/make_random.hpp"
 #include "../utilities/write_x3d.hpp"
+#include "../utilities/custom_print.hpp"
 
 class Solution : public Graph{
 public:
