@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  src
+//  └─┴─────┘  ││   └─agents_and_teams
+//             ││      └─agent.cpp
+
 #include "../../include/agents_and_teams/agent.hpp"
 
 //// Necessary definitions of static vectors for sharing between agents.

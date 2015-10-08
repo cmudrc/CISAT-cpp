@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  src
+//  └─┴─────┘  ││   └─agents_and_teams
+//             ││      └─multiple_teams.cpp
+
 #include "../../include/agents_and_teams/multiple_teams.hpp"
 
 // This does the things, and initializes parameters from file

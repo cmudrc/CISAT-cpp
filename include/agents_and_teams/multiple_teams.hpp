@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  include
+//  └─┴─────┘  ││   └─agents_and_teams
+//             ││      └─multiple_teams.hpp
+
 #ifndef AGENTS_AND_TEAMS__MULTIPLE_TEAMS_HPP
 #define AGENTS_AND_TEAMS__MULTIPLE_TEAMS_HPP
 

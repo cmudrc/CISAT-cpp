@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  src
+//  └─┴─────┘  ││   └─agents_and_teams
+//             ││      └─team.cpp
+
 #include "../../include/agents_and_teams/team.hpp"
 
 //// This constructs the team

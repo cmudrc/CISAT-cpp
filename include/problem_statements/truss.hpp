@@ -2,10 +2,10 @@
 //  ├─┼─────┤  ││         Annealing Teams Modeling Framework
 //  │ │ McC │  ││  include
 //  └─┴─────┘  ││   └─problem_statements
-//             ││      └─fluid_channels.hpp
+//             ││      └─truss.hpp
 
-#ifndef PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
-#define PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
+#ifndef PROBLEM_STATEMENTS__TRUSS_HPP
+#define PROBLEM_STATEMENTS__TRUSS_HPP
 
 #include <iostream>
 #include <cmath>
@@ -41,7 +41,8 @@ private:
     static const long double fluid_u;
 
     // Pipe diameters
-    static const std::vector< long double > pipe_radius;
+    static const std::vector< long double > member_area;
+    static const std::vector< long double > member_moi;
 
     // Variables
     int solution_id;

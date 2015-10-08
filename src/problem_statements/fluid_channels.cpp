@@ -16,7 +16,7 @@ const  long double    Solution::goal                 = 0.0;
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
 
 //Available pipe sizes
-const std::vector< long double > Solution::pipe_radii = {0.02, 0.04, 0.06, 0.08, 0.10};
+const std::vector< long double > Solution::pipe_radius = {0.02, 0.04, 0.06, 0.08, 0.10};
 
 enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
 
@@ -86,14 +86,14 @@ void Solution::create_seed_graph(void) {
         if(seed_graph_parameters[i]["type"] == INLET) {
             add_junction(seed_graph_parameters[i]["x"],
                          seed_graph_parameters[i]["y"],
-                         seed_graph_parameters[i]["z"]+5.1,
+                         seed_graph_parameters[i]["z"]+0.1,
                          false);
             nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
             nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
         } else {
             add_junction(seed_graph_parameters[i]["x"],
                          seed_graph_parameters[i]["y"],
-                         seed_graph_parameters[i]["z"]-5.1,
+                         seed_graph_parameters[i]["z"]-0.1,
                          false);
             nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
             nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
@@ -125,14 +125,6 @@ void Solution::create_seed_graph(void) {
 
 
 void Solution::compute_quality(void) {
-//    // For now, just sum the length
-//    quality[0] = 1000;
-//    int validity = is_valid();
-//    for(std::map<int, Edge>::iterator iter = edges.begin(); iter != edges.end(); ++iter) {
-//        quality[0] -= edges[iter->first].parameters["L"];
-//    }
-//    quality[0] += 0.2*number_of_nodes;
-//    quality[0] += 10*validity;
 
     // Define the global stiffness matrix
     std::vector< std::vector<long double> > k_global(static_cast<unsigned long>(number_of_nodes), std::vector<long double>(static_cast<unsigned long>(number_of_nodes+1), 0.0));
@@ -154,7 +146,7 @@ void Solution::compute_quality(void) {
         k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
-        edges[k].parameters["R"] = M_PI*std::pow(pipe_radii[edges[k].parameters["D"]], 4)/(128.0*edges[k].parameters["L"]*fluid_u);
+        edges[k].parameters["R"] = M_PI*std::pow(pipe_radius[edges[k].parameters["D"]], 4)/(128.0*edges[k].parameters["L"]*fluid_u);
         k_global[idx1][idx1] += edges[k].parameters["R"];
         k_global[idx1][idx2] -= edges[k].parameters["R"];
         k_global[idx2][idx1] -= edges[k].parameters["R"];
@@ -184,11 +176,11 @@ void Solution::compute_quality(void) {
     }
 
     quality[0] = 0;
-    for(int i=0; i<4; i++) {
+    for(int i=1; i<4; i++) {
         print(edges[i].parameters["Q"]);
-        quality[0] += 100000*std::pow((0.001 + edges[i].parameters["Q"]), 2);
+        quality[0] += 1000000*std::pow((0.0007 + edges[i].parameters["Q"]), 2);
     }
-    quality[0] += 10*is_valid();
+    quality[0] += 5*is_valid() + 0.05*(number_of_edges + number_of_nodes);
 
 }
 
