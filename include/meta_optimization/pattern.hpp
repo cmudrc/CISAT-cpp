@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  include
+//  └─┴─────┘  ││   └─meta_optimization
+//             ││      └─pattern.hpp
+
 #ifndef META_OPTIMIZATION__PATTERN_HPP
 #define META_OPTIMIZATION__PATTERN_HPP
 

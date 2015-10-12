@@ -7,7 +7,7 @@
 #include "../../include/problem_statements/fluid_channels.hpp"
 
 // Graph grammar characteristics
-const  unsigned long  Solution::number_of_move_ops   = 4;
+const  unsigned long  Solution::number_of_move_ops   = 6;
 const  unsigned long  Solution::number_of_objectives = 1;
 const  std::string    Solution::name                 = "Gravity Fed Fluid Network";
 const  long double    Solution::goal                 = 0.0;
@@ -178,9 +178,10 @@ void Solution::compute_quality(void) {
     quality[0] = 0;
     for(int i=1; i<4; i++) {
         print(edges[i].parameters["Q"]);
-        quality[0] += 1000000*std::pow((0.0007 + edges[i].parameters["Q"]), 2);
+        quality[0] += 10000000*std::pow((0.0007 + edges[i].parameters["Q"]), 2);
+//        quality[0] += 1000000*std::abs((0.0007 + edges[i].parameters["Q"]));
     }
-    quality[0] += 5*is_valid() + 0.05*(number_of_edges + number_of_nodes);
+    quality[0] += 5*is_valid() + 0.1*(number_of_edges + number_of_nodes);
 
 }
 
@@ -190,7 +191,7 @@ void Solution::get_valid_moves(void) {
 
     // Clear the options vector, and then instantiate it
     move_options.clear();
-    move_options.assign(4, std::vector< std::vector<int> > ());
+    move_options.assign(number_of_move_ops, std::vector< std::vector<int> > ());
 
     // Pull valid edge addition moves and node deletion moves
     int idx1 = 0;
@@ -198,12 +199,11 @@ void Solution::get_valid_moves(void) {
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         idx1 = (it1->first);
         if(nodes[idx1].parameters["editable"] == true){
-            // Define the move
+            // Define the node deletion move
             order = {3, idx1, 0};
-
-            // Add it to the vector of options
             move_options[3].push_back(order);
         }
+
         for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
             idx2 = (it2->first);
             if (!undirected_edge_exists(idx1, idx2) && nodes[idx1].parameters["type"]!=INLET
@@ -221,7 +221,7 @@ void Solution::get_valid_moves(void) {
         }
     }
 
-    // Pull valid junction addition and edge deletion moves
+    // Pull valid node addition and edge deletion moves
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
         if(edges[it1->first].parameters["editable"]) {
             // Define the junction addition move and add it
@@ -231,6 +231,13 @@ void Solution::get_valid_moves(void) {
             // Define the edge deletion move and add it
             order = {2, it1->first, 0};
             move_options[2].push_back(order);
+
+            // Define and add edge size change moves
+            order = {4, it1->first, 0};
+            move_options[4].push_back(order);
+            order = {5, it1->first, 0};
+            move_options[5].push_back(order);
+
         }
     }
 }
@@ -252,6 +259,12 @@ void Solution::apply_move_operator(int move_type, int move_number) {
             break;
         case 3:
             remove_junction(selected_order[1]);
+            break;
+        case 4:
+            increase_pipe_size(selected_order[1]);
+            break;
+        case 5:
+            decrease_pipe_size(selected_order[1]);
             break;
         default:
             break;
