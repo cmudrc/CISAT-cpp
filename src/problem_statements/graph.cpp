@@ -197,3 +197,11 @@ void Graph::print_directed_edge_list(void) {
         std::cout << iter->first << "\t" << edges[iter->first].initial_node << "\t" << edges[iter->first].terminal_node << std::endl;
     }
 }
+
+long double Graph::euclidean_distance(int n1, int n2) {
+    return std::sqrt(
+            std::pow(nodes[n1].parameters["x"] - nodes[n2].parameters["x"], 2)
+            + std::pow(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], 2)
+            + std::pow(nodes[n1].parameters["z"] - nodes[n2].parameters["z"], 2)
+    );
+}

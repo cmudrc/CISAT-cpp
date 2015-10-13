@@ -58,6 +58,9 @@ public:
     void remove_edge(int e);
     void remove_node(int n);
 
+    // Not valid without specific things
+    long double euclidean_distance(int n1, int n2);
+
     // Navigating graph
     bool directed_edge_exists(int n1, int n2);
     bool undirected_edge_exists(int n1, int n2);

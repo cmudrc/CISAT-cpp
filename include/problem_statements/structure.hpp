@@ -4,8 +4,8 @@
 //  └─┴─────┘  ││   └─problem_statements
 //             ││      └─structure.hpp
 
-#ifndef PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
-#define PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
+#ifndef PROBLEM_STATEMENTS__STRUCTURE_HPP
+#define PROBLEM_STATEMENTS__STRUCTURE_HPP
 
 #include <iostream>
 #include <cmath>
@@ -38,10 +38,11 @@ private:
     static const std::string name;
 
     // Fluid constants
-    static const long double fluid_u;
+    static const long double E;
+    static const long double Fy;
 
     // Pipe diameters
-    static const std::vector< long double > pipe_radius;
+    static const std::vector< long double > pipe_diam;
 
     // Variables
     int solution_id;
@@ -55,18 +56,17 @@ private:
     void create_seed_graph(void);
 
     // Move operators
-    void add_pipe(int n1, int n2, int d, bool editable);
-    void add_junction(long double x, long double y, long double z, bool editable);
-    void remove_pipe(int e);
-    void remove_junction(int n);
-    void increase_pipe_size(int e);
-    void decrease_pipe_size(int e);
-    void add_midpoint_junction(int e);
-    void move_junction(int n, long double dx, long double dy, long double dz);
+    void add_member(int n1, int n2, int d, bool editable);
+    void add_joint(long double x, long double y, long double z, bool editable);
+    void remove_member(int e);
+    void remove_joint(int n);
+    void increase_member_size(int e);
+    void decrease_member_size(int e);
+    void move_joint(int n, long double dx, long double dy, long double dz);
+    void brace_member(int e);
+    void add_joint_and_attach(long double x, long double y, long double z);
 
     int is_valid(void);
-    long double euclidean_distance(int n1, int n2);
-
 };
 
 #endif

@@ -2,7 +2,7 @@
 //  ├─┼─────┤  ││         Annealing Teams Modeling Framework
 //  │ │ McC │  ││  src
 //  └─┴─────┘  ││   └─problem_statements
-//             ││      └─fluid_channels.cpp
+//             ││      └─fluid_network.cpp
 
 #include "../../include/problem_statements/fluid_network.hpp"
 
@@ -16,7 +16,7 @@ const  long double    Solution::goal                 = 0.0;
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
 
 //Available pipe sizes
-const std::vector< long double > Solution::pipe_radius = {0.02, 0.04, 0.06, 0.08, 0.10};
+const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
 
 enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
 
@@ -146,7 +146,7 @@ void Solution::compute_quality(void) {
         k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
-        edges[k].parameters["R"] = M_PI*std::pow(pipe_radius[edges[k].parameters["D"]], 4)/(128.0*edges[k].parameters["L"]*fluid_u);
+        edges[k].parameters["R"] = M_PI*std::pow(pipe_diam[edges[k].parameters["D"]], 4)/(128.0*edges[k].parameters["L"]*fluid_u);
         k_global[idx1][idx1] += edges[k].parameters["R"];
         k_global[idx1][idx2] -= edges[k].parameters["R"];
         k_global[idx2][idx1] -= edges[k].parameters["R"];
@@ -393,14 +393,6 @@ int Solution::is_valid(void) {
     return is_connected();
 }
 
-
-long double Solution::euclidean_distance(int n1, int n2) {
-    return std::sqrt(
-                  std::pow(nodes[n1].parameters["x"] - nodes[n2].parameters["x"], 2)
-                + std::pow(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], 2)
-                + std::pow(nodes[n1].parameters["z"] - nodes[n2].parameters["z"], 2)
-    );
-}
 
 void Solution::save_as_x3d(std::string save_to_file) {
     WriteX3D x3d;

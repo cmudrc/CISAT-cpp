@@ -41,7 +41,7 @@ private:
     static const long double fluid_u;
 
     // Pipe diameters
-    static const std::vector< long double > pipe_radius;
+    static const std::vector< long double > pipe_diam;
 
     // Variables
     int solution_id;
@@ -65,8 +65,6 @@ private:
     void move_junction(int n, long double dx, long double dy, long double dz);
 
     int is_valid(void);
-    long double euclidean_distance(int n1, int n2);
-
 };
 
 #endif
