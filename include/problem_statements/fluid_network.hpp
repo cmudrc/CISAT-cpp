@@ -30,7 +30,7 @@ public:
     Solution(void);
     void get_valid_moves(void);
     void apply_move_operator(int move_type, int move_number);
-    static void print_surface_characteristics(void);
+//    static void print_surface_characteristics(void);
     void save_as_x3d(std::string save_to_file);
 
 private:

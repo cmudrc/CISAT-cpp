@@ -22,31 +22,31 @@ enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
-        {
-                {"x",      0.00}, // [m]
-                {"y",      0.00}, // [m]
-                {"z",      0.00}, // [m]
-                {"p",  35000.00}, // [Pa]
-                {"type", INLET}
-        }, {
-                {"x",  5.00},
-                {"y",  0.00},
-                {"z",  0.00},
-                {"p", 35000.00}, // [Pa]
-                {"type", INLET}
-        }, {
-                {"x",  0.00},
-                {"y",  25.00},
-                {"z",  0.00},
-                {"p", -1.00}, // [Pa]
-                {"type", OUTLET}
-        }, {
-                {"x",  5.00},
-                {"y", 25.00},
-                {"z",  0.00},
-                {"p", -1.00}, // [Pa]
-                {"type", OUTLET}
-        }
+    {
+        {"x",      0.00}, // [m]
+        {"y",      0.00}, // [m]
+        {"z",      0.00}, // [m]
+        {"p",  35000.00}, // [Pa]
+        {"type", INLET}
+    }, {
+        {"x",  5.00},
+        {"y",  0.00},
+        {"z",  0.00},
+        {"p", 35000.00}, // [Pa]
+        {"type", INLET}
+    }, {
+        {"x",  0.00},
+        {"y",  25.00},
+        {"z",  0.00},
+        {"p", -1.00}, // [Pa]
+        {"type", OUTLET}
+    }, {
+        {"x",  5.00},
+        {"y", 25.00},
+        {"z",  0.00},
+        {"p", -1.00}, // [Pa]
+        {"type", OUTLET}
+    }
 };
 
 
@@ -380,12 +380,12 @@ void Solution::add_midpoint_junction(int e) {
 }
 
 
-void Solution::print_surface_characteristics(void) {
-    print("Problem Characteristics");
-    std::cout << "\tName: " << name << std::endl;
-    std::cout << "\tGoal: " << goal << std::endl;
-    std::cout << "\tNumber of move operators: " << number_of_move_ops << std::endl;
-}
+//void Solution::print_surface_characteristics(void) {
+//    print("Problem Characteristics");
+//    std::cout << "\tName: " << name << std::endl;
+//    std::cout << "\tGoal: " << goal << std::endl;
+//    std::cout << "\tNumber of move operators: " << number_of_move_ops << std::endl;
+//}
 
 
 // Function to ensure that the solution is valid
