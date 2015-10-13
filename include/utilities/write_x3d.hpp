@@ -17,7 +17,7 @@ public:
     void open_file(std::string file_path);
     void close_file(void);
     void write_sphere(long double x, long double y, long double z, long double radius);
-    void write_line(long double x1, long double y1, long double z1, long double x2, long double y2, long double z2);
+    void write_line(long double x1, long double y1, long double z1, long double x2, long double y2, long double z2, int size);
 
 private:
     std::ofstream my_file;

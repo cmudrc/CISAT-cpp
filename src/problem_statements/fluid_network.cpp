@@ -4,10 +4,10 @@
 //  └─┴─────┘  ││   └─problem_statements
 //             ││      └─fluid_channels.cpp
 
-#include "../../include/problem_statements/fluid_channels.hpp"
+#include "../../include/problem_statements/fluid_network.hpp"
 
 // Graph grammar characteristics
-const  unsigned long  Solution::number_of_move_ops   = 6;
+const  unsigned long  Solution::number_of_move_ops   = 7;
 const  unsigned long  Solution::number_of_objectives = 1;
 const  std::string    Solution::name                 = "Gravity Fed Fluid Network";
 const  long double    Solution::goal                 = 0.0;
@@ -29,19 +29,19 @@ std::vector< std::map<std::string, long double> > Solution::seed_graph_parameter
                 {"p",  35000.00}, // [Pa]
                 {"type", INLET}
         }, {
+                {"x",  5.00},
+                {"y",  0.00},
+                {"z",  0.00},
+                {"p", 35000.00}, // [Pa]
+                {"type", INLET}
+        }, {
                 {"x",  0.00},
                 {"y",  25.00},
                 {"z",  0.00},
                 {"p", -1.00}, // [Pa]
                 {"type", OUTLET}
         }, {
-                {"x", 25.00},
-                {"y", 25.00},
-                {"z",  0.00},
-                {"p", -1.00}, // [Pa]
-                {"type", OUTLET}
-        }, {
-                {"x", 50.00},
+                {"x",  5.00},
                 {"y", 25.00},
                 {"z",  0.00},
                 {"p", -1.00}, // [Pa]
@@ -168,20 +168,23 @@ void Solution::compute_quality(void) {
 
     // Solve the matrix and find the elemental flow rates
     std::vector<long double> p = gauss(k_global);
+    long double total_length = 0;
     for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
         k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
         edges[k].parameters["Q"] = edges[k].parameters["R"]*(p[idx1] - p[idx2]);
+        total_length += edges[k].parameters["L"];
     }
 
     quality[0] = 0;
-    for(int i=1; i<4; i++) {
+    for(int i=2; i<4; i++) {
         print(edges[i].parameters["Q"]);
-        quality[0] += 10000000*std::pow((0.0007 + edges[i].parameters["Q"]), 2);
-//        quality[0] += 1000000*std::abs((0.0007 + edges[i].parameters["Q"]));
+//        quality[0] += 10000000*std::pow((0.001 + edges[i].parameters["Q"]), 2);
+        quality[0] += 10000000*std::abs((0.001 + edges[i].parameters["Q"]));
     }
-    quality[0] += 5*is_valid() + 0.1*(number_of_edges + number_of_nodes);
+//    quality[0] += 100000*is_valid();
+    quality[0] += 10000*is_valid() + total_length*10 + 100*number_of_nodes;
 
 }
 
@@ -202,6 +205,16 @@ void Solution::get_valid_moves(void) {
             // Define the node deletion move
             order = {3, idx1, 0};
             move_options[3].push_back(order);
+
+            // Define junction motion moves
+            order = {6, idx1,  0,  1};
+            move_options[6].push_back(order);
+            order = {6, idx1,  0, -1};
+            move_options[6].push_back(order);
+            order = {6, idx1,  1,  0};
+            move_options[6].push_back(order);
+            order = {6, idx1, -1,  0};
+            move_options[6].push_back(order);
         }
 
         for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
@@ -249,7 +262,7 @@ void Solution::apply_move_operator(int move_type, int move_number) {
 
     switch(selected_order[0]) {
         case 0:
-            add_pipe(selected_order[1], selected_order[2], 0, true);
+            add_pipe(selected_order[1], selected_order[2], 2, true);
             break;
         case 1:
             add_midpoint_junction(selected_order[1]);
@@ -265,6 +278,9 @@ void Solution::apply_move_operator(int move_type, int move_number) {
             break;
         case 5:
             decrease_pipe_size(selected_order[1]);
+            break;
+        case 6:
+            move_junction(selected_order[1], selected_order[2], selected_order[3], 0);
             break;
         default:
             break;
@@ -329,6 +345,18 @@ void Solution::decrease_pipe_size(int e) {
 }
 
 
+void Solution::move_junction(int n, long double dx, long double dy, long double dz) {
+    nodes[n].parameters["x"] += dx;
+    nodes[n].parameters["x"] += dy;
+    nodes[n].parameters["x"] += dz;
+
+    // Brute force length update
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+    }
+}
+
+
 void Solution::add_midpoint_junction(int e) {
     // Save the indices of the endpoints
     int n1 = edges[e].initial_node;
@@ -387,7 +415,8 @@ void Solution::save_as_x3d(std::string save_to_file) {
         n1 = edges[it1->first].initial_node;
         n2 = edges[it1->first].terminal_node;
         x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
-                       nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"]);
+                       nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
+                       edges[it1->first].parameters["d"]);
     }
 
 

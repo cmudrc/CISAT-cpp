@@ -2,10 +2,10 @@
 //  ├─┼─────┤  ││         Annealing Teams Modeling Framework
 //  │ │ McC │  ││  include
 //  └─┴─────┘  ││   └─problem_statements
-//             ││      └─fluid_channels.hpp
+//             ││      └─fluid_network.hpp
 
-#ifndef PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
-#define PROBLEM_STATEMENTS__FLUID_CHANNELS_HPP
+#ifndef PROBLEM_STATEMENTS__FLUID_NETWORK_HPP
+#define PROBLEM_STATEMENTS__FLUID_NETWORK_HPP
 
 #include <iostream>
 #include <cmath>
@@ -62,6 +62,7 @@ private:
     void increase_pipe_size(int e);
     void decrease_pipe_size(int e);
     void add_midpoint_junction(int e);
+    void move_junction(int n, long double dx, long double dy, long double dz);
 
     int is_valid(void);
     long double euclidean_distance(int n1, int n2);

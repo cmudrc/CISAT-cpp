@@ -12,8 +12,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
 set(SOURCE_FILES_MAIN
     cisat.cpp
 
-    include/problem_statements/fluid_channels.hpp
-    src/problem_statements/fluid_channels.cpp
+    include/problem_statements/fluid_network.hpp
+    src/problem_statements/fluid_network.cpp
 
     include/problem_statements/graph.hpp
     src/problem_statements/graph.cpp
