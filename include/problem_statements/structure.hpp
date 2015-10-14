@@ -52,6 +52,8 @@ private:
 
     // Functions
     void compute_quality(void);
+    void compute_truss_forces(void);
+//    void compute_frame_forces(void);
     void create_seed_graph(void);
 
     // Move operators

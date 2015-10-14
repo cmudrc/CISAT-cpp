@@ -68,17 +68,17 @@ Solution::Solution(bool) {
 }
 
 
-void get_valid_moves(void){
+void Solution::get_valid_moves(void){
 
 }
 
 
-void apply_move_operator(int move_type, int move_number){
+void Solution::apply_move_operator(int move_type, int move_number){
 
 }
 
 
-void save_as_x3d(std::string save_to_file) {
+void Solution::save_as_x3d(std::string save_to_file) {
     WriteX3D x3d;
     int n1, n2;
 
@@ -100,12 +100,12 @@ void save_as_x3d(std::string save_to_file) {
 }
 
 
-void compute_quality(void) {}
+void Solution::compute_quality(void) {}
 
-void comput_truss_forces(void) {}
+void Solution::compute_truss_forces(void) {
     // Initialize things
     std::vector< std::vector <long double> >  tj(3, std::vector<long double>(static_cast<unsigned long>(number_of_edges), 0));
-    std::vector< std::vector <long double> > dof(static_cast<unsigned long>(3*number_of_nodes),
+    std::vector< std::vector <long double> > K(static_cast<unsigned long>(3*number_of_nodes),
                                                  std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0.0));
 
     // Get the vector that will relate entries in the node map to entries in the global stiffness matrix
@@ -117,8 +117,9 @@ void comput_truss_forces(void) {}
     }
 
     // Define a matrix that will later to be used to hold deflections and other things
+    int idx;
     std::vector< std::vector <long double> >  deflections(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
-    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
         idx = node_id_map[it1->first];
         deflections[0][idx] = 1 - nodes[it1->first].parameters["rx"];
         deflections[1][idx] = 1 - nodes[it1->first].parameters["ry"];
@@ -139,48 +140,87 @@ void comput_truss_forces(void) {}
 
     // Build the global stiffess matrix
     int k;
-    int idx1 = 0;
-    int idx2 = 0;
+    int idx1;
+    int idx2;
+    long double ux;
+    long double uy;
+    long double uz;
+    std::vector<int> ee(6, 0);
+    std::vector<long double> uu(6, 0.0);
     for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
         k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
+        ux = (nodes[idx1].parameters["x"] - nodes[idx2].parameters["x"])/edges[k].parameters["L"];
+        uy = (nodes[idx1].parameters["y"] - nodes[idx2].parameters["y"])/edges[k].parameters["L"];
+        uz = (nodes[idx1].parameters["z"] - nodes[idx2].parameters["z"])/edges[k].parameters["L"];
+        uu = {ux, uy, uz, -ux, -uy, -uz};
+        ee = {3*idx1 - 3, 3*idx1-2, 3*idx1-1, 3*idx2 - 3, 3*idx2-2, 3*idx2-1};
+        for(int i=0; i<6; i++) {
+            for(int j=0; j<6; j++) {
+                K[ee[i]][ee[j]] += E*edges[k].parameters["A"]/edges[k].parameters["L"]*uu[i]*uu[j];
+            }
+        }
     }
 
+    print(K);
+
+    quality[0] = number_of_nodes + number_of_edges;
 
 }
 
 
+void Solution::create_seed_graph(void){
 
-void create_seed_graph(void);
+}
 
 // Move operators
-void add_member(int n1, int n2, int d, bool editable);
-void add_joint(long double x, long double y, long double z, bool editable);
+void Solution::add_member(int n1, int n2, int d, bool editable){
+
+}
 
 
-void remove_member(int e) {
+void Solution::add_joint(long double x, long double y, long double z, bool editable){
+
+}
+
+
+void Solution::remove_member(int e) {
     remove_edge(e);
 }
 
 
-void remove_joint(int n) {
+void Solution::remove_joint(int n) {
     remove_node(n);
 }
 
 
-void increase_member_size(int e) {
+void Solution::increase_member_size(int e) {
     edges[e].parameters["d"]++;
 }
 
 
-void decrease_member_size(int e);
-void move_joint(int n, long double dx, long double dy, long double dz);
-void brace_member(int e);
-void add_joint_and_attach(long double x, long double y, long double z);
+void Solution::decrease_member_size(int e){
+
+}
+
+
+void Solution::move_joint(int n, long double dx, long double dy, long double dz){
+
+}
+
+
+void Solution::brace_member(int e){
+
+}
+
+
+void Solution::add_joint_and_attach(long double x, long double y, long double z){
+
+}
 
 
 // Function to ensure that the solution is valid
-int is_valid(void) {
+int Solution::is_valid(void) {
     return is_connected();
 }

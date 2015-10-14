@@ -350,7 +350,7 @@ void Solution::move_junction(int n, long double dx, long double dy, long double 
     nodes[n].parameters["x"] += dy;
     nodes[n].parameters["x"] += dz;
 
-    // Brute force length update
+    // Brute force length update TODO Avoid brute-forcedness
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
         edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
     }

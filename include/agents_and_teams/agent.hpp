@@ -12,7 +12,8 @@
 #include "../utilities/make_random.hpp"
 #include "../utilities/stats.hpp"
 #include "../utilities/custom_print.hpp"
-#include "../problem_statements/fluid_network.hpp"
+//#include "../problem_statements/fluid_network.hpp"
+#include "../problem_statements/structure.hpp"
 
 class Agent {
 public:
