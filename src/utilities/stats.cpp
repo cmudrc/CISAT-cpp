@@ -1,3 +1,9 @@
+//  ┌─┬─────┐  ││  CISAT: The Cognitively-Inspired Simulated
+//  ├─┼─────┤  ││         Annealing Teams Modeling Framework
+//  │ │ McC │  ││  src
+//  └─┴─────┘  ││   └─utilities
+//             ││      └─stats.cpp
+
 #include "../../include/utilities/stats.hpp"
 
 //// Return the largest element in a vector.
@@ -20,6 +26,35 @@ long double vector_minimum(std::vector<long double> v){
         }
     }
     return min;
+}
+
+
+
+// Function that returns the index of the maximum
+long vector_argmax(std::vector<long double> v){
+    long double max = -LDBL_MAX;
+    long idx = -1;
+    for(std::vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
+        if(*it > max){
+            max = *it;
+            idx = (std::distance(v.begin(), it));
+        }
+    }
+    return idx;
+}
+
+
+// Function that returns the index of the minimum value
+long vector_argmin(std::vector<long double> v){
+    long double min = LDBL_MAX;
+    long idx = -1;
+    for(std::vector<long double>::iterator it = v.begin(); it != v.end(); ++it) {
+        if(*it < min){
+            min = *it;
+            idx = (std::distance(v.begin(), it));
+        }
+    }
+    return idx;
 }
 
 

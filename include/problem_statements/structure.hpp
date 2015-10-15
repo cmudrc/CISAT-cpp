@@ -65,7 +65,6 @@ private:
     void increase_member_size(int e);
     void decrease_member_size(int e);
     void move_joint(int n, long double dx, long double dy, long double dz);
-    void brace_member(int e);
     void add_joint_and_attach(long double x, long double y, long double z);
 
     int is_valid(void);

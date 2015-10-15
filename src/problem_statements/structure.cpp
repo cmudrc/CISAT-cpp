@@ -196,6 +196,12 @@ void Solution::add_joint(long double x, long double y, long double z, bool edita
     nodes[node_id_counter].parameters["y"] = y;
     nodes[node_id_counter].parameters["z"] = z;
 
+    // Add other miscellaneous parameters, assuming joint is free
+    nodes[node_id_counter].parameters["F"] = 0;
+    nodes[node_id_counter].parameters["rx"] = 0;
+    nodes[node_id_counter].parameters["ry"] = 0;
+    nodes[node_id_counter].parameters["rz"] = 1;
+
     // Moveable or not
     nodes[node_id_counter].parameters["editable"] = editable;
 }
@@ -246,9 +252,10 @@ void Solution::add_joint_and_attach(long double x, long double y, long double z)
 
     // Connect the newest joint to the three nearest existing joints
     int idx;
+    long double min;
     for(int i=0; i<3; i++){
-        idx = vector_minimum(distances);
-        distances[idx] = DBL_MAX;
+        idx = vector_argmin(distances);
+        distances[idx] = LDBL_MAX;
         add_edge(node_id_counter, reverse_map[idx]);
     }
 
