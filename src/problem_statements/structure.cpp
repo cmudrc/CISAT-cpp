@@ -251,8 +251,7 @@ void Solution::add_joint_and_attach(long double x, long double y, long double z)
     }
 
     // Connect the newest joint to the three nearest existing joints
-    int idx;
-    long double min;
+    long idx;
     for(int i=0; i<3; i++){
         idx = vector_argmin(distances);
         distances[idx] = LDBL_MAX;
