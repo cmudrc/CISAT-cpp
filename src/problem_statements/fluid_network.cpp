@@ -347,8 +347,8 @@ void Solution::decrease_pipe_size(int e) {
 
 void Solution::move_junction(int n, long double dx, long double dy, long double dz) {
     nodes[n].parameters["x"] += dx;
-    nodes[n].parameters["x"] += dy;
-    nodes[n].parameters["x"] += dz;
+    nodes[n].parameters["y"] += dy;
+    nodes[n].parameters["z"] += dz;
 
     // Brute force length update TODO Avoid brute-forcedness
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {

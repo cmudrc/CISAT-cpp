@@ -100,7 +100,9 @@ void Solution::save_as_x3d(std::string save_to_file) {
 }
 
 
-void Solution::compute_quality(void) {}
+void Solution::compute_quality(void) {
+    quality[0] = number_of_edges + number_of_nodes;
+}
 
 void Solution::compute_truss_forces(void) {
     // Initialize things
@@ -164,9 +166,6 @@ void Solution::compute_truss_forces(void) {
     }
 
     print(K);
-
-    quality[0] = number_of_nodes + number_of_edges;
-
 }
 
 
@@ -176,12 +175,29 @@ void Solution::create_seed_graph(void){
 
 // Move operators
 void Solution::add_member(int n1, int n2, int d, bool editable){
+    // Add the edge to teh graph
+    add_edge(n1, n2);
 
+    // Add parameters to the edges
+    edges[edge_id_counter].parameters["editable"] = editable;
+    edges[edge_id_counter].parameters["D"] = d;
+
+    // Compute the length
+    edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
 }
 
 
 void Solution::add_joint(long double x, long double y, long double z, bool editable){
+    // Add the node
+    add_node();
 
+    // Add the coordinates
+    nodes[node_id_counter].parameters["x"] = x;
+    nodes[node_id_counter].parameters["y"] = y;
+    nodes[node_id_counter].parameters["z"] = z;
+
+    // Moveable or not
+    nodes[node_id_counter].parameters["editable"] = editable;
 }
 
 
@@ -201,21 +217,40 @@ void Solution::increase_member_size(int e) {
 
 
 void Solution::decrease_member_size(int e){
-
+    edges[e].parameters["d"]++;
 }
 
 
 void Solution::move_joint(int n, long double dx, long double dy, long double dz){
+    nodes[n].parameters["x"] += dx;
+    nodes[n].parameters["y"] += dy;
+    nodes[n].parameters["z"] += dz;
+
+    // Brute force length update TODO Avoid brute-forcedness
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+    }
 
 }
-
-
-void Solution::brace_member(int e){
-
-}
-
 
 void Solution::add_joint_and_attach(long double x, long double y, long double z){
+    add_joint(x, y, z, true);
+
+    // Find distance between current joint and other joints
+    std::vector<long double> distances;
+    std::vector<int> reverse_map;
+    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++){
+        distances.push_back(euclidean_distance(node_id_counter, it1->first));
+        reverse_map.push_back(it1->first);
+    }
+
+    // Connect the newest joint to the three nearest existing joints
+    int idx;
+    for(int i=0; i<3; i++){
+        idx = vector_minimum(distances);
+        distances[idx] = DBL_MAX;
+        add_edge(node_id_counter, reverse_map[idx]);
+    }
 
 }
 
