@@ -16,8 +16,9 @@ const  long double    Solution::goal                 = 0.0;
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
 const  long double    Solution::Fy              = 250*std::pow(10,6); // Pa
 
-//
+// TODO: Add calculatioon of area and moment of inertia
 const std::vector< long double > pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
+
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
@@ -81,7 +82,7 @@ std::vector< std::map<std::string, long double> > Solution::seed_node_parameters
         {"y",  2.00}, // [m]
         {"z",  0.00}, // [m]
         {"Fx", 0.00}, // [N]
-        {"Fy", -3500.00}, // [N]
+        {"Fy", 0.00}, // [N]
         {"Fz", 0.00}, // [N]
         {"rx", 0}, // [bool]
         {"ry", 0}, // [bool]
@@ -103,7 +104,7 @@ std::vector< std::map<std::string, long double> > Solution::seed_node_parameters
         {"y",  2.00}, // [m]
         {"z",  0.00}, // [m]
         {"Fx", 0.00}, // [N]
-        {"Fy", -3500.00}, // [N]
+        {"Fy", 0.00}, // [N]
         {"Fz", 0.00}, // [N]
         {"rx", 0}, // [bool]
         {"ry", 0}, // [bool]
@@ -218,47 +219,58 @@ void Solution::create_seed_graph(void){
 }
 
 void Solution::compute_quality(void) {
+    compute_truss_forces();
     quality[0] = -(number_of_edges + number_of_nodes);
 }
 
 void Solution::compute_truss_forces(void) {
     // Initialize things
-    std::vector< std::vector <long double> >  tj(3, std::vector<long double>(static_cast<unsigned long>(number_of_edges), 0));
-    std::vector< std::vector <long double> > K(static_cast<unsigned long>(3*number_of_nodes),
-                                                 std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0.0));
+    std::vector<std::vector<long double> > tj(3,
+                                              std::vector<long double>(static_cast<unsigned long>(number_of_edges), 0));
+    std::vector<std::vector<long double> > K(static_cast<unsigned long>(3 * number_of_nodes),
+                                             std::vector<long double>(static_cast<unsigned long>(3 * number_of_nodes),
+                                                                      0.0));
 
     // Get the vector that will relate entries in the node map to entries in the global stiffness matrix
     std::map<int, int> node_id_map;
     int counter = 0;
-    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+    for (std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
         node_id_map[(it->first)] = counter;
         counter++;
     }
 
     // Define a matrix that will later to be used to hold deflections and other things
     int idx;
-    std::vector< std::vector <long double> >  deflections(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
-    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
+    std::vector<std::vector<long double> > deflections(3, std::vector<long double>(
+        static_cast<unsigned long>(number_of_nodes), 0));
+    std::vector<std::vector<long double> > loads(3,
+                                                 std::vector<long double>(static_cast<unsigned long>(number_of_nodes),
+                                                                          0));
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
         idx = node_id_map[it1->first];
         deflections[0][idx] = 1 - nodes[it1->first].parameters["rx"];
         deflections[1][idx] = 1 - nodes[it1->first].parameters["ry"];
         deflections[2][idx] = 1 - nodes[it1->first].parameters["rz"];
+        loads[0][idx] = nodes[it1->first].parameters["Fx"];
+        loads[1][idx] = nodes[it1->first].parameters["Fy"];
+        loads[2][idx] = nodes[it1->first].parameters["Fz"];
     }
 
     // Find out which joints can deflect
     std::vector<long double> ff;
+    std::vector<long double> loads_ff;
     counter = 0;
-    for(int i=0; i<number_of_nodes; i++) {
-        for(int j=0; j<3; j++){
-            if(deflections[j][i] == 1){
+    for (int i = 0; i < number_of_nodes; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (deflections[j][i] == 1) {
                 ff.push_back(counter);
+                loads_ff.push_back(loads[j][i]);
             }
             counter++;
         }
     }
 
     // Build the global stiffess matrix
-    int k;
     int idx1;
     int idx2;
     long double ux;
@@ -266,23 +278,59 @@ void Solution::compute_truss_forces(void) {
     long double uz;
     std::vector<int> ee(6, 0);
     std::vector<long double> uu(6, 0.0);
-    for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
-        k = (it->first);
+    std::vector<std::vector<long double>> element_stiffness(number_of_edges, std::vector<long double>(3, 0.0));
+    for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+        int k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
-        ux = (nodes[idx1].parameters["x"] - nodes[idx2].parameters["x"])/edges[k].parameters["L"];
-        uy = (nodes[idx1].parameters["y"] - nodes[idx2].parameters["y"])/edges[k].parameters["L"];
-        uz = (nodes[idx1].parameters["z"] - nodes[idx2].parameters["z"])/edges[k].parameters["L"];
+        ux = (nodes[idx1].parameters["x"] - nodes[idx2].parameters["x"]) / edges[k].parameters["L"];
+        uy = (nodes[idx1].parameters["y"] - nodes[idx2].parameters["y"]) / edges[k].parameters["L"];
+        uz = (nodes[idx1].parameters["z"] - nodes[idx2].parameters["z"]) / edges[k].parameters["L"];
+        long double EAL = E * edges[k].parameters["A"] / edges[k].parameters["L"];
+        edges[k].parameters["kx"] = EAL*ux;
+        edges[k].parameters["ky"] = EAL*uy;
+        edges[k].parameters["kz"] = EAL*uz;
         uu = {ux, uy, uz, -ux, -uy, -uz};
-        ee = {3*idx1 - 3, 3*idx1-2, 3*idx1-1, 3*idx2 - 3, 3*idx2-2, 3*idx2-1};
-        for(int i=0; i<6; i++) {
-            for(int j=0; j<6; j++) {
-                K[ee[i]][ee[j]] += E*edges[k].parameters["A"]/edges[k].parameters["L"]*uu[i]*uu[j];
+        ee = {3 * idx1, 3 * idx1 + 1, 3 * idx1 + 2, 3 * idx2, 3 * idx2 + 1, 3 * idx2 + 2};
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                K[ee[i]][ee[j]] += EAL * uu[i] * uu[j];
             }
         }
     }
 
-    print(K);
+    // Solve for displacements
+    std::vector<std::vector<long double> > Kff(ff.size(), std::vector<long double>(ff.size() + 1, 0.0));
+    for (int i = 0; i < ff.size(); i++) {
+        for (int j = 0; j < ff.size(); j++) {
+            Kff[i][j] = K[ff[i]][ff[j]];
+        }
+        Kff[i][ff.size()] = loads_ff[i];
+    }
+    std::vector<long double> deflections_compact = gauss(Kff);
+
+    // Fit the compacted deflection matrix back into the original
+    counter = 0;
+    for (int i = 0; i < number_of_nodes; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (deflections[j][i] == 1) {
+                deflections[j][i] = deflections_compact[counter];
+                counter++;
+            }
+        }
+    }
+
+    // From displacements, solve for forces
+    for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+        long double F = 0;
+        int k = (it->first);
+        idx1 = node_id_map[edges[k].initial_node];
+        idx2 = node_id_map[edges[k].terminal_node];
+        F += edges[k].parameters["kx"] * (deflections[0][idx1] - deflections[0][idx2]);
+        F += edges[k].parameters["ky"] * (deflections[1][idx1] - deflections[1][idx2]);
+        F += edges[k].parameters["kz"] * (deflections[2][idx1] - deflections[2][idx2]);
+        edges[k].parameters["F"] = F;
+    }
 }
 
 
@@ -330,6 +378,7 @@ void Solution::add_member(int n1, int n2, int d, bool editable){
     // Add parameters to the edges
     edges[edge_id_counter].parameters["editable"] = editable;
     edges[edge_id_counter].parameters["d"] = d;
+    edges[edge_id_counter].parameters["A"] = 0.1;
 
     // Compute the length
     edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
@@ -409,7 +458,6 @@ void Solution::change_size_single(void){
 
     // Increase the size of the selected edge
     int inc_dec = uniform_int(1, 0)*2 - 1;
-    print(inc_dec);
 
     edges[editable[idx]].parameters["d"] += inc_dec;
 }
@@ -420,7 +468,6 @@ void Solution::change_size_all(void){
 
     // Decide whether ot increase or decrease
     int inc_dec = uniform_int(1, 0)*2 - 1;
-    print(inc_dec);
 
     for(int i=0; i<editable.size(); i++){
         edges[editable[i]].parameters["d"] += inc_dec;
