@@ -225,8 +225,6 @@ void Solution::compute_quality(void) {
 
 void Solution::compute_truss_forces(void) {
     // Initialize things
-    std::vector<std::vector<long double> > tj(3,
-                                              std::vector<long double>(static_cast<unsigned long>(number_of_edges), 0));
     std::vector<std::vector<long double> > K(static_cast<unsigned long>(3 * number_of_nodes),
                                              std::vector<long double>(static_cast<unsigned long>(3 * number_of_nodes),
                                                                       0.0));
@@ -240,14 +238,13 @@ void Solution::compute_truss_forces(void) {
     }
 
     // Define a matrix that will later to be used to hold deflections and other things
-    int idx;
     std::vector<std::vector<long double> > deflections(3, std::vector<long double>(
         static_cast<unsigned long>(number_of_nodes), 0));
     std::vector<std::vector<long double> > loads(3,
                                                  std::vector<long double>(static_cast<unsigned long>(number_of_nodes),
                                                                           0));
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
-        idx = node_id_map[it1->first];
+        int idx = node_id_map[it1->first];
         deflections[0][idx] = 1 - nodes[it1->first].parameters["rx"];
         deflections[1][idx] = 1 - nodes[it1->first].parameters["ry"];
         deflections[2][idx] = 1 - nodes[it1->first].parameters["rz"];
@@ -334,6 +331,7 @@ void Solution::compute_truss_forces(void) {
 }
 
 void Solution::apply_move_operator(int move_type){
+    print(move_type);
     switch(move_type) {
         case 0:
             add_member();
@@ -435,6 +433,9 @@ void Solution::remove_member(void) {
 
 
 void Solution::remove_joint(void) {
+    print("Removing joint");
+    print(number_of_nodes);
+    print(number_of_edges);
     // Define some things
     std::vector<int> editable = get_node_ids("editable", true);
 
@@ -443,6 +444,8 @@ void Solution::remove_joint(void) {
         std::vector<long double> weights(editable.size(), 0.0);
         remove_node(editable[weighted_choice(weights)]);
     }
+    print(number_of_nodes);
+    print(number_of_edges);
 }
 
 

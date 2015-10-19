@@ -98,9 +98,11 @@ void Graph::remove_node(int n) {
     // Remove edges attached to the node
     for(int i=0; i<nodes[n].outgoing_edges.size(); i++) {
         edges.erase(nodes[n].outgoing_edges[i]);
+        number_of_edges--;
     }
     for(int i=0; i<nodes[n].incoming_edges.size(); i++) {
         edges.erase(nodes[n].incoming_edges[i]);
+        number_of_edges--;
     }
 
     // Remove the node itself
