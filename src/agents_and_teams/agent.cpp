@@ -90,19 +90,10 @@ Solution Agent::candidate_solution(void){
 
     // Choose which move operator to apply
     // TODO: Add a contextually sensitive learning module (i.e. operation chosen based on degree of nodes, edge weight, etc.).
-    // TODO: Fix so no update happens after an interaction
-    candidate.get_valid_moves();
-    bool no_moves_available = true;
-    while (no_moves_available){
-        j = weighted_choice(move_oper_pref[last_operation]);
-        if (candidate.move_options[j].size() != 0) {
-            no_moves_available = false;
-            k = uniform_int(static_cast <int> (candidate.move_options[j].size()-1), 0);
-        }
-    }
+    j = weighted_choice(move_oper_pref[last_operation]);
 
     // Apply teh move operator
-    candidate.apply_move_operator(j, k);
+    candidate.apply_move_operator(j);
 
     // Keep track of what happened
     new_fx = apply_weighting(candidate.quality, objective_weighting);

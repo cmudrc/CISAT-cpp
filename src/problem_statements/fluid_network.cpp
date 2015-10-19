@@ -189,98 +189,28 @@ void Solution::compute_quality(void) {
 }
 
 
-void Solution::get_valid_moves(void) {
-    std::vector<int> order;
-
-    // Clear the options vector, and then instantiate it
-    move_options.clear();
-    move_options.assign(number_of_move_ops, std::vector< std::vector<int> > ());
-
-    // Pull valid edge addition moves and node deletion moves
-    int idx1 = 0;
-    int idx2 = 0;
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        idx1 = (it1->first);
-        if(nodes[idx1].parameters["editable"] == true){
-            // Define the node deletion move
-            order = {3, idx1, 0};
-            move_options[3].push_back(order);
-
-            // Define junction motion moves
-            order = {6, idx1,  0,  1};
-            move_options[6].push_back(order);
-            order = {6, idx1,  0, -1};
-            move_options[6].push_back(order);
-            order = {6, idx1,  1,  0};
-            move_options[6].push_back(order);
-            order = {6, idx1, -1,  0};
-            move_options[6].push_back(order);
-        }
-
-        for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
-            idx2 = (it2->first);
-            if (!undirected_edge_exists(idx1, idx2) && nodes[idx1].parameters["type"]!=INLET
-                                                    && nodes[idx2].parameters["type"]!=INLET
-                                                    && nodes[idx1].parameters["type"]!=OUTLET
-                                                    && nodes[idx2].parameters["type"]!=OUTLET) {
-                if((it2->first) != (it1->first)) {
-                    // Define the move
-                    order = {0, (it1->first), (it2->first)};
-
-                    // Add it to the vector of options
-                    move_options[0].push_back(order);
-                }
-            }
-        }
-    }
-
-    // Pull valid node addition and edge deletion moves
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        if(edges[it1->first].parameters["editable"]) {
-            // Define the junction addition move and add it
-            order = {1, it1->first, 0};
-            move_options[1].push_back(order);
-
-            // Define the edge deletion move and add it
-            order = {2, it1->first, 0};
-            move_options[2].push_back(order);
-
-            // Define and add edge size change moves
-            order = {4, it1->first, 0};
-            move_options[4].push_back(order);
-            order = {5, it1->first, 0};
-            move_options[5].push_back(order);
-
-        }
-    }
-}
-
-
-void Solution::apply_move_operator(int move_type, int move_number) {
-    std::vector<int> selected_order = move_options[move_type][move_number];
-
-
-    switch(selected_order[0]) {
+void Solution::apply_move_operator(int move_type) {
+    switch(move_type) {
         case 0:
-            add_pipe(selected_order[1], selected_order[2], 2, true);
+            add_pipe();
             break;
         case 1:
-            add_midpoint_junction(selected_order[1]);
+            add_midpoint_junction();
             break;
         case 2:
-            remove_pipe(selected_order[1]);
+            remove_pipe();
             break;
         case 3:
-            remove_junction(selected_order[1]);
+            remove_junction();
             break;
         case 4:
-            increase_pipe_size(selected_order[1]);
+            increase_pipe_size();
             break;
         case 5:
-            decrease_pipe_size(selected_order[1]);
+            decrease_pipe_size();
             break;
         case 6:
-            move_junction(selected_order[1], selected_order[2], selected_order[3], 0);
+            move_junction();
             break;
         default:
             break;
@@ -309,6 +239,29 @@ void Solution::add_pipe(int n1, int n2, int d, bool editable) {
     edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
 }
 
+void Solution::add_pipe(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
+
+    // Find out which edges are available
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        if (nodes[it1->first].parameters["type"] == INTERMEDIATE) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select a pair to connect between at random
+    int idx = weighted_choice(weights);
+    int n1 = editable[idx];
+    weights[idx] = 0.0;
+    int n2 = editable[weighted_choice(weights)];
+
+    // Add an edge
+    add_pipe(n1, n2, 2, true);
+}
+
 
 void Solution::add_junction(long double x, long double y, long double z, bool editable) {
     // Add the node
@@ -324,31 +277,111 @@ void Solution::add_junction(long double x, long double y, long double z, bool ed
     nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
 }
 
+// TODO: Update operators to keep a running list of editable edges
+void Solution::remove_pipe(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
 
-void Solution::remove_pipe(int e) {
-    remove_edge(e);
+    // Find out which edges are removable
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        if (edges[it1->first].parameters["editable"]) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select one to remove at random
+    int idx = weighted_choice(weights);
+
+    // Remove the chosen edge
+    remove_edge(editable[idx]);
+}
+
+// TODO: Update operators to keepa running list of editable nodes
+void Solution::remove_junction(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
+
+    // Find out which edges are removable
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        if (nodes[it1->first].parameters["editable"]) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select one to remove at random
+    int idx = weighted_choice(weights);
+
+    // Remove the specific node
+    remove_node(editable[idx]);
 }
 
 
-void Solution::remove_junction(int n) {
-    remove_node(n);
+void Solution::increase_pipe_size(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
+
+    // Find out which edges are removable
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        if (edges[it1->first].parameters["editable"]) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select one to remove at random
+    int idx = weighted_choice(weights);
+
+    // Increase the size of the chosen edge
+    edges[editable[idx]].parameters["d"]++;
 }
 
 
-void Solution::increase_pipe_size(int e) {
-    edges[e].parameters["d"]++;
+void Solution::decrease_pipe_size(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
+
+    // Find out which edges are removable
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        if (edges[it1->first].parameters["editable"]) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select one to remove at random
+    int idx = weighted_choice(weights);
+
+    // Decrease the size of the chosen edge
+    edges[editable[idx]].parameters["d"]--;
 }
 
 
-void Solution::decrease_pipe_size(int e) {
-    edges[e].parameters["d"]--;
-}
+void Solution::move_junction(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
 
+    // Find out which edges are removable
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        if (nodes[it1->first].parameters["editable"]) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
 
-void Solution::move_junction(int n, long double dx, long double dy, long double dz) {
-    nodes[n].parameters["x"] += dx;
-    nodes[n].parameters["y"] += dy;
-    nodes[n].parameters["z"] += dz;
+    // Select one to move at random
+    int idx = weighted_choice(weights);
+
+    // Move it somehow
+    nodes[editable[idx]].parameters["x"] += 1;
+    nodes[editable[idx]].parameters["y"] += 1;
+    nodes[editable[idx]].parameters["z"] += 1;
 
     // Brute force length update TODO Avoid brute-forcedness
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
@@ -357,14 +390,30 @@ void Solution::move_junction(int n, long double dx, long double dy, long double 
 }
 
 
-void Solution::add_midpoint_junction(int e) {
+void Solution::add_midpoint_junction(void) {
+    // Define a couple of things
+    std::vector<int> editable;
+    std::vector<long double> weights;
+
+    // Find out which edges are removable
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        if (edges[it1->first].parameters["editable"]) {
+            editable.push_back(it1->first);
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select one to remove at random
+    int idx = weighted_choice(weights);
+    int e = editable[idx];
+
     // Save the indices of the endpoints
     int n1 = edges[e].initial_node;
     int n2 = edges[e].terminal_node;
     int d = static_cast <int> (edges[e].parameters["d"]);
 
     // Remove the edge
-    remove_pipe(e);
+    remove_edge(e);
 
     // Add a new node
     add_junction(
@@ -378,14 +427,6 @@ void Solution::add_midpoint_junction(int e) {
     add_pipe(n1, node_id_counter, d, true);
     add_pipe(n2, node_id_counter, d, true);
 }
-
-
-//void Solution::print_surface_characteristics(void) {
-//    print("Problem Characteristics");
-//    std::cout << "\tName: " << name << std::endl;
-//    std::cout << "\tGoal: " << goal << std::endl;
-//    std::cout << "\tNumber of move operators: " << number_of_move_ops << std::endl;
-//}
 
 
 // Function to ensure that the solution is valid

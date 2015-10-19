@@ -28,9 +28,7 @@ public:
     // Functions
     Solution(bool);
     Solution(void);
-    void get_valid_moves(void);
-    void apply_move_operator(int move_type, int move_number);
-//    static void print_surface_characteristics(void);
+    void apply_move_operator(int move_type);
     void save_as_x3d(std::string save_to_file);
 
 private:
@@ -56,13 +54,14 @@ private:
 
     // Move operators
     void add_pipe(int n1, int n2, int d, bool editable);
+    void add_pipe(void);
     void add_junction(long double x, long double y, long double z, bool editable);
-    void remove_pipe(int e);
-    void remove_junction(int n);
-    void increase_pipe_size(int e);
-    void decrease_pipe_size(int e);
-    void add_midpoint_junction(int e);
-    void move_junction(int n, long double dx, long double dy, long double dz);
+    void remove_pipe(void);
+    void remove_junction(void);
+    void increase_pipe_size(void);
+    void decrease_pipe_size(void);
+    void add_midpoint_junction(void);
+    void move_junction(void);
 
     int is_valid(void);
 };
