@@ -150,17 +150,25 @@ int Graph::is_connected(void) {
 }
 
 
-// Breadth first search for path between two nodes
-bool Graph::breadth_first_search(int n1, int n2) {
-    // TODO: Define BFS algorithm
-    return true;
+std::vector<int> Graph::get_node_ids(std::string param, long double value){
+    std::vector<int> list;
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        if (nodes[it1->first].parameters[param] == value) {
+            list.push_back(it1->first);
+        }
+    }
+    return list;
 }
 
 
-// Depth first search for path between two nodes
-bool Graph::depth_first_search(int n1, int n2) {
-    // TODO: Define DFS algorithm
-    return true;
+std::vector<int> Graph::get_edge_ids(std::string param, long double value){
+    std::vector<int> list;
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        if (edges[it1->first].parameters[param] == value) {
+            list.push_back(it1->first);
+        }
+    }
+    return list;
 }
 
 

@@ -50,6 +50,10 @@ public:
     int node_id_counter;
     int edge_id_counter;
 
+    // Functions to get node ids and edge ids that match conditions
+    std::vector<int> get_node_ids(std::string param, long double value);
+    std::vector<int> get_edge_ids(std::string param, long double value);
+
     // Functions for construction
     void add_edge(int n1, int n2);
     void add_node(void);

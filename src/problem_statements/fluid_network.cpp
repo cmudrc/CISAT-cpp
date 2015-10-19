@@ -241,16 +241,8 @@ void Solution::add_pipe(int n1, int n2, int d, bool editable) {
 
 void Solution::add_pipe(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
-
-    // Find out which edges are available
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        if (nodes[it1->first].parameters["type"] == INTERMEDIATE) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
+    std::vector<int> editable = get_node_ids("type", INTERMEDIATE);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Select a pair to connect between at random
     int idx = weighted_choice(weights);
@@ -280,16 +272,8 @@ void Solution::add_junction(long double x, long double y, long double z, bool ed
 // TODO: Update operators to keep a running list of editable edges
 void Solution::remove_pipe(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
-
-    // Find out which edges are removable
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        if (edges[it1->first].parameters["editable"]) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
+    std::vector<int> editable = get_edge_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Select one to remove at random
     int idx = weighted_choice(weights);
@@ -301,16 +285,9 @@ void Solution::remove_pipe(void) {
 // TODO: Update operators to keepa running list of editable nodes
 void Solution::remove_junction(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
+    std::vector<int> editable = get_node_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
-    // Find out which edges are removable
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        if (nodes[it1->first].parameters["editable"]) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
 
     // Select one to remove at random
     int idx = weighted_choice(weights);
@@ -322,16 +299,8 @@ void Solution::remove_junction(void) {
 
 void Solution::increase_pipe_size(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
-
-    // Find out which edges are removable
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        if (edges[it1->first].parameters["editable"]) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
+    std::vector<int> editable = get_edge_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Select one to remove at random
     int idx = weighted_choice(weights);
@@ -343,16 +312,8 @@ void Solution::increase_pipe_size(void) {
 
 void Solution::decrease_pipe_size(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
-
-    // Find out which edges are removable
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        if (edges[it1->first].parameters["editable"]) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
+    std::vector<int> editable = get_edge_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Select one to remove at random
     int idx = weighted_choice(weights);
@@ -364,24 +325,16 @@ void Solution::decrease_pipe_size(void) {
 
 void Solution::move_junction(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
-
-    // Find out which edges are removable
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        if (nodes[it1->first].parameters["editable"]) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
+    std::vector<int> editable = get_node_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Select one to move at random
     int idx = weighted_choice(weights);
 
-    // Move it somehow
-    nodes[editable[idx]].parameters["x"] += 1;
-    nodes[editable[idx]].parameters["y"] += 1;
-    nodes[editable[idx]].parameters["z"] += 1;
+    // Move it somehow TODO: Make this more intelligent
+    nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
+    nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
+    nodes[editable[idx]].parameters["z"] += uniform(-1.0, 1.0);
 
     // Brute force length update TODO Avoid brute-forcedness
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
@@ -392,16 +345,8 @@ void Solution::move_junction(void) {
 
 void Solution::add_midpoint_junction(void) {
     // Define a couple of things
-    std::vector<int> editable;
-    std::vector<long double> weights;
-
-    // Find out which edges are removable
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        if (edges[it1->first].parameters["editable"]) {
-            editable.push_back(it1->first);
-            weights.push_back(1.0);
-        }
-    }
+    std::vector<int> editable = get_edge_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Select one to remove at random
     int idx = weighted_choice(weights);
