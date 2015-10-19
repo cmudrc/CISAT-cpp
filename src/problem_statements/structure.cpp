@@ -237,11 +237,6 @@ void Solution::compute_quality(void) {
 //            FOS = edges[it1->first].parameters["FOS_b"];
 //        }
     }
-    std::cout << "Mass: " << mass << std::endl;
-    std::cout << "FOS:  " << FOS << std::endl << std::endl;
-
-    // Find the minimum FOS
-
 
     quality[0] = mass;
 }
@@ -352,20 +347,21 @@ void Solution::compute_truss_forces(void) {
                                    + edges[k].parameters["ky"] * (deflections[1][idx1] - deflections[1][idx2])
                                    + edges[k].parameters["kz"] * (deflections[2][idx1] - deflections[2][idx2]);
 
-//        // Calculate factor of safety against yielding
-//        edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
-//
-//        // Calculate force of safety
-//        if (edges[k].parameters["F"] > 0) {
-//            edges[k].parameters["FOS_b"] = (std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
-//        } else {
-//            edges[k].parameters["FOS_b"] = LDBL_MAX;
-//        }
+        // Calculate factor of safety against yielding
+        edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
+
+        // Calculate force of safety
+        if (edges[k].parameters["F"] > 0) {
+            edges[k].parameters["FOS_b"] = (std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
+        } else {
+            edges[k].parameters["FOS_b"] = LDBL_MAX;
+        }
+
     }
 }
 
 void Solution::apply_move_operator(int move_type){
-    print(move_type);
+    std::cout << "Move: " << move_type << std::endl;
     switch(move_type) {
         case 0:
             add_member();
@@ -373,9 +369,9 @@ void Solution::apply_move_operator(int move_type){
         case 1:
             remove_member();
             break;
-//        case 2:
-//            remove_joint();
-//            break;
+        case 2:
+            remove_joint();
+            break;
         case 3:
             change_size_single();
             break;
@@ -471,9 +467,11 @@ void Solution::remove_joint(void) {
     std::vector<int> editable = get_node_ids("editable", true);
 
     // Make a selection
+    int idx = -1;
     if(editable.size() > 0){
-        std::vector<long double> weights(editable.size(), 0.0);
-        remove_node(editable[weighted_choice(weights)]);
+        std::vector<long double> weights(editable.size(), 1.0);
+        idx = weighted_choice(weights);
+        remove_node(editable[idx]);
     }
 }
 

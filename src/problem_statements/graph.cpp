@@ -71,6 +71,7 @@ void Graph::add_node(void) {
 
 
 void Graph::remove_edge(int e) {
+    std::cout << "Removed edge with key: " << e << std::endl;
     // Remove from connectivity map
     connectivity_map[edges[e].initial_node].erase(edges[e].terminal_node);
 
@@ -110,6 +111,8 @@ void Graph::remove_edge(int e) {
 //}
 
 void Graph::remove_node(int n) {
+    std::cout << "Removed node with key: " << n << std::endl;
+
     // Remove from connectivity map
     connectivity_map.erase(n);
 
@@ -121,11 +124,13 @@ void Graph::remove_node(int n) {
     }
 
     // Remove edges attached to the node
-    for(int i=0; i<nodes[n].outgoing_edges.size(); i++) {
-        remove_edge(nodes[n].outgoing_edges[i]);
+    std::vector<int> temp_out = nodes[n].outgoing_edges;
+    for(int i=0; i<temp_out.size(); i++) {
+        remove_edge(temp_out[i]);
     }
-    for(int i=0; i<nodes[n].incoming_edges.size(); i++) {
-        remove_edge(nodes[n].incoming_edges[i]);
+    std::vector<int> temp_in = nodes[n].incoming_edges;
+    for(int i=0; i<temp_in.size(); i++) {
+        remove_edge(temp_in[i]);
     }
 
     // Remove the node itself
@@ -179,9 +184,11 @@ std::vector<int> Graph::get_node_ids(std::string param, long double value){
     std::vector<int> list;
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         if (nodes[it1->first].parameters[param] == value) {
+            std::cout << it1->first << " ";
             list.push_back(it1->first);
         }
     }
+    std::cout << std::endl;
     return list;
 }
 
@@ -190,9 +197,11 @@ std::vector<int> Graph::get_edge_ids(std::string param, long double value){
     std::vector<int> list;
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
         if (edges[it1->first].parameters[param] == value) {
+            std::cout << it1->first << " ";
             list.push_back(it1->first);
         }
     }
+    std::cout << std::endl;
     return list;
 }
 
