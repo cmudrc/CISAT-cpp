@@ -48,7 +48,8 @@ private:
     static int solution_counter;
 
     // Inlet location
-    static std::vector< std::map<std::string, long double> > seed_graph_parameters;
+    static std::vector< std::map<std::string, long double> > seed_node_parameters;
+    static std::vector< std::map<std::string, long double> > seed_edge_parameters;
 
     // Functions
     void compute_quality(void);

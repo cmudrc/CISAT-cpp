@@ -2,7 +2,7 @@
 
 WriteX3D::WriteX3D(void) {}
 
-void WriteX3D::open_file(std::string file_name) {
+void WriteX3D::open_file(std::string file_name, long double x, long double y, long double z) {
     // Open a file on that file stream
     my_file.open(file_name);
 
@@ -19,7 +19,7 @@ void WriteX3D::open_file(std::string file_name) {
     my_file << "    <body>" << std::endl;
     my_file << "        <x3d xmlns=\"http://www.x3dom.org/x3dom\" showStat=\"false\" showLog=\"false\" x=\"0px\" y=\"0px\" style='width: 100%; height: 100%;'> " << std::endl;
     my_file << "            <scene>" << std::endl;
-    my_file << "                <viewpoint position='12.5 12.5 75' ></viewpoint>" << std::endl;
+    my_file << "                <viewpoint position='" << x << " " << y << " " << z << "' ></viewpoint>" << std::endl;
 }
 
 void WriteX3D::write_sphere(long double x, long double y, long double z, long double radius) {
