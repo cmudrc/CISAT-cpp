@@ -16,21 +16,28 @@ const  long double    Solution::goal                 = 0.0;
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
 const  long double    Solution::Fy              = 250*std::pow(10,6); // Pa
 
+//
+const std::vector< long double > pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
+
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
     {
         {"x", 0.00}, // [m]
         {"y", 10.00}, // [m]
         {"z", 0.00}, // [m]
-        {"F", 35000.00}, // [N]
+        {"Fx", 35000.00}, // [N]
+        {"Fy", 35000.00}, // [N]
+        {"Fz", 35000.00}, // [N]
         {"rx", 0}, // [bool]
         {"ry", 0}, // [bool]
         {"rz", 1} // [bool]
     }, {
         {"x", 1.00}, // [m]
-        {"y", 10.00}, // [m]
+        {"y", 0.00}, // [m]
         {"z", 0.00}, // [m]
-        {"F", 0.00}, // [N]
+        {"Fx", 0.00}, // [N]
+        {"Fy", 0.00}, // [N]
+        {"Fz", 0.00}, // [N]
         {"rx", 1}, // [bool]
         {"ry", 1}, // [bool]
         {"rz", 1} // [bool]
@@ -38,7 +45,9 @@ std::vector< std::map<std::string, long double> > Solution::seed_graph_parameter
         {"x", -1.00}, // [m]
         {"y", 0.00}, // [m]
         {"z", 0.00}, // [m]
-        {"F", 0.00}, // [N]
+        {"Fx", 0.00}, // [N]
+        {"Fy", 0.00}, // [N]
+        {"Fz", 0.00}, // [N]
         {"rx", 1}, // [bool]
         {"ry", 1}, // [bool]
         {"rz", 1} // [bool]
@@ -67,31 +76,8 @@ Solution::Solution(bool) {
     compute_quality();
 }
 
-
-void Solution::save_as_x3d(std::string save_to_file) {
-    WriteX3D x3d;
-    int n1, n2;
-
-    x3d.open_file(save_to_file);
-    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 1);
-    }
-
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        n1 = edges[it1->first].initial_node;
-        n2 = edges[it1->first].terminal_node;
-        x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
-                       nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
-                       edges[it1->first].parameters["d"]);
-    }
-
-
-    x3d.close_file();
-}
-
-
 void Solution::compute_quality(void) {
-    quality[0] = number_of_edges + number_of_nodes;
+    quality[0] = -(number_of_edges + number_of_nodes);
 }
 
 void Solution::compute_truss_forces(void) {
@@ -160,6 +146,47 @@ void Solution::compute_truss_forces(void) {
 
 
 void Solution::create_seed_graph(void){
+    // Add all joints
+    for(int i=0; i < seed_graph_parameters.size(); i++) {
+        // Add the node
+        add_node();
+
+        // Add the values
+        nodes[node_id_counter].parameters["x"] = seed_graph_parameters[i]["x"];
+        nodes[node_id_counter].parameters["y"] = seed_graph_parameters[i]["y"];
+        nodes[node_id_counter].parameters["z"] = seed_graph_parameters[i]["z"];
+        nodes[node_id_counter].parameters["rx"] = seed_graph_parameters[i]["rx"];
+        nodes[node_id_counter].parameters["ry"] = seed_graph_parameters[i]["ry"];
+        nodes[node_id_counter].parameters["rz"] = seed_graph_parameters[i]["rz"];
+        nodes[node_id_counter].parameters["Fx"] = seed_graph_parameters[i]["Fx"];
+        nodes[node_id_counter].parameters["Fy"] = seed_graph_parameters[i]["Fy"];
+        nodes[node_id_counter].parameters["Fz"] = seed_graph_parameters[i]["Fz"];
+        nodes[node_id_counter].parameters["editable"] = false;
+    }
+
+    // Connect these joints
+    for(int i=0; i < seed_graph_parameters.size(); i++) {
+        for (int j = i + 1; j < seed_graph_parameters.size(); j++) {
+            add_member(i, j, 2, true);
+        }
+    }
+
+    // Add a central joint
+    double cx=0, cy=0, cz=0;
+    for(int i=0; i<seed_graph_parameters.size(); i++) {
+        cx += seed_graph_parameters[i]["x"];
+        cy += seed_graph_parameters[i]["y"];
+        cz += seed_graph_parameters[i]["z"];
+    }
+    cx /= seed_graph_parameters.size();
+    cy /= seed_graph_parameters.size();
+    cz /= seed_graph_parameters.size();
+    add_joint(cx, cy, cz, true);
+
+    // Add members between joints
+    for(int i=0; i < seed_graph_parameters.size(); i++) {
+        add_member(i, node_id_counter, 2, true);
+    }
 
 }
 
@@ -169,12 +196,23 @@ void Solution::apply_move_operator(int move_type){
             add_member();
             break;
         case 1:
-//        void remove_member(int e);
-//        void remove_joint(int n);
-//        void increase_member_size(int e);
-//        void decrease_member_size(int e);
-//        void move_joint(int n, long double dx, long double dy, long double dz);
-//        void add_joint_and_attach(long double x, long double y, long double z);
+            remove_member();
+            break;
+        case 2:
+            remove_joint();
+            break;
+        case 3:
+            change_size_single();
+            break;
+        case 4:
+            change_size_all();
+            break;
+        case 5:
+            move_joint();
+            break;
+        case 6:
+            add_joint_and_attach();
+            break;
         default:
             break;
     }
@@ -190,7 +228,7 @@ void Solution::apply_move_operator(int move_type){
 
 // Move operators
 void Solution::add_member(int n1, int n2, int d, bool editable){
-    // Add the edge to teh graph
+    // Add the edge to the graph
     add_edge(n1, n2);
 
     // Add parameters to the edges
@@ -213,6 +251,9 @@ void Solution::add_member(void){
     int n1 = editable[idx];
     int n2 = editable[weighted_choice(weights)];
 
+    // TODO Make sure the member doesn't already exist
+
+    // Add the member
     add_member(n1, n2, 4, true);
 }
 
@@ -226,7 +267,9 @@ void Solution::add_joint(long double x, long double y, long double z, bool edita
     nodes[node_id_counter].parameters["z"] = z;
 
     // Add other miscellaneous parameters, assuming joint is free
-    nodes[node_id_counter].parameters["F"] = 0;
+    nodes[node_id_counter].parameters["Fx"] = 0;
+    nodes[node_id_counter].parameters["Fy"] = 0;
+    nodes[node_id_counter].parameters["Fz"] = 0;
     nodes[node_id_counter].parameters["rx"] = 0;
     nodes[node_id_counter].parameters["ry"] = 0;
     nodes[node_id_counter].parameters["rz"] = 1;
@@ -239,26 +282,24 @@ void Solution::add_joint(long double x, long double y, long double z, bool edita
 void Solution::remove_member(void) {
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 0.0);
 
     // Make a selection
-    int idx = weighted_choice(weights);
-
-    // Remove the selected edge
-    remove_edge(editable[idx]);
+    if(editable.size() > 0){
+        std::vector<long double> weights(editable.size(), 0.0);
+        remove_edge(editable[weighted_choice(weights)]);
+    }
 }
 
 
 void Solution::remove_joint(void) {
     // Define some things
     std::vector<int> editable = get_node_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 0.0);
 
     // Make a selection
-    int idx = weighted_choice(weights);
-
-    // Remove the selected edge
-    remove_node(editable[idx]);
+    if(editable.size() > 0){
+        std::vector<long double> weights(editable.size(), 0.0);
+        remove_node(editable[weighted_choice(weights)]);
+    }
 }
 
 
@@ -290,21 +331,21 @@ void Solution::change_size_all(void){
 void Solution::move_joint(void){
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 1.0);
+    if(editable.size() > 0){
+        std::vector<long double> weights(editable.size(), 1.0);
 
-    // Select one to move at random
-    int idx = weighted_choice(weights);
+        // Select one to move at random
+        int idx = weighted_choice(weights);
 
-    // Move it somehow TODO: Make this more intelligent
-    nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
-    nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
-    nodes[editable[idx]].parameters["z"] += uniform(-1.0, 1.0);
+        // Move it somehow TODO: Make this more intelligent
+        nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
+        nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
 
-    // Brute force length update TODO Avoid brute-forcedness
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+        // Brute force length update TODO Avoid brute-forcedness
+        for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+            edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+        }
     }
-
 }
 
 void Solution::add_joint_and_attach(){
@@ -337,4 +378,26 @@ void Solution::add_joint_and_attach(){
 // Function to ensure that the solution is valid
 int Solution::is_valid(void) {
     return is_connected();
+}
+
+
+void Solution::save_as_x3d(std::string save_to_file) {
+    WriteX3D x3d;
+    int n1, n2;
+
+    x3d.open_file(save_to_file);
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.25);
+    }
+
+    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
+        n1 = edges[it1->first].initial_node;
+        n2 = edges[it1->first].terminal_node;
+        x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
+                       nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
+                       edges[it1->first].parameters["d"]);
+    }
+
+
+    x3d.close_file();
 }

@@ -333,7 +333,6 @@ void Solution::move_junction(void) {
     // Move it somehow TODO: Make this more intelligent
     nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
     nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
-    nodes[editable[idx]].parameters["z"] += uniform(-1.0, 1.0);
 
     // Brute force length update TODO Avoid brute-forcedness
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
@@ -395,7 +394,6 @@ void Solution::save_as_x3d(std::string save_to_file) {
                        nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
                        edges[it1->first].parameters["d"]);
     }
-
 
     x3d.close_file();
 }
