@@ -114,7 +114,7 @@ void Solution::create_seed_graph(void) {
     add_junction(cx, cy, cz, true);
 
     // Connect the central junction to all intermediate nodes
-    int k = -1;
+    int k;
     for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); it++) {
         k = (it->first);
         if(nodes[k].parameters["type"] == INTERMEDIATE && k != node_id_counter){
@@ -139,7 +139,6 @@ void Solution::compute_quality(void) {
 
     // For every existing element, add to the global matrix
     int k;
-    long double R=0;
     int idx1 = 0;
     int idx2 = 0;
     for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {

@@ -29,8 +29,7 @@ public:
     // Functions
     Solution(bool);
     Solution(void);
-    void get_valid_moves(void);
-    void apply_move_operator(int move_type, int move_number);
+    void apply_move_operator(int move_type);
     void save_as_x3d(std::string save_to_file);
 
 private:
@@ -59,13 +58,14 @@ private:
 
     // Move operators
     void add_member(int n1, int n2, int d, bool editable);
+    void add_member(void);
     void add_joint(long double x, long double y, long double z, bool editable);
-    void remove_member(int e);
-    void remove_joint(int n);
-    void increase_member_size(int e);
-    void decrease_member_size(int e);
-    void move_joint(int n, long double dx, long double dy, long double dz);
-    void add_joint_and_attach(long double x, long double y, long double z);
+    void remove_member(void);
+    void remove_joint(void);
+    void change_size_single(void);
+    void change_size_all(void);
+    void move_joint(void);
+    void add_joint_and_attach(void);
 
     int is_valid(void);
 };

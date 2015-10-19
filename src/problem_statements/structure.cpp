@@ -68,16 +68,6 @@ Solution::Solution(bool) {
 }
 
 
-void Solution::get_valid_moves(void){
-
-}
-
-
-void Solution::apply_move_operator(int move_type, int move_number){
-
-}
-
-
 void Solution::save_as_x3d(std::string save_to_file) {
     WriteX3D x3d;
     int n1, n2;
@@ -173,6 +163,31 @@ void Solution::create_seed_graph(void){
 
 }
 
+void Solution::apply_move_operator(int move_type){
+    switch(move_type) {
+        case 0:
+            add_member();
+            break;
+        case 1:
+//        void remove_member(int e);
+//        void remove_joint(int n);
+//        void increase_member_size(int e);
+//        void decrease_member_size(int e);
+//        void move_joint(int n, long double dx, long double dy, long double dz);
+//        void add_joint_and_attach(long double x, long double y, long double z);
+        default:
+            break;
+    }
+
+    // Compute the quality
+    compute_quality();
+
+    // Increment solution counters and things?
+    solution_counter++;
+    solution_id++;
+
+}
+
 // Move operators
 void Solution::add_member(int n1, int n2, int d, bool editable){
     // Add the edge to teh graph
@@ -186,6 +201,20 @@ void Solution::add_member(int n1, int n2, int d, bool editable){
     edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
 }
 
+
+void Solution::add_member(void){
+    // Define some things
+    std::vector<int> editable = get_node_ids("z", 0.00);
+    std::vector<long double> weights(editable.size(), 0.0);
+
+    // Pick nodes to attach between
+    int idx = weighted_choice(weights);
+    weights[idx] = 0.0;
+    int n1 = editable[idx];
+    int n2 = editable[weighted_choice(weights)];
+
+    add_member(n1, n2, 4, true);
+}
 
 void Solution::add_joint(long double x, long double y, long double z, bool editable){
     // Add the node
@@ -207,30 +236,69 @@ void Solution::add_joint(long double x, long double y, long double z, bool edita
 }
 
 
-void Solution::remove_member(int e) {
-    remove_edge(e);
+void Solution::remove_member(void) {
+    // Define some things
+    std::vector<int> editable = get_edge_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 0.0);
+
+    // Make a selection
+    int idx = weighted_choice(weights);
+
+    // Remove the selected edge
+    remove_edge(editable[idx]);
 }
 
 
-void Solution::remove_joint(int n) {
-    remove_node(n);
+void Solution::remove_joint(void) {
+    // Define some things
+    std::vector<int> editable = get_node_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 0.0);
+
+    // Make a selection
+    int idx = weighted_choice(weights);
+
+    // Remove the selected edge
+    remove_node(editable[idx]);
 }
 
 
-void Solution::increase_member_size(int e) {
-    edges[e].parameters["d"]++;
+void Solution::change_size_single(void){
+    // Define some things
+    std::vector<int> editable = get_edge_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 0.0);
+
+    // Make a selection
+    int idx = weighted_choice(weights);
+
+    // Increase the size of the selected edge
+    edges[editable[idx]].parameters["d"] += uniform_int(-1, 1);;
+}
+
+void Solution::change_size_all(void){
+    // Define some things
+    std::vector<int> editable = get_edge_ids("editable", true);
+
+    // Decide whether ot increase or decrease
+    int inc_dec = uniform_int(-1, 1);
+
+    for(int i=0; i<editable.size(); i++){
+        edges[editable[i]].parameters["d"] += inc_dec;
+    }
 }
 
 
-void Solution::decrease_member_size(int e){
-    edges[e].parameters["d"]++;
-}
+void Solution::move_joint(void){
+    // Define a couple of things
+    std::vector<int> editable = get_node_ids("editable", true);
+    std::vector<long double> weights(editable.size(), 1.0);
 
+    // Select one to move at random
+    int idx = weighted_choice(weights);
 
-void Solution::move_joint(int n, long double dx, long double dy, long double dz){
-    nodes[n].parameters["x"] += dx;
-    nodes[n].parameters["y"] += dy;
-    nodes[n].parameters["z"] += dz;
+    // Move it somehow TODO: Make this more intelligent
+    nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
+    nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
+    nodes[editable[idx]].parameters["z"] += uniform(-1.0, 1.0);
 
     // Brute force length update TODO Avoid brute-forcedness
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
@@ -239,7 +307,13 @@ void Solution::move_joint(int n, long double dx, long double dy, long double dz)
 
 }
 
-void Solution::add_joint_and_attach(long double x, long double y, long double z){
+void Solution::add_joint_and_attach(){
+    // Find x y and z for new joint
+    long double x = uniform(-10, 10);
+    long double y = uniform(-10, 10);
+    long double z = 0;
+
+    // Add the new joint
     add_joint(x, y, z, true);
 
     // Find distance between current joint and other joints
@@ -257,7 +331,6 @@ void Solution::add_joint_and_attach(long double x, long double y, long double z)
         distances[idx] = LDBL_MAX;
         add_edge(node_id_counter, reverse_map[idx]);
     }
-
 }
 
 
