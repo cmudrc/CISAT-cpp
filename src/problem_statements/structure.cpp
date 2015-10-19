@@ -15,10 +15,13 @@ const  long double    Solution::goal                 = 0.0;
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
 const  long double    Solution::Fy              = 250*std::pow(10,6); // Pa
+const  long double    Solution::rho             = 7870; // kg/m3
 
-// TODO: Add calculatioon of area and moment of inertia
-const std::vector< long double > Solution::member_radius  = {0.02, 0.04, 0.06, 0.08, 0.10};
-const std::vector< long double > Solution::wall_thickness = {0.002, 0.004, 0.006, 0.008, 0.01};
+// TODO: Add calculation of area and moment of inertia
+const std::vector< long double > Solution::member_radius  = {0.005, 0.010, 0.015, 0.020, 0.025,
+                                                             0.030, 0.035, 0.040, 0.045, 0.050};
+const std::vector< long double > Solution::wall_thickness = {0.005/15, 0.010/15, 0.015/15, 0.020/15, 0.025/15,
+                                                             0.030/15, 0.035/15, 0.040/15, 0.045/15, 0.050/15};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
@@ -38,7 +41,7 @@ std::vector< std::map<std::string, long double> > Solution::seed_node_parameters
         {"y",  0.00}, // [m]
         {"z",  0.00}, // [m]
         {"Fx", 0.00}, // [N]
-        {"Fy", -3500.00}, // [N]
+        {"Fy", -200000.00}, // [N]
         {"Fz", 0.00}, // [N]
         {"rx", 0}, // [bool]
         {"ry", 0}, // [bool]
@@ -60,7 +63,7 @@ std::vector< std::map<std::string, long double> > Solution::seed_node_parameters
         {"y",  0.00}, // [m]
         {"z",  0.00}, // [m]
         {"Fx", 0.00}, // [N]
-        {"Fy", -3500.00}, // [N]
+        {"Fy", -200000.00}, // [N]
         {"Fz", 0.00}, // [N]
         {"rx", 0}, // [bool]
         {"ry", 0}, // [bool]
@@ -219,8 +222,28 @@ void Solution::create_seed_graph(void){
 }
 
 void Solution::compute_quality(void) {
+    // Compute the force-based solution for the truss
     compute_truss_forces();
-    quality[0] = -(number_of_edges + number_of_nodes);
+
+    // Compute the mass
+    long double mass = 0;
+    long double FOS = LDBL_MAX;
+    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1){
+        mass += edges[it1->first].parameters["m"];
+//        if(edges[it1->first].parameters["FOS_y"] < FOS){
+//            FOS = edges[it1->first].parameters["FOS_y"];
+//        }
+//        if(edges[it1->first].parameters["FOS_b"] < FOS){
+//            FOS = edges[it1->first].parameters["FOS_b"];
+//        }
+    }
+    std::cout << "Mass: " << mass << std::endl;
+    std::cout << "FOS:  " << FOS << std::endl << std::endl;
+
+    // Find the minimum FOS
+
+
+    quality[0] = mass;
 }
 
 void Solution::compute_truss_forces(void) {
@@ -319,14 +342,25 @@ void Solution::compute_truss_forces(void) {
 
     // From displacements, solve for forces
     for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
-        long double F = 0;
+        // Define a few things
         int k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
-        F += edges[k].parameters["kx"] * (deflections[0][idx1] - deflections[0][idx2]);
-        F += edges[k].parameters["ky"] * (deflections[1][idx1] - deflections[1][idx2]);
-        F += edges[k].parameters["kz"] * (deflections[2][idx1] - deflections[2][idx2]);
-        edges[k].parameters["F"] = F;
+
+        // Define the force
+        edges[k].parameters["F"] =   edges[k].parameters["kx"] * (deflections[0][idx1] - deflections[0][idx2])
+                                   + edges[k].parameters["ky"] * (deflections[1][idx1] - deflections[1][idx2])
+                                   + edges[k].parameters["kz"] * (deflections[2][idx1] - deflections[2][idx2]);
+
+//        // Calculate factor of safety against yielding
+//        edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
+//
+//        // Calculate force of safety
+//        if (edges[k].parameters["F"] > 0) {
+//            edges[k].parameters["FOS_b"] = (std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
+//        } else {
+//            edges[k].parameters["FOS_b"] = LDBL_MAX;
+//        }
     }
 }
 
@@ -339,9 +373,9 @@ void Solution::apply_move_operator(int move_type){
         case 1:
             remove_member();
             break;
-        case 2:
-            remove_joint();
-            break;
+//        case 2:
+//            remove_joint();
+//            break;
         case 3:
             change_size_single();
             break;
@@ -376,8 +410,8 @@ void Solution::add_member(int n1, int n2, int r, bool editable){
     edges[edge_id_counter].parameters["editable"] = editable;
     edges[edge_id_counter].parameters["r"] = r;
     edges[edge_id_counter].parameters["t"] = r;
-    update_sectional_properties(edge_id_counter);
     update_length(edge_id_counter);
+    update_sectional_properties(edge_id_counter);
 }
 
 
@@ -395,7 +429,7 @@ void Solution::add_member(void){
     // TODO Make sure the member doesn't already exist
 
     // Add the member
-    add_member(n1, n2, 2, true);
+    add_member(n1, n2, 4, true);
 }
 
 void Solution::add_joint(long double x, long double y, long double z, bool editable){
@@ -433,9 +467,6 @@ void Solution::remove_member(void) {
 
 
 void Solution::remove_joint(void) {
-    print("Removing joint");
-    print(number_of_nodes);
-    print(number_of_edges);
     // Define some things
     std::vector<int> editable = get_node_ids("editable", true);
 
@@ -444,8 +475,6 @@ void Solution::remove_joint(void) {
         std::vector<long double> weights(editable.size(), 0.0);
         remove_node(editable[weighted_choice(weights)]);
     }
-    print(number_of_nodes);
-    print(number_of_edges);
 }
 
 
@@ -504,7 +533,7 @@ void Solution::move_joint(void){
     }
 }
 
-void Solution::add_joint_and_attach(){
+void Solution::add_joint_and_attach(void){
     // Add the new joint
     add_joint(uniform(-5, 5), uniform(-3, 3), 0.0, true);
 
@@ -521,7 +550,7 @@ void Solution::add_joint_and_attach(){
     for(int i=0; i<3; i++){
         idx = vector_argmin(distances);
         distances[idx] = LDBL_MAX;
-        add_member(node_id_counter, reverse_map[idx], 2, true);
+        add_member(node_id_counter, reverse_map[idx], 4, true);
     }
 }
 
@@ -540,6 +569,9 @@ void Solution::update_sectional_properties(int e){
 
     // Update the area moment of inertia
     edges[e].parameters["I"] = M_PI*(std::pow(2*outer, 4) - std::pow(2*inner, 4))/64;
+
+    // Compute the mass of the member
+    edges[e].parameters["m"] = edges[e].parameters["L"]*edges[e].parameters["A"]*rho;
 }
 
 

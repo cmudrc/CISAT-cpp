@@ -39,6 +39,7 @@ private:
     // Fluid constants
     static const long double E;
     static const long double Fy;
+    static const long double rho;
 
     // Pipe diameters
     static const std::vector< long double > member_radius;
