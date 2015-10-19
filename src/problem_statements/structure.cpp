@@ -17,8 +17,8 @@ const  long double    Solution::E               = 209*std::pow(10,9); // Pa
 const  long double    Solution::Fy              = 250*std::pow(10,6); // Pa
 
 // TODO: Add calculatioon of area and moment of inertia
-const std::vector< long double > pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
-
+const std::vector< long double > Solution::member_radius  = {0.02, 0.04, 0.06, 0.08, 0.10};
+const std::vector< long double > Solution::wall_thickness = {0.002, 0.004, 0.006, 0.008, 0.01};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
@@ -118,55 +118,55 @@ std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters
     {
         {"initial",  0},
         {"terminal", 1},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  1},
         {"terminal", 2},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  2},
         {"terminal", 3},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  3},
         {"terminal", 4},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  5},
         {"terminal", 6},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  6},
         {"terminal", 7},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  0},
         {"terminal", 5},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  1},
         {"terminal", 5},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  5},
         {"terminal", 2},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  6},
         {"terminal", 2},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  7},
         {"terminal", 2},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  3},
         {"terminal", 7},
-        {"diameter", 4}
+        {"radius", 4}
     }, {
         {"initial",  4},
         {"terminal", 7},
-        {"diameter", 4}
+        {"radius", 4}
     }
 };
 
@@ -214,7 +214,7 @@ void Solution::create_seed_graph(void){
 
     // Connect these joints
     for(int i=0; i < seed_edge_parameters.size(); i++) {
-        add_member(seed_edge_parameters[i]["initial"], seed_edge_parameters[i]["terminal"], seed_edge_parameters[i]["diameter"], true);
+        add_member(seed_edge_parameters[i]["initial"], seed_edge_parameters[i]["terminal"], seed_edge_parameters[i]["radius"], true);
     }
 }
 
@@ -333,7 +333,6 @@ void Solution::compute_truss_forces(void) {
     }
 }
 
-
 void Solution::apply_move_operator(int move_type){
     switch(move_type) {
         case 0:
@@ -371,17 +370,16 @@ void Solution::apply_move_operator(int move_type){
 }
 
 // Move operators
-void Solution::add_member(int n1, int n2, int d, bool editable){
+void Solution::add_member(int n1, int n2, int r, bool editable){
     // Add the edge to the graph
     add_edge(n1, n2);
 
     // Add parameters to the edges
     edges[edge_id_counter].parameters["editable"] = editable;
-    edges[edge_id_counter].parameters["d"] = d;
-    edges[edge_id_counter].parameters["A"] = 0.1;
-
-    // Compute the length
-    edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
+    edges[edge_id_counter].parameters["r"] = r;
+    edges[edge_id_counter].parameters["t"] = r;
+    update_sectional_properties(edge_id_counter);
+    update_length(edge_id_counter);
 }
 
 
@@ -399,7 +397,7 @@ void Solution::add_member(void){
     // TODO Make sure the member doesn't already exist
 
     // Add the member
-    add_member(n1, n2, 4, true);
+    add_member(n1, n2, 2, true);
 }
 
 void Solution::add_joint(long double x, long double y, long double z, bool editable){
@@ -459,7 +457,11 @@ void Solution::change_size_single(void){
     // Increase the size of the selected edge
     int inc_dec = uniform_int(1, 0)*2 - 1;
 
-    edges[editable[idx]].parameters["d"] += inc_dec;
+    if ((edges[editable[idx]].parameters["r"] + inc_dec) < member_radius.size()
+        && (edges[editable[idx]].parameters["r"] + inc_dec) >= 0){
+        edges[editable[idx]].parameters["r"] += inc_dec;
+        edges[editable[idx]].parameters["t"] += inc_dec;
+    }
 }
 
 void Solution::change_size_all(void){
@@ -470,7 +472,11 @@ void Solution::change_size_all(void){
     int inc_dec = uniform_int(1, 0)*2 - 1;
 
     for(int i=0; i<editable.size(); i++){
-        edges[editable[i]].parameters["d"] += inc_dec;
+        if ((edges[editable[i]].parameters["r"] + inc_dec) < member_radius.size()
+            && (edges[editable[i]].parameters["r"] + inc_dec) >= 0){
+            edges[editable[i]].parameters["r"] += inc_dec;
+            edges[editable[i]].parameters["t"] += inc_dec;
+        }
     }
 }
 
@@ -490,19 +496,14 @@ void Solution::move_joint(void){
 
         // Brute force length update TODO Avoid brute-forcedness
         for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-            edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+            update_length(it1->first);
         }
     }
 }
 
 void Solution::add_joint_and_attach(){
-    // Find x y and z for new joint
-    long double x = uniform(-2, 2);
-    long double y = uniform(0, 15);
-    long double z = 0;
-
     // Add the new joint
-    add_joint(x, y, z, true);
+    add_joint(uniform(-5, 5), uniform(-3, 3), 0.0, true);
 
     // Find distance between current joint and other joints
     std::vector<long double> distances;
@@ -517,8 +518,25 @@ void Solution::add_joint_and_attach(){
     for(int i=0; i<3; i++){
         idx = vector_argmin(distances);
         distances[idx] = LDBL_MAX;
-        add_edge(node_id_counter, reverse_map[idx]);
+        add_member(node_id_counter, reverse_map[idx], 2, true);
     }
+}
+
+
+void Solution::update_length(int e){
+    // Update the length
+    edges[e].parameters["L"] = euclidean_distance(edges[e].initial_node, edges[e].terminal_node);
+}
+
+
+void Solution::update_sectional_properties(int e){
+    // Update the area
+    long double outer = member_radius[edges[e].parameters["r"]];
+    long double inner = outer - wall_thickness[edges[e].parameters["t"]];
+    edges[e].parameters["A"] = M_PI*(std::pow(outer, 2) - std::pow(inner, 2));
+
+    // Update the area moment of inertia
+    edges[e].parameters["I"] = M_PI*(std::pow(2*outer, 4) - std::pow(2*inner, 4))/64;
 }
 
 
@@ -542,7 +560,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
         n2 = edges[it1->first].terminal_node;
         x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
                        nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
-                       edges[it1->first].parameters["d"]);
+                       edges[it1->first].parameters["r"]);
     }
 
 

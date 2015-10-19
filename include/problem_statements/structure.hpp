@@ -41,7 +41,8 @@ private:
     static const long double Fy;
 
     // Pipe diameters
-    static const std::vector< long double > pipe_diam;
+    static const std::vector< long double > member_radius;
+    static const std::vector< long double > wall_thickness;
 
     // Variables
     int solution_id;
@@ -69,6 +70,8 @@ private:
     void add_joint_and_attach(void);
 
     int is_valid(void);
+    void update_sectional_properties(int e);
+    void update_length(int e);
 };
 
 #endif
