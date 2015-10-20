@@ -55,3 +55,5 @@ void WriteX3D::close_file(void) {
     // Close the file
     my_file.close();
 }
+
+//TODO: Add optional ability to write title.

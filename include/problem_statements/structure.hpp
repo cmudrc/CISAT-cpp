@@ -36,18 +36,21 @@ private:
     // Constants
     static const std::string name;
 
-    // Fluid constants
+    // Material constants
     static const long double E;
     static const long double Fy;
     static const long double rho;
 
-    // Pipe diameters
+    // Member parameters
     static const std::vector< long double > member_radius;
     static const std::vector< long double > wall_thickness;
 
-    // Variables
+    // Miscellaneous variables
     int solution_id;
     static int solution_counter;
+
+    // Saving the global FOS
+    long double FOS;
 
     // Inlet location
     static std::vector< std::map<std::string, long double> > seed_node_parameters;

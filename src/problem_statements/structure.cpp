@@ -224,8 +224,8 @@ void Solution::create_seed_graph(void){
 void Solution::compute_quality(void) {
     // Define some things
     long double mass = 0;
-    long double FOS = LDBL_MAX;
     long double FOS_penalty;
+    FOS = LDBL_MAX;
 
     if (is_valid()) {
         // Compute the force-based solution for the truss
@@ -241,8 +241,6 @@ void Solution::compute_quality(void) {
                 FOS = edges[it1->first].parameters["FOS_b"];
             }
         }
-
-        print(FOS);
 
         // Compute FOS penalty
         if(FOS < LDBL_MAX) {
@@ -262,8 +260,6 @@ void Solution::compute_quality(void) {
     }
 
     quality[0] = mass + FOS_penalty;
-    std::cout << quality[0] << " " << mass << " "  << FOS << std::endl;
-
 }
 
 void Solution::compute_truss_forces(void) {
@@ -433,20 +429,29 @@ void Solution::add_member(int n1, int n2, int r, bool editable){
 
 
 // This function adds a member between two random joints
-// TODO: Update with heuristics for adding member
 void Solution::add_member(void){
     // Define some things
-    std::vector<int> editable = get_node_ids("z", 0.00);
-    std::vector<long double> weights(editable.size(), 1.0);
+    if(number_of_nodes*number_of_nodes > number_of_edges) {
+        long double min_distance = LDBL_MAX;
+        long double new_distance;
+        int n1 = -1;
+        int n2 = -1;
+        for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+            for (std::map<int, Node>::iterator it2 = std::next(it1, 1); it2 != nodes.end(); it2++) {
+                if (~undirected_edge_exists(it1->first, it2->first)) {
+                    new_distance = euclidean_distance(it1->first, it2->first);
+                    if (new_distance < min_distance) {
+                        n1 = it1->first;
+                        n2 = it2->first;
+                        min_distance = new_distance;
+                    }
+                }
+            }
+        }
 
-    // Pick nodes to attach between
-    int idx = weighted_choice(weights);
-    weights[idx] = 0.0;
-    int n1 = editable[idx];
-    int n2 = editable[weighted_choice(weights)];
-
-    // Add the member
-    add_member(n1, n2, 4, true);
+        // Add the member
+        add_member(n1, n2, 4, true);
+    }
 }
 
 
@@ -481,7 +486,19 @@ void Solution::remove_member(void) {
 
     // Make a selection
     if(editable.size() > 0){
-        std::vector<long double> weights(editable.size(), 1.0);
+        // Instantiate a weighting vector
+        std::vector<long double> weights(editable.size(), 0.0);
+
+        // Step through the avaialable members to fill the weighting vector
+        for(int i=0; i<editable.size(); i++) {
+            if(edges[editable[i]].parameters["FOS_b"] < edges[editable[i]].parameters["FOS_y"]){
+                weights[i] = edges[editable[i]].parameters["FOS_b"];
+            } else {
+                weights[i] = edges[editable[i]].parameters["FOS_y"];
+            }
+        }
+
+        // Remove the edge that is chosen!
         remove_edge(editable[weighted_choice(weights)]);
     }
 }
