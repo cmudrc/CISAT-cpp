@@ -14,7 +14,7 @@ const  long double    Solution::goal                 = 0.0;
 
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
-const  long double    Solution::Fy              = 250*std::pow(10,6); // Pa
+const  long double    Solution::Fy              = 344*std::pow(10,6); // Pa
 const  long double    Solution::rho             = 7870; // kg/m3
 
 // TODO: Add calculation of area and moment of inertia
@@ -222,23 +222,48 @@ void Solution::create_seed_graph(void){
 }
 
 void Solution::compute_quality(void) {
-    // Compute the force-based solution for the truss
-    compute_truss_forces();
-
-    // Compute the mass
+    // Define some things
     long double mass = 0;
     long double FOS = LDBL_MAX;
-    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1){
-        mass += edges[it1->first].parameters["m"];
-//        if(edges[it1->first].parameters["FOS_y"] < FOS){
-//            FOS = edges[it1->first].parameters["FOS_y"];
-//        }
-//        if(edges[it1->first].parameters["FOS_b"] < FOS){
-//            FOS = edges[it1->first].parameters["FOS_b"];
-//        }
+    long double FOS_penalty;
+
+    if (is_valid()) {
+        // Compute the force-based solution for the truss
+        compute_truss_forces();
+
+        // Compute the mass
+        for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1) {
+            mass += edges[it1->first].parameters["m"];
+            if (edges[it1->first].parameters["FOS_y"] < FOS) {
+                FOS = edges[it1->first].parameters["FOS_y"];
+            }
+            if (edges[it1->first].parameters["FOS_b"] < FOS) {
+                FOS = edges[it1->first].parameters["FOS_b"];
+            }
+        }
+
+        print(FOS);
+
+        // Compute FOS penalty
+        if(FOS < LDBL_MAX) {
+            if (FOS > 1.25) {
+                FOS_penalty = 0;
+            }
+            else {
+                FOS_penalty = std::pow(10, 4) * std::pow(1.25 - FOS, 2);
+            }
+        } else {
+            mass = std::pow(10, 10);
+            FOS_penalty = std::pow(10, 10);
+        }
+    } else {
+        mass = std::pow(10, 10);
+        FOS_penalty = std::pow(10, 10);
     }
 
-    quality[0] = mass;
+    quality[0] = mass + FOS_penalty;
+    std::cout << quality[0] << " " << mass << " "  << FOS << std::endl;
+
 }
 
 void Solution::compute_truss_forces(void) {
@@ -251,16 +276,14 @@ void Solution::compute_truss_forces(void) {
     std::map<int, int> node_id_map;
     int counter = 0;
     for (std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
-        node_id_map[(it->first)] = counter;
+        node_id_map[it->first] = counter;
         counter++;
     }
 
     // Define a matrix that will later to be used to hold deflections and other things
-    std::vector<std::vector<long double> > deflections(3, std::vector<long double>(
-        static_cast<unsigned long>(number_of_nodes), 0));
-    std::vector<std::vector<long double> > loads(3,
-                                                 std::vector<long double>(static_cast<unsigned long>(number_of_nodes),
-                                                                          0));
+    std::vector<std::vector<long double> > deflections(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
+    std::vector<std::vector<long double> > loads(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
+
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
         int idx = node_id_map[it1->first];
         deflections[0][idx] = 1 - nodes[it1->first].parameters["rx"];
@@ -286,21 +309,20 @@ void Solution::compute_truss_forces(void) {
     }
 
     // Build the global stiffess matrix
-    int idx1;
-    int idx2;
-    long double ux;
-    long double uy;
-    long double uz;
+    int idx1, idx2, key1, key2;
+    long double ux, uy, uz;
     std::vector<int> ee(6, 0);
     std::vector<long double> uu(6, 0.0);
     std::vector<std::vector<long double>> element_stiffness(number_of_edges, std::vector<long double>(3, 0.0));
     for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
         int k = (it->first);
-        idx1 = node_id_map[edges[k].initial_node];
-        idx2 = node_id_map[edges[k].terminal_node];
-        ux = (nodes[idx1].parameters["x"] - nodes[idx2].parameters["x"]) / edges[k].parameters["L"];
-        uy = (nodes[idx1].parameters["y"] - nodes[idx2].parameters["y"]) / edges[k].parameters["L"];
-        uz = (nodes[idx1].parameters["z"] - nodes[idx2].parameters["z"]) / edges[k].parameters["L"];
+        key1 = edges[k].initial_node;
+        key2 = edges[k].terminal_node;
+        idx1 = node_id_map[key1];
+        idx2 = node_id_map[key2];
+        ux = (nodes[key1].parameters["x"] - nodes[key2].parameters["x"]) / edges[k].parameters["L"];
+        uy = (nodes[key1].parameters["y"] - nodes[key2].parameters["y"]) / edges[k].parameters["L"];
+        uz = (nodes[key1].parameters["z"] - nodes[key2].parameters["z"]) / edges[k].parameters["L"];
         long double EAL = E * edges[k].parameters["A"] / edges[k].parameters["L"];
         edges[k].parameters["kx"] = EAL*ux;
         edges[k].parameters["ky"] = EAL*uy;
@@ -351,17 +373,15 @@ void Solution::compute_truss_forces(void) {
         edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
 
         // Calculate force of safety
-        if (edges[k].parameters["F"] > 0) {
-            edges[k].parameters["FOS_b"] = (std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
+        if (edges[k].parameters["F"] < 0) {
+            edges[k].parameters["FOS_b"] = -(std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
         } else {
             edges[k].parameters["FOS_b"] = LDBL_MAX;
         }
-
     }
 }
 
 void Solution::apply_move_operator(int move_type){
-    std::cout << "Move: " << move_type << std::endl;
     switch(move_type) {
         case 0:
             add_member();
@@ -414,7 +434,7 @@ void Solution::add_member(int n1, int n2, int r, bool editable){
 void Solution::add_member(void){
     // Define some things
     std::vector<int> editable = get_node_ids("z", 0.00);
-    std::vector<long double> weights(editable.size(), 0.0);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Pick nodes to attach between
     int idx = weighted_choice(weights);
@@ -456,7 +476,7 @@ void Solution::remove_member(void) {
 
     // Make a selection
     if(editable.size() > 0){
-        std::vector<long double> weights(editable.size(), 0.0);
+        std::vector<long double> weights(editable.size(), 1.0);
         remove_edge(editable[weighted_choice(weights)]);
     }
 }
@@ -467,7 +487,7 @@ void Solution::remove_joint(void) {
     std::vector<int> editable = get_node_ids("editable", true);
 
     // Make a selection
-    int idx = -1;
+    int idx;
     if(editable.size() > 0){
         std::vector<long double> weights(editable.size(), 1.0);
         idx = weighted_choice(weights);
@@ -479,7 +499,7 @@ void Solution::remove_joint(void) {
 void Solution::change_size_single(void){
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 0.0);
+    std::vector<long double> weights(editable.size(), 1.0);
 
     // Make a selection
     int idx = weighted_choice(weights);
@@ -491,6 +511,7 @@ void Solution::change_size_single(void){
         && (edges[editable[idx]].parameters["r"] + inc_dec) >= 0){
         edges[editable[idx]].parameters["r"] += inc_dec;
         edges[editable[idx]].parameters["t"] += inc_dec;
+        update_sectional_properties(editable[idx]);
     }
 }
 
@@ -506,6 +527,7 @@ void Solution::change_size_all(void){
             && (edges[editable[i]].parameters["r"] + inc_dec) >= 0){
             edges[editable[i]].parameters["r"] += inc_dec;
             edges[editable[i]].parameters["t"] += inc_dec;
+            update_sectional_properties(editable[i]);
         }
     }
 }
@@ -575,7 +597,19 @@ void Solution::update_sectional_properties(int e){
 
 // Function to ensure that the solution is valid
 int Solution::is_valid(void) {
-    return is_connected();
+    // Make sure forces nodes are connected by 2
+    bool LOADS = true;
+
+    // Make sure supports are connected
+    bool SUPPORTS = true;
+
+    // Make sure at least statically determinant
+    bool STAT_DET = false;
+    if (number_of_edges + 5 >= 2*number_of_nodes) {
+        STAT_DET = true;
+    }
+
+    return LOADS && SUPPORTS && STAT_DET;
 }
 
 

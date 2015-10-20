@@ -15,7 +15,17 @@ Team::Team(ParameterSet x){
 
 //// Give the team a new start
 void Team::new_start(void){
-    team_id = static_cast <unsigned long> (time(0));
+    // Make a new folder for team results
+    char dirname[50];
+    std::sprintf(dirname, "./data/%lu/t%03d", run_id, team_id);
+    mkdir(dirname, ACCESSPERMS);
+
+    // Make a subdirectory for every agent
+    for(int i=0; i<parameters.n_agents; i++){
+        char subdirname[50];
+        std::sprintf(subdirname, "./data/%lu/t%03d/a%03d/", run_id, team_id, i);
+        mkdir(subdirname, ACCESSPERMS);
+    }
 
     // If 
     if(agent_list.size() > 0){
@@ -81,15 +91,9 @@ void Team::pull_best_solution(int iter) {
     }
 
     for(int i=0; i<agent_list.size(); i++) {
-
-        // TODO: Rewrite with sprintf() for leading 0's
-        std::string name = "./data/";
-        name.append(std::to_string(team_id));
-        name.append("_");
-        name.append(std::to_string(iter));
-        name.append("_");
-        name.append(std::to_string(i));
-        name.append(".html");
+        char buff[50];
+        std::sprintf(buff, "./data/%lu/t%03d/a%03d/d%08d.html", run_id, team_id, i, iter);
+        std::string name(buff);
         agent_list[i].current_solution.save_as_x3d(name);
 
         temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0/num));

@@ -8,6 +8,7 @@
 #define AGENTS_AND_TEAMS__TEAM_HPP
 
 #include "agent.hpp"
+#include <sys/stat.h>
 
 class Team {
 public:
@@ -22,10 +23,12 @@ public:
     ParameterSet parameters; // ParameterSet used for SA
     std::vector<Agent> agent_list;     // A vector to store agents in
     std::vector<long double> best_solution; // A vector to store the time-string of best solutions in
+    int team_id;
+    unsigned long run_id;
 
 private:
     // nothing yet
-    unsigned long team_id;
+
 };
 
 #endif

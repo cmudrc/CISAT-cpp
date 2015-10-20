@@ -24,6 +24,7 @@ public:
 
 private:
     // nothing yet
+    unsigned long id;
 };
 
 #endif

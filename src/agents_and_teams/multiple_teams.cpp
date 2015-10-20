@@ -26,10 +26,20 @@ MultipleTeams::MultipleTeams(std::string file_name){
 
 //// This actually solves the problem LOTS of times.
 long double MultipleTeams::solve(void){
+    // Assign an id for the run
+    id = static_cast <unsigned long> (time(0));
 
+    // Make a new folder for team results
+    char dirname[50];
+    std::sprintf(dirname, "./data/%lu/", id);
+    mkdir(dirname, ACCESSPERMS);
+
+    // Do the run
     for(int i = 0; i< parameters.n_reps; i++) {
         // Instantiate a new team
         Team this_team(parameters);
+        this_team.run_id = id;
+        this_team.team_id = i;
 
         // Give the team a new start
         this_team.new_start();
