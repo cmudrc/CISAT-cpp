@@ -417,7 +417,8 @@ void Solution::apply_move_operator(int move_type){
 
 }
 
-// Move operators
+
+// This deterministically adds a member as specified. Primarily a utility function.
 void Solution::add_member(int n1, int n2, int r, bool editable){
     // Add the edge to the graph
     add_edge(n1, n2);
@@ -431,6 +432,8 @@ void Solution::add_member(int n1, int n2, int r, bool editable){
 }
 
 
+// This function adds a member between two random joints
+// TODO: Update with heuristics for adding member
 void Solution::add_member(void){
     // Define some things
     std::vector<int> editable = get_node_ids("z", 0.00);
@@ -442,12 +445,12 @@ void Solution::add_member(void){
     int n1 = editable[idx];
     int n2 = editable[weighted_choice(weights)];
 
-    // TODO Make sure the member doesn't already exist
-
     // Add the member
     add_member(n1, n2, 4, true);
 }
 
+
+// This function adds a joint to the space.
 void Solution::add_joint(long double x, long double y, long double z, bool editable){
     // Add the node
     add_node();
@@ -470,6 +473,8 @@ void Solution::add_joint(long double x, long double y, long double z, bool edita
 }
 
 
+// This function removes a member at random
+// TODO: Implemenet heuristics for member removal.
 void Solution::remove_member(void) {
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -482,6 +487,8 @@ void Solution::remove_member(void) {
 }
 
 
+// This function removes a joint at random (as well as connected members)
+// TODO: Implement heuristics for joint removal.
 void Solution::remove_joint(void) {
     // Define some things
     std::vector<int> editable = get_node_ids("editable", true);
@@ -496,6 +503,8 @@ void Solution::remove_joint(void) {
 }
 
 
+// Changes the size of a single member chosen at random
+// TODO: Implement heuristics for selecting and changing member size
 void Solution::change_size_single(void){
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -515,6 +524,9 @@ void Solution::change_size_single(void){
     }
 }
 
+
+// Changes the size of all members
+// TODO: Implement heuristics for changing member size
 void Solution::change_size_all(void){
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -533,6 +545,8 @@ void Solution::change_size_all(void){
 }
 
 
+// This function randomly moves a joint.
+// TODO: Make joint selection and update more intelligent.
 void Solution::move_joint(void){
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
@@ -542,17 +556,22 @@ void Solution::move_joint(void){
         // Select one to move at random
         int idx = weighted_choice(weights);
 
-        // Move it somehow TODO: Make this more intelligent
+        // Move it somehow
         nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
         nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
 
-        // Brute force length update TODO Avoid brute-forcedness
-        for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-            update_length(it1->first);
+        //Update length related properties for the node that we moved.
+        for(int i=0; i < nodes[editable[idx]].outgoing_edges.size(); i++){
+            update_length(nodes[editable[idx]].outgoing_edges[i]);
+        }
+        for(int i=0; i < nodes[editable[idx]].incoming_edges.size(); i++){
+            update_length(nodes[editable[idx]].incoming_edges[i]);
         }
     }
 }
 
+
+// Function to add a joint and attach it to the nearest available joints.
 void Solution::add_joint_and_attach(void){
     // Add the new joint
     add_joint(uniform(-5, 5), uniform(-3, 3), 0.0, true);
@@ -578,6 +597,9 @@ void Solution::add_joint_and_attach(void){
 void Solution::update_length(int e){
     // Update the length
     edges[e].parameters["L"] = euclidean_distance(edges[e].initial_node, edges[e].terminal_node);
+
+    // Compute the mass of the member
+    calculate_member_mass(e);
 }
 
 
@@ -591,21 +613,49 @@ void Solution::update_sectional_properties(int e){
     edges[e].parameters["I"] = M_PI*(std::pow(2*outer, 4) - std::pow(2*inner, 4))/64;
 
     // Compute the mass of the member
+    calculate_member_mass(e);
+}
+
+
+// Updates the mass of the member
+void Solution::calculate_member_mass(int e){
+    // Compute the mass of the member
     edges[e].parameters["m"] = edges[e].parameters["L"]*edges[e].parameters["A"]*rho;
 }
 
 
 // Function to ensure that the solution is valid
 int Solution::is_valid(void) {
-    // Make sure forces nodes are connected by 2
+    // Make sure forces nodes are connected by 2, and supports are connected by at least 1
     bool LOADS = true;
-
-    // Make sure supports are connected
     bool SUPPORTS = true;
+    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it){
+        if(nodes[it->first].parameters["editable"] == false){
+            if(  std::abs(nodes[it->first].parameters["Fx"])
+               + std::abs(nodes[it->first].parameters["Fy"])
+               + std::abs(nodes[it->first].parameters["Fz"]) !=0) {
+                if(nodes[it->first].incoming_edges.size() + nodes[it->first].outgoing_edges.size() < 2){
+                    LOADS = false;
+                    break;
+                }
+            } else {
+                if(nodes[it->first].incoming_edges.size() + nodes[it->first].outgoing_edges.size() < 1){
+                    SUPPORTS = false;
+                    break;
+                }
+            }
+        }
+    }
 
     // Make sure at least statically determinant
     bool STAT_DET = false;
-    if (number_of_edges + 5 >= 2*number_of_nodes) {
+    int number_of_reactions = 0;
+    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it){
+        number_of_reactions += nodes[it->first].parameters["rx"];
+        number_of_reactions += nodes[it->first].parameters["ry"];
+        number_of_reactions += nodes[it->first].parameters["rz"];
+    }
+    if (number_of_edges + number_of_reactions >= 3*number_of_nodes) {
         STAT_DET = true;
     }
 

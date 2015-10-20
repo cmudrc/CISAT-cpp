@@ -268,7 +268,7 @@ void Solution::add_junction(long double x, long double y, long double z, bool ed
     nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
 }
 
-// TODO: Update operators to keep a running list of editable edges
+
 void Solution::remove_pipe(void) {
     // Define a couple of things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -281,7 +281,7 @@ void Solution::remove_pipe(void) {
     remove_edge(editable[idx]);
 }
 
-// TODO: Update operators to keepa running list of editable nodes
+
 void Solution::remove_junction(void) {
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
@@ -334,9 +334,12 @@ void Solution::move_junction(void) {
     nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
     nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
 
-    // Brute force length update TODO Avoid brute-forcedness
-    for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
-        edges[it1->first].parameters["L"] = euclidean_distance(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+    //Update length related properties for the node that we moved.
+    for(int i=0; i < nodes[editable[idx]].outgoing_edges.size(); i++){
+        update_length(nodes[editable[idx]].outgoing_edges[i]);
+    }
+    for(int i=0; i < nodes[editable[idx]].incoming_edges.size(); i++){
+        update_length(nodes[editable[idx]].incoming_edges[i]);
     }
 }
 
@@ -396,4 +399,9 @@ void Solution::save_as_x3d(std::string save_to_file) {
     }
 
     x3d.close_file();
+}
+
+void Solution::update_length(int e){
+    // Update the length
+    edges[e].parameters["L"] = euclidean_distance(edges[e].initial_node, edges[e].terminal_node);
 }

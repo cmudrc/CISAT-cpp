@@ -64,6 +64,7 @@ private:
     void move_junction(void);
 
     int is_valid(void);
+    void update_length(int e);
 };
 
 #endif
