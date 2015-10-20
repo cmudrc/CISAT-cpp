@@ -223,8 +223,8 @@ void Solution::create_seed_graph(void){
 
 void Solution::compute_quality(void) {
     // Define some things
-    long double mass = 0;
     long double FOS_penalty;
+    mass = 0;
     FOS = LDBL_MAX;
 
     if (is_valid()) {
@@ -438,7 +438,7 @@ void Solution::add_member(void){
         int n2 = -1;
         for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
             for (std::map<int, Node>::iterator it2 = std::next(it1, 1); it2 != nodes.end(); it2++) {
-                if (~undirected_edge_exists(it1->first, it2->first)) {
+                if (!undirected_edge_exists(it1->first, it2->first)) {
                     new_distance = euclidean_distance(it1->first, it2->first);
                     if (new_distance < min_distance) {
                         n1 = it1->first;
@@ -684,7 +684,29 @@ void Solution::save_as_x3d(std::string save_to_file) {
     WriteX3D x3d;
     int n1, n2;
 
-    x3d.open_file(save_to_file, -1, 1, 10);
+    // Open the file
+    x3d.open_file(save_to_file);
+
+    // Add the fos
+    std::string the_fos;
+    the_fos.append("fos = ");
+    the_fos.append(std::to_string(FOS));
+    x3d.add_html("h1", the_fos);
+
+    // Add the mass
+    std::string the_mass;
+    the_mass.append("mass = ");
+    the_mass.append(std::to_string(mass));
+    x3d.add_html("h1", the_mass);
+
+    // Add the quality
+    std::string the_quality;
+    the_quality.append("quality = ");
+    the_quality.append(std::to_string(quality[0]));
+    x3d.add_html("h1", the_quality);
+
+
+    x3d.start_scene(-1, 1, 10);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.25);
     }
@@ -697,6 +719,6 @@ void Solution::save_as_x3d(std::string save_to_file) {
                        edges[it1->first].parameters["r"]);
     }
 
-
+    x3d.close_scene();
     x3d.close_file();
 }

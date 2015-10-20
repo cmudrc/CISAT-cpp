@@ -2,7 +2,7 @@
 
 WriteX3D::WriteX3D(void) {}
 
-void WriteX3D::open_file(std::string file_name, long double x, long double y, long double z) {
+void WriteX3D::open_file(std::string file_name) {
     // Open a file on that file stream
     my_file.open(file_name);
 
@@ -12,11 +12,14 @@ void WriteX3D::open_file(std::string file_name, long double x, long double y, lo
     my_file << "    <head>" << std::endl;
     my_file << "        <meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\" />" << std::endl;
     my_file << "        <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />" << std::endl;
-    my_file << "        <title>Hello World</title>" << std::endl;
+    my_file << "        <title>TITLE GOES HERE</title>" << std::endl;
     my_file << "        <link rel=\"stylesheet\" type=\"text/css\" href=\"http://www.cmccomb.com/CISAT/x3dom.css\" />" << std::endl;
     my_file << "        <script type=\"text/javascript\" src=\"http://www.cmccomb.com/CISAT/x3dom.js\"></script>" << std::endl;
     my_file << "    </head>" << std::endl;
     my_file << "    <body>" << std::endl;
+}
+
+void WriteX3D::start_scene(long double x, long double y, long double z){
     my_file << "        <x3d xmlns=\"http://www.x3dom.org/x3dom\" showStat=\"false\" showLog=\"false\" x=\"0px\" y=\"0px\" style='width: 100%; height: 100%;'> " << std::endl;
     my_file << "            <scene>" << std::endl;
     my_file << "                <viewpoint position='" << x << " " << y << " " << z << "' ></viewpoint>" << std::endl;
@@ -45,15 +48,20 @@ void WriteX3D::write_line(long double x1, long double y1, long double z1, long d
     my_file << "                </Transform>" << std::endl;
 }
 
-void WriteX3D::close_file(void) {
+void WriteX3D::add_html(std::string tag, std::string text){
+    my_file << "<" << tag << ">" << text << "</" << tag << ">" << std::endl;
+}
+
+void WriteX3D::close_scene(void) {
     // Write some final things
     my_file << "            </scene>" << std::endl;
     my_file << "        </x3d>" << std::endl;
+}
+
+void WriteX3D::close_file(void){
     my_file << "    </body>" << std::endl;
     my_file << "</html>" << std::endl;
 
     // Close the file
     my_file.close();
 }
-
-//TODO: Add optional ability to write title.

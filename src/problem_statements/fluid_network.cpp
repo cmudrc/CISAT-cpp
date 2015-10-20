@@ -385,7 +385,8 @@ void Solution::save_as_x3d(std::string save_to_file) {
     WriteX3D x3d;
     int n1, n2;
 
-    x3d.open_file(save_to_file, 12.5, 12.5, 75);
+    x3d.open_file(save_to_file);
+    x3d.start_scene(12.5, 12.5, 75);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 1);
     }
@@ -398,6 +399,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
                        edges[it1->first].parameters["d"]);
     }
 
+    x3d.close_scene();
     x3d.close_file();
 }
 

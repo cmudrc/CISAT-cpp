@@ -51,6 +51,7 @@ private:
 
     // Saving the global FOS
     long double FOS;
+    long double mass;
 
     // Inlet location
     static std::vector< std::map<std::string, long double> > seed_node_parameters;
