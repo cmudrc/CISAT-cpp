@@ -162,12 +162,9 @@ void Agent::iterate(int iter){
         history.push_back(current_solution_quality);
     }
 
-//    current_solution.print_undirected_connectivity_matrix("type");
-    print(current_solution.quality[0]);
-
-
     //Update the temperature
     update_temp();
+    print(temperature);
 }
 
 //// Updates temperature using simple stretched Cauchy schedule.

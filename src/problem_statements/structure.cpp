@@ -10,7 +10,7 @@
 const  unsigned long  Solution::number_of_move_ops   = 7;
 const  unsigned long  Solution::number_of_objectives = 1;
 const  std::string    Solution::name                 = "Gravity Fed Fluid Network";
-const  long double    Solution::goal                 = 0.0;
+const  long double    Solution::goal                 = 175.0;
 
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
@@ -368,11 +368,18 @@ void Solution::compute_truss_forces(void) {
         // Calculate factor of safety against yielding
         edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
 
-        // Calculate force of safety
+        // Calculate factor of safety against buckling
         if (edges[k].parameters["F"] < 0) {
             edges[k].parameters["FOS_b"] = -(std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
         } else {
             edges[k].parameters["FOS_b"] = LDBL_MAX;
+        }
+
+        // Save the limiting factor of safety
+        if(edges[k].parameters["FOS_b"] < edges[k].parameters["FOS_y"]){
+            edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_b"];
+        } else {
+            edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_y"];
         }
     }
 }
@@ -479,7 +486,6 @@ void Solution::add_joint(long double x, long double y, long double z, bool edita
 
 
 // This function removes a member at random
-// TODO: Implemenet heuristics for member removal.
 void Solution::remove_member(void) {
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -491,11 +497,7 @@ void Solution::remove_member(void) {
 
         // Step through the avaialable members to fill the weighting vector
         for(int i=0; i<editable.size(); i++) {
-            if(edges[editable[i]].parameters["FOS_b"] < edges[editable[i]].parameters["FOS_y"]){
-                weights[i] = edges[editable[i]].parameters["FOS_b"];
-            } else {
-                weights[i] = edges[editable[i]].parameters["FOS_y"];
-            }
+            weights[i] = edges[editable[i]].parameters["FOS_lim"];
         }
 
         // Remove the edge that is chosen!
@@ -505,17 +507,27 @@ void Solution::remove_member(void) {
 
 
 // This function removes a joint at random (as well as connected members)
-// TODO: Implement heuristics for joint removal.
 void Solution::remove_joint(void) {
     // Define some things
     std::vector<int> editable = get_node_ids("editable", true);
 
     // Make a selection
-    int idx;
     if(editable.size() > 0){
-        std::vector<long double> weights(editable.size(), 1.0);
-        idx = weighted_choice(weights);
-        remove_node(editable[idx]);
+        // Instantiate a weighting vector
+        std::vector<long double> weights(editable.size(), 0.0);
+
+        // Fill the weighting vector
+        for (int i=0; i<editable.size(); i++){
+            for(int j=0; j<nodes[editable[i]].incoming_edges.size(); j++) {
+                weights[i] += edges[nodes[editable[i]].incoming_edges[j]].parameters["FOS_lim"];
+            }
+            for(int j=0; j<nodes[editable[i]].outgoing_edges.size(); j++) {
+                weights[i] += edges[nodes[editable[i]].outgoing_edges[j]].parameters["FOS_lim"];
+            }
+        }
+
+        // Remove the chosen joint
+        remove_node(editable[weighted_choice(weights)]);
     }
 }
 
@@ -525,7 +537,19 @@ void Solution::remove_joint(void) {
 void Solution::change_size_single(void){
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 1.0);
+    std::vector<long double> weights(editable.size(), 0.0);
+
+    // Instantiate the vector of weights
+    for(int i=0; i<editable.size(); i++) {
+        weights[i] = std::abs(edges[editable[i]].parameters["FOS_lim"] - 1.25);
+    }
+    if (FOS < 1.25) {
+        for (int i = 0; i < editable.size(); i++) {
+            if (edges[editable[i]].parameters["FOS_lim"] > 1.25) {
+                weights[i] = 0.0;
+            }
+        }
+    }
 
     // Make a selection
     int idx = weighted_choice(weights);
@@ -568,9 +592,9 @@ void Solution::move_joint(void){
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
     if(editable.size() > 0){
-        std::vector<long double> weights(editable.size(), 1.0);
 
         // Select one to move at random
+        std::vector<long double> weights(editable.size(), 1.0);
         int idx = weighted_choice(weights);
 
         // Move it somehow
