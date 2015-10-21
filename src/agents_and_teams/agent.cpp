@@ -32,9 +32,43 @@ Agent::Agent(int ID, ParameterSet x){
 //// A function that selects a random starting point, and pushes it to other agents.
 void Agent::new_start(void){
     // Define initial move operator preferences
-    move_oper_pref.assign(Solution::number_of_move_ops,
-                          std::vector<long double> (Solution::number_of_move_ops,
-                                                    1.0/std::pow(Solution::number_of_move_ops,2)));
+    if(parameters.learning_style == "FREQUENCY") {
+        // Assign a single vector of weights
+        move_oper_pref.assign(1, std::vector<long double> (Solution::number_of_move_ops, 1.0));
+
+        // Read in initalization from file, if appropriate
+        if(parameters.init_learn_path != "none") {
+            std::ifstream inputFile(parameters.init_learn_path);
+            std::string line;
+
+            getline(inputFile, line);
+            std::istringstream ss(line);
+            for (int i=0; i<Solution::number_of_move_ops; i++) {
+                ss >> move_oper_pref[0][i];
+            }
+        }
+    }
+    else if(parameters.learning_style == "MARKOV") {
+        // Assign a matrix of weights
+        move_oper_pref.assign(Solution::number_of_move_ops, std::vector<long double> (Solution::number_of_move_ops, 1.0));
+
+        // Read in initalization from file, if appropriate
+        if(parameters.init_learn_path != "none") {
+            std::ifstream inputFile(parameters.init_learn_path);
+            std::string line;
+
+            for (int i=0; i<Solution::number_of_move_ops; i++) {
+                getline(inputFile, line);
+                std::istringstream ss(line);
+                for (int j=0; j<Solution::number_of_move_ops; j++) {
+                    ss >> move_oper_pref[i][j];
+                }
+            }
+        }
+    }
+    else if(parameters.learning_style == "HIDDEN_MARKOV") {
+
+    }
 
     // Define objective weighting
     objective_weighting.assign(Solution::number_of_objectives, 1.0);
@@ -58,7 +92,6 @@ Solution Agent::candidate_solution(void){
     long double sum_w = 0;
     long double old_fx = 0, new_fx = 0;
     int j, k;                    // Index for random draw
-
 
     // If a random draw is lower than teh probability of interaction, then interact.
     if(parameters.interaction > uniform(1.0, 0.0)) {
@@ -88,34 +121,64 @@ Solution Agent::candidate_solution(void){
     // Save the old quality
     old_fx = apply_weighting(candidate.quality, objective_weighting);
 
-    // Choose which move operator to apply
+
     // TODO: Add a contextually sensitive learning module (i.e. operation chosen based on degree of nodes, edge weight, etc.).
-    j = weighted_choice(move_oper_pref[last_operation]);
+    if(parameters.learning_style == "FREQUENCY") {
+        // Choose which move operator to apply
+        j = weighted_choice(move_oper_pref[0]);
 
-    // Apply teh move operator
-    candidate.apply_move_operator(j);
+        // Apply the move operator
+        candidate.apply_move_operator(j);
 
-    // Keep track of what happened
-    new_fx = apply_weighting(candidate.quality, objective_weighting);
+        // Keep track of what happened
+        new_fx = apply_weighting(candidate.quality, objective_weighting);
 
-    // Update move operator preferences
-    if (new_fx < old_fx) {
-        move_oper_pref[last_operation][j] *= (1 + parameters.op_learn);
-    } else if (new_fx > old_fx) {
-        move_oper_pref[last_operation][j] *= (1 - parameters.op_learn);
+        // Update move operator preferences
+        if (new_fx < old_fx) {
+            move_oper_pref[0][j] *= (1 + parameters.op_learn);
+        } else if (new_fx > old_fx) {
+            move_oper_pref[0][j] *= (1 - parameters.op_learn);
+        }
+
+        // Normalize the vector so it doesn't get out of hand
+        sum_w = 0;
+        for (int i=0; i < Solution::number_of_move_ops; i++) {
+            sum_w += move_oper_pref[0][i];
+        }
+        for (int i=0; i < Solution::number_of_move_ops; i++) {
+            move_oper_pref[0][i]/=sum_w;
+        }
+    }
+    else if(parameters.learning_style == "MARKOV") {
+        // Choose which move operator to apply
+        j = weighted_choice(move_oper_pref[last_operation]);
+
+        // Apply teh move operator
+        candidate.apply_move_operator(j);
+
+        // Keep track of what happened
+        new_fx = apply_weighting(candidate.quality, objective_weighting);
+
+        // Update move operator preferences
+        if (new_fx < old_fx) {
+            move_oper_pref[last_operation][j] *= (1 + parameters.op_learn);
+        } else if (new_fx > old_fx) {
+            move_oper_pref[last_operation][j] *= (1 - parameters.op_learn);
+        }
+
+        // Normalize the vector so it doesn't get out of hand
+        sum_w = 0;
+        for (int i=0; i < Solution::number_of_move_ops; i++) {
+            sum_w += move_oper_pref[last_operation][i];
+        }
+        for (int i=0; i < Solution::number_of_move_ops; i++) {
+            move_oper_pref[last_operation][i]/=sum_w;
+        }
+
+        // Update the last operation
+        last_operation = j;
     }
 
-    // Normalize the vector so it doesn't get out of hand
-    sum_w = 0;
-    for (int i=0; i < Solution::number_of_move_ops; i++) {
-        sum_w += move_oper_pref[last_operation][i];
-    }
-    for (int i=0; i < Solution::number_of_move_ops; i++) {
-        move_oper_pref[last_operation][i]/=sum_w;
-    }
-
-    // Update the last operation
-    last_operation = j;
 
     return candidate;
 
@@ -143,7 +206,7 @@ void Agent::iterate(int iter){
         // Save locally
         current_solution = x_cand;
         current_solution_quality = fx_cand;
-        std::cout << "Accepted" << ", ";
+//        std::cout << "Accepted" << ", ";
     } else {
         // If not, accept with some probability
         long double p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
@@ -151,9 +214,9 @@ void Agent::iterate(int iter){
             // Save locally
             current_solution = x_cand;
             current_solution_quality = fx_cand;
-            std::cout << "Accepted" << ", ";
+//            std::cout << "Accepted" << ", ";
         } else {
-            std::cout << "Rejected" << ", ";
+//            std::cout << "Rejected" << ", ";
         }
     }
 
@@ -168,7 +231,6 @@ void Agent::iterate(int iter){
 
     //Update the temperature
     update_temp();
-    print(temperature);
 }
 
 //// Updates temperature using simple stretched Cauchy schedule.

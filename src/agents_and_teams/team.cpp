@@ -62,9 +62,9 @@ void Team::iterate(int iter){
         Agent::all_current_solutions[agent_list[i].agent_id] = agent_list[i].current_solution;
     }
 
-    if (parameters.n_reps == 1){
-        std::cout << std::endl;
-    }
+//    if (parameters.n_reps == 1){
+//        std::cout << std::endl;
+//    }
 
     // Pull out the best solution
     pull_best_solution(iter);

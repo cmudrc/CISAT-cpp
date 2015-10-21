@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
             i++;
             max_iter = atoi(argv[i]);
         }
-        else if (std::string(argv[i]) == "--pattern"  || std::string(argv[i]) == "-parameters") {
+        else if (std::string(argv[i]) == "--pattern"  || std::string(argv[i]) == "-p") {
             pattern = true;
             i++;
             max_iter = atoi(argv[i]);

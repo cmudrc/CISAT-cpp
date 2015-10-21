@@ -2,3 +2,4 @@ build/*
 .idea/*
 analysis/.ipynb_checkpoints/*
 data/*
+runs/*

@@ -25,152 +25,53 @@ const std::vector< long double > Solution::wall_thickness = {0.005/7.5, 0.010/7.
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
-    {
-        {"x", -5.00}, // [m]
-        {"y",  0.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", 0.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 1}, // [bool]
-        {"ry", 1}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", false}
-    }, {
-        {"x", -2.00}, // [m]
-        {"y",  0.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", -200000.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 0}, // [bool]
-        {"ry", 0}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", false}
-    }, {
-        {"x",  1.00}, // [m]
-        {"y",  0.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", 0.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 0}, // [bool]
-        {"ry", 1}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", false}
-    }, {
-        {"x",  3.00}, // [m]
-        {"y",  0.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", -200000.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 0}, // [bool]
-        {"ry", 0}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", false}
-    }, {
-        {"x",  5.00}, // [m]
-        {"y",  0.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", 0.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 1}, // [bool]
-        {"ry", 1}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", false}
-    }, {
-        {"x", -2.00}, // [m]
-        {"y",  2.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", 0.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 0}, // [bool]
-        {"ry", 0}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", true}
-    }, {
-        {"x",  1.00}, // [m]
-        {"y",  2.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", 0.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 0}, // [bool]
-        {"ry", 0}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", true}
-    }, {
-        {"x",  3.00}, // [m]
-        {"y",  2.00}, // [m]
-        {"z",  0.00}, // [m]
-        {"Fx", 0.00}, // [N]
-        {"Fy", 0.00}, // [N]
-        {"Fz", 0.00}, // [N]
-        {"rx", 0}, // [bool]
-        {"ry", 0}, // [bool]
-        {"rz", 1}, // [bool]
-        {"editable", true}
-    }
+    {{"x", -5.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"editable", false}},
+    {{"x", -2.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", false}},
+    {{"x", 1.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 1}, {"rz", 1}, {"editable", false}},
+    {{"x", 3.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", false}},
+    {{"x", 5.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"editable", false}},
+    {{"x", -5.00}, {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", -3.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", -0.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", 2.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", 4.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", 5.00},  {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", -2.00}, {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", 1.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", 3.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
 };
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters = {
-    {
-        {"initial",  0},
-        {"terminal", 1},
-        {"radius", 4}
-    }, {
-        {"initial",  1},
-        {"terminal", 2},
-        {"radius", 4}
-    }, {
-        {"initial",  2},
-        {"terminal", 3},
-        {"radius", 4}
-    }, {
-        {"initial",  3},
-        {"terminal", 4},
-        {"radius", 4}
-    }, {
-        {"initial",  5},
-        {"terminal", 6},
-        {"radius", 4}
-    }, {
-        {"initial",  6},
-        {"terminal", 7},
-        {"radius", 4}
-    }, {
-        {"initial",  0},
-        {"terminal", 5},
-        {"radius", 4}
-    }, {
-        {"initial",  1},
-        {"terminal", 5},
-        {"radius", 4}
-    }, {
-        {"initial",  5},
-        {"terminal", 2},
-        {"radius", 4}
-    }, {
-        {"initial",  6},
-        {"terminal", 2},
-        {"radius", 4}
-    }, {
-        {"initial",  7},
-        {"terminal", 2},
-        {"radius", 4}
-    }, {
-        {"initial",  3},
-        {"terminal", 7},
-        {"radius", 4}
-    }, {
-        {"initial",  4},
-        {"terminal", 7},
-        {"radius", 4}
-    }
+    {{"initial",  0}, {"terminal", 1}, {"radius", 4}},
+    {{"initial",  1}, {"terminal", 2}, {"radius", 4}},
+    {{"initial",  2}, {"terminal", 3}, {"radius", 4}},
+    {{"initial",  3}, {"terminal", 4}, {"radius", 4}},
+    {{"initial",  0}, {"terminal", 6}, {"radius", 4}},
+    {{"initial",  6}, {"terminal", 1}, {"radius", 4}},
+    {{"initial",  1}, {"terminal", 7}, {"radius", 4}},
+    {{"initial",  7}, {"terminal", 2}, {"radius", 4}},
+    {{"initial",  2}, {"terminal", 8}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 3}, {"radius", 4}},
+    {{"initial",  3}, {"terminal", 9}, {"radius", 4}},
+    {{"initial",  9}, {"terminal", 4}, {"radius", 4}},
+    {{"initial",  5}, {"terminal", 6}, {"radius", 4}},
+    {{"initial",  6}, {"terminal", 7}, {"radius", 4}},
+    {{"initial",  7}, {"terminal", 8}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 9}, {"radius", 4}},
+    {{"initial",  9}, {"terminal", 10}, {"radius", 4}},
+    {{"initial",  5}, {"terminal", 11}, {"radius", 4}},
+    {{"initial", 11}, {"terminal", 12}, {"radius", 4}},
+    {{"initial", 12}, {"terminal", 13}, {"radius", 4}},
+    {{"initial", 13}, {"terminal", 10}, {"radius", 4}},
+    {{"initial",  6}, {"terminal", 11}, {"radius", 4}},
+    {{"initial",  7}, {"terminal", 11}, {"radius", 4}},
+    {{"initial",  7}, {"terminal", 12}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 12}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 13}, {"radius", 4}},
+    {{"initial",  9}, {"terminal", 13}, {"radius", 4}},
+    {{"initial",  0}, {"terminal", 5}, {"radius", 4}},
+    {{"initial",  4}, {"terminal", 10}, {"radius", 4}},
 };
 
 
@@ -203,9 +104,9 @@ void Solution::create_seed_graph(void){
         add_node();
 
         // Add the values
-        nodes[node_id_counter].parameters["x"] = seed_node_parameters[i]["x"];
-        nodes[node_id_counter].parameters["y"] = seed_node_parameters[i]["y"];
-        nodes[node_id_counter].parameters["z"] = seed_node_parameters[i]["z"];
+        nodes[node_id_counter].parameters["x"] = seed_node_parameters[i]["x"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
+        nodes[node_id_counter].parameters["y"] = seed_node_parameters[i]["y"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
+        nodes[node_id_counter].parameters["z"] = seed_node_parameters[i]["z"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
         nodes[node_id_counter].parameters["rx"] = seed_node_parameters[i]["rx"];
         nodes[node_id_counter].parameters["ry"] = seed_node_parameters[i]["ry"];
         nodes[node_id_counter].parameters["rz"] = seed_node_parameters[i]["rz"];
@@ -227,9 +128,11 @@ void Solution::compute_quality(void) {
     mass = 0;
     FOS = LDBL_MAX;
 
+
+    // Compute the force-based solution for the truss
+    compute_truss_forces();
+
     if (is_valid()) {
-        // Compute the force-based solution for the truss
-        compute_truss_forces();
 
         // Compute the mass
         for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1) {
@@ -335,14 +238,28 @@ void Solution::compute_truss_forces(void) {
     }
 
     // Solve for displacements
+    int ffs = ff.size();
     std::vector<std::vector<long double> > Kff(ff.size(), std::vector<long double>(ff.size() + 1, 0.0));
-    for (int i = 0; i < ff.size(); i++) {
-        for (int j = 0; j < ff.size(); j++) {
+    for (int i = 0; i < ffs; i++) {
+        for (int j = 0; j < ffs; j++) {
             Kff[i][j] = K[ff[i]][ff[j]];
         }
-        Kff[i][ff.size()] = loads_ff[i];
+        Kff[i][ffs] = loads_ff[i];
     }
+
     std::vector<long double> deflections_compact = gauss(Kff);
+
+
+    // Compute hte condition number
+    for(int i=0; i<ffs; i++){
+        Kff[i][ffs] = deflections_compact[i];
+    }
+    std::vector<long double> backed_out_loads = matrix_vector_mult(Kff);
+    cond = 0;
+    for(int i=0; i<ffs; i++){
+        cond += std::abs(loads_ff[i] - backed_out_loads[i]);
+    }
+
 
     // Fit the compacted deflection matrix back into the original
     counter = 0;
@@ -387,28 +304,27 @@ void Solution::compute_truss_forces(void) {
 }
 
 void Solution::apply_move_operator(int move_type){
-    std::cout << "Move: " << move_type << ", ";
     switch(move_type) {
         case 0:
-            add_member();
+            add_joint_and_attach();
             break;
         case 1:
-            remove_member();
-            break;
-        case 2:
             remove_joint();
             break;
+        case 2:
+            add_member();
+            break;
         case 3:
-            change_size_single();
+            remove_member();
             break;
         case 4:
-            change_size_all();
+            change_size_single();
             break;
         case 5:
-            move_joint();
+            change_size_all();
             break;
         case 6:
-            add_joint_and_attach();
+//            move_joint();
             break;
         default:
             break;
@@ -730,7 +646,7 @@ int Solution::is_valid(void) {
     }
 
     // Make sure at least statically determinant
-    bool STAT_DET = false;
+    bool STABLE = false;
     int number_of_reactions = 0;
     for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it){
         number_of_reactions += nodes[it->first].parameters["rx"];
@@ -738,10 +654,15 @@ int Solution::is_valid(void) {
         number_of_reactions += nodes[it->first].parameters["rz"];
     }
     if (number_of_edges + number_of_reactions >= 3*number_of_nodes) {
-        STAT_DET = true;
+        STABLE = true;
     }
 
-    return LOADS && SUPPORTS && STAT_DET;
+    // Mkae sure the stiffness matrix isn't singular
+    if(cond > std::pow(10, -5)) {
+        STABLE = false;
+    }
+
+    return LOADS && SUPPORTS && STABLE;
 }
 
 

@@ -1,7 +1,9 @@
 #include "../../include/utilities/parameterset.hpp"
 
 //// Construct the thing
-ParameterSet::ParameterSet(void){}
+ParameterSet::ParameterSet(void){
+    init_learn_path = "none";
+}
 
 //// Function to read variables from a file
 void ParameterSet::set_from_file(std::string file_name) {
@@ -25,24 +27,28 @@ void ParameterSet::set_from_file(std::string file_name) {
         else if(name == "MAX_IT")  ss >> max_iter;
         else if(name == "S_BIAS")  ss >> s_bias;
         else if(name == "Q_BIAS")  ss >> q_bias;
-        else if(name == "OLEARN")  ss >> op_learn;
+        else if(name == "LEARN_CONST")  ss >> op_learn;
+        else if(name == "LEARN_INIT")  ss >> init_learn_path;
+        else if(name == "LEARN")  ss >> learning_style;
         else if(name == "SATFRAC") ss >> satisficing_fraction;
     }
 }
 
 //// Shows the current parameters
 void ParameterSet::print_parameters(void) {
-    std::cout << "Number of agents: " <<  n_agents                        << std::endl;
-    std::cout << "Interaction:      " <<  interaction                     << std::endl;
-    std::cout << "Initial temp:     " <<  initial_temperature             << std::endl;
-    std::cout << "Temp factor:      " <<  delt                            << std::endl;
-    std::cout << "History length:   " <<  history_length                  << std::endl;
-    std::cout << "Number of reps:   " <<  n_reps                          << std::endl;
-    std::cout << "Max iterations:   " <<  max_iter                        << std::endl;
-    std::cout << "Self-bias:        " <<  s_bias                          << std::endl;
-    std::cout << "Quality-bias:     " <<  q_bias                          << std::endl;
-    std::cout << "Operation learn:  " <<  op_learn                        << std::endl;
-    std::cout << "Satisficing frac: " <<  satisficing_fraction            << std::endl;
+    std::cout << "Number of agents:  " <<  n_agents                        << std::endl;
+    std::cout << "Interaction:       " <<  interaction                     << std::endl;
+    std::cout << "Initial temp:      " <<  initial_temperature             << std::endl;
+    std::cout << "Temp factor:       " <<  delt                            << std::endl;
+    std::cout << "History length:    " <<  history_length                  << std::endl;
+    std::cout << "Number of reps:    " <<  n_reps                          << std::endl;
+    std::cout << "Max iterations:    " <<  max_iter                        << std::endl;
+    std::cout << "Self-bias:         " <<  s_bias                          << std::endl;
+    std::cout << "Quality-bias:      " <<  q_bias                          << std::endl;
+    std::cout << "Learning style:    " <<  learning_style                  << std::endl;
+    std::cout << "Initial knowledge: " <<  init_learn_path                 << std::endl;
+    std::cout << "Operation learn:   " <<  op_learn                        << std::endl;
+    std::cout << "Satisficing frac:  " <<  satisficing_fraction            << std::endl;
 }
 
 //// Sets parameters based on a vector
@@ -54,7 +60,7 @@ void ParameterSet::set_from_pair(std::string name, long double x) {
     else if(name == "INTER")   interaction = x;
     else if(name == "S_BIAS")  s_bias = x;
     else if(name == "Q_BIAS")  q_bias = x;
-    else if(name == "OLEARN")  op_learn = x;
+    else if(name == "LEARN_CONST")  op_learn = x;
     else if(name == "SATFRAC") satisficing_fraction = x;
 }
 
@@ -67,7 +73,7 @@ long double ParameterSet::get_from_name(std::string name) {
     else if(name == "INTER")   return interaction;
     else if(name == "S_BIAS")  return s_bias;
     else if(name == "Q_BIAS")  return q_bias;
-    else if(name == "OLEARN")  return op_learn;
+    else if(name == "LEARN_CONST")  return op_learn;
     else if(name == "SATFRAC") return satisficing_fraction;
     else                       return -1;
 }

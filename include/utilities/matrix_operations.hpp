@@ -6,6 +6,22 @@
 
 std::vector<long double> gauss(std::vector< std::vector<long double> > A);
 
+
+template <typename Type>
+std::vector< Type > matrix_vector_mult(std::vector< std::vector<Type> > A) {
+    // Define the vector
+    std::vector<Type> C(A.size(),0);
+
+    unsigned long m = A.size();
+
+    for(int i=0; i<m; i++){
+        for(int j=0; j<m; j++)
+        C[i] += A[i][j]*A[j][m];
+    }
+
+    return C;
+}
+
 template <typename Type>
 std::vector< std::vector<Type> > matrix_mult(std::vector< std::vector<Type> > A, std::vector< std::vector<Type> > B) {
     // Define the vector

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <vector>
 
 class ParameterSet {
 public:
@@ -23,6 +24,9 @@ public:
     long double s_bias;
     long double q_bias;
     long double op_learn;
+    std::vector<std::vector< long double>> learn_init;
+    std::string init_learn_path;
+    std::string learning_style;
     long double satisficing_fraction;
 
     //// Functions
