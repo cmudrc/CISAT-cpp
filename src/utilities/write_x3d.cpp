@@ -41,7 +41,7 @@ void WriteX3D::write_line(long double x1, long double y1, long double z1, long d
     my_file << "                <Transform translation=\"" << 0 << " " << 0 << " " <<  0 << "\">" << std::endl;
     my_file << "                    <Shape>" << std::endl;
     my_file << "                        <Appearance>" << std::endl;
-    my_file << "                            <LineProperties applied='TRUE' linewidthscalefactor='" << 2*size+1 << "'></LineProperties>" << std::endl;
+    my_file << "                            <LineProperties applied='TRUE' linewidthscalefactor='" << size << "'></LineProperties>" << std::endl;
     my_file << "                        </Appearance>" << std::endl;
     my_file << "                        <IndexedLineSet coordIndex='0 1'><Coordinate point='" << x1 << " " << y1 << " "  << z1 << " "  << x2  << " " << y2  << " " << z2 << "'></IndexedLineSet>" << std::endl;
     my_file << "                    </Shape>" << std::endl;

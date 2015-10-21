@@ -232,12 +232,13 @@ void Solution::add_pipe(int n1, int n2, int d, bool editable) {
     edges[edge_id_counter].parameters["editable"] = editable;
     edges[edge_id_counter].parameters["D"] = d;
     edges[edge_id_counter].parameters["Q"] = 0.0;
-    edges[edge_id_counter].parameters["p"] = 0.0;
 
     // Compute the length
     edges[edge_id_counter].parameters["L"] = euclidean_distance(n1, n2);
 }
 
+
+// Adds a pipe randomly between two junctions
 void Solution::add_pipe(void) {
     // Define a couple of things
     std::vector<int> editable = get_node_ids("type", INTERMEDIATE);

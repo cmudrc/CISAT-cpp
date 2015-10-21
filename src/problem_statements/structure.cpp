@@ -17,11 +17,11 @@ const  long double    Solution::E               = 209*std::pow(10,9); // Pa
 const  long double    Solution::Fy              = 344*std::pow(10,6); // Pa
 const  long double    Solution::rho             = 7870; // kg/m3
 
-// TODO: Add calculation of area and moment of inertia
+// Member radius and wall thickness
 const std::vector< long double > Solution::member_radius  = {0.005, 0.010, 0.015, 0.020, 0.025,
                                                              0.030, 0.035, 0.040, 0.045, 0.050};
-const std::vector< long double > Solution::wall_thickness = {0.005/15, 0.010/15, 0.015/15, 0.020/15, 0.025/15,
-                                                             0.030/15, 0.035/15, 0.040/15, 0.045/15, 0.050/15};
+const std::vector< long double > Solution::wall_thickness = {0.005/7.5, 0.010/7.5, 0.015/7.5, 0.020/7.5, 0.025/7.5,
+                                                             0.030/7.5, 0.035/7.5, 0.040/7.5, 0.045/7.5, 0.050/7.5};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
@@ -262,6 +262,9 @@ void Solution::compute_quality(void) {
     quality[0] = mass + FOS_penalty;
 }
 
+
+// This function computes forces and factors of sfaety
+// TODO: Check condition number
 void Solution::compute_truss_forces(void) {
     // Initialize things
     std::vector<std::vector<long double> > K(static_cast<unsigned long>(3 * number_of_nodes),
@@ -309,7 +312,6 @@ void Solution::compute_truss_forces(void) {
     long double ux, uy, uz;
     std::vector<int> ee(6, 0);
     std::vector<long double> uu(6, 0.0);
-    std::vector<std::vector<long double>> element_stiffness(number_of_edges, std::vector<long double>(3, 0.0));
     for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
         int k = (it->first);
         key1 = edges[k].initial_node;
@@ -385,6 +387,7 @@ void Solution::compute_truss_forces(void) {
 }
 
 void Solution::apply_move_operator(int move_type){
+    std::cout << "Move: " << move_type << ", ";
     switch(move_type) {
         case 0:
             add_member();
@@ -438,7 +441,7 @@ void Solution::add_member(int n1, int n2, int r, bool editable){
 // This function adds a member between two random joints
 void Solution::add_member(void){
     // Define some things
-    if(number_of_nodes*number_of_nodes > number_of_edges) {
+    if(number_of_nodes*number_of_nodes-3 > number_of_edges) {
         long double min_distance = LDBL_MAX;
         long double new_distance;
         int n1 = -1;
@@ -446,11 +449,13 @@ void Solution::add_member(void){
         for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
             for (std::map<int, Node>::iterator it2 = std::next(it1, 1); it2 != nodes.end(); it2++) {
                 if (!undirected_edge_exists(it1->first, it2->first)) {
-                    new_distance = euclidean_distance(it1->first, it2->first);
-                    if (new_distance < min_distance) {
-                        n1 = it1->first;
-                        n2 = it2->first;
-                        min_distance = new_distance;
+                    if(!(std::abs((it1->first)-(it2->first)) == 2 && (it1->first)<5 && (it2->first)<5)) {
+                        new_distance = euclidean_distance(it1->first, it2->first);
+                        if (new_distance < min_distance) {
+                            n1 = it1->first;
+                            n2 = it2->first;
+                            min_distance = new_distance;
+                        }
                     }
                 }
             }
@@ -533,7 +538,6 @@ void Solution::remove_joint(void) {
 
 
 // Changes the size of a single member chosen at random
-// TODO: Implement heuristics for selecting and changing member size
 void Solution::change_size_single(void){
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -567,13 +571,20 @@ void Solution::change_size_single(void){
 
 
 // Changes the size of all members
-// TODO: Implement heuristics for changing member size
 void Solution::change_size_all(void){
     // Define some things
     std::vector<int> editable = get_edge_ids("editable", true);
 
     // Decide whether ot increase or decrease
-    int inc_dec = uniform_int(1, 0)*2 - 1;
+    long double inc_dec = 0.0001; // Instantiate to non-zero to break ties
+    for (int i=0; i<editable.size(); i++){
+        if(edges[editable[i]].parameters["FOS_lim"] < 1.25) {
+            inc_dec += 1;
+        } else {
+            inc_dec -= 1;
+        }
+    }
+    inc_dec /= std::abs(inc_dec);
 
     for(int i=0; i<editable.size(); i++){
         if ((edges[editable[i]].parameters["r"] + inc_dec) < member_radius.size()
@@ -587,7 +598,6 @@ void Solution::change_size_all(void){
 
 
 // This function randomly moves a joint.
-// TODO: Make joint selection and update more intelligent.
 void Solution::move_joint(void){
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
@@ -595,18 +605,49 @@ void Solution::move_joint(void){
 
         // Select one to move at random
         std::vector<long double> weights(editable.size(), 1.0);
-        int idx = weighted_choice(weights);
+        int key = editable[weighted_choice(weights)];
 
         // Move it somehow
-        nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
-        nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
+        long double step_size = 2.0;
+        int max_iter = 10;
+        long double best_quality = quality[0];
+        std::vector< std::vector< long double> > udir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for(int i=0; i<max_iter; i++){
+            for(int j=0; j<4; j++){
+                // Try a move in the j^th direction
+                nodes[key].parameters["x"] += udir[j][0]*step_size;
+                nodes[key].parameters["y"] += udir[j][1]*step_size;
+
+                // Compute quality
+                compute_quality();
+
+                // If improved, keep and break. Else, reverse.
+                if(quality[0] < best_quality) {
+                    best_quality = quality[0];
+                    break;
+                } else {
+                    nodes[key].parameters["x"] -= udir[j][0]*step_size;
+                    nodes[key].parameters["y"] -= udir[j][1]*step_size;
+                };
+
+                // If j == 4 without improvement, halve step size
+                if (j==4) {
+                    step_size /= 2.0;
+                }
+
+                // If the step size gets too small, exit. Its good enough.
+                if (step_size < 0.1) {
+                    i = max_iter;
+                }
+            }
+        }
 
         //Update length related properties for the node that we moved.
-        for(int i=0; i < nodes[editable[idx]].outgoing_edges.size(); i++){
-            update_length(nodes[editable[idx]].outgoing_edges[i]);
+        for(int i=0; i < nodes[key].outgoing_edges.size(); i++){
+            update_length(nodes[key].outgoing_edges[i]);
         }
-        for(int i=0; i < nodes[editable[idx]].incoming_edges.size(); i++){
-            update_length(nodes[editable[idx]].incoming_edges[i]);
+        for(int i=0; i < nodes[key].incoming_edges.size(); i++){
+            update_length(nodes[key].incoming_edges[i]);
         }
     }
 }
@@ -730,7 +771,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
     x3d.add_html("h1", the_quality);
 
 
-    x3d.start_scene(-1, 1, 10);
+    x3d.start_scene(0, 1, 10);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.25);
     }

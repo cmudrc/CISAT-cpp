@@ -143,6 +143,7 @@ void Agent::iterate(int iter){
         // Save locally
         current_solution = x_cand;
         current_solution_quality = fx_cand;
+        std::cout << "Accepted" << ", ";
     } else {
         // If not, accept with some probability
         long double p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
@@ -150,6 +151,9 @@ void Agent::iterate(int iter){
             // Save locally
             current_solution = x_cand;
             current_solution_quality = fx_cand;
+            std::cout << "Accepted" << ", ";
+        } else {
+            std::cout << "Rejected" << ", ";
         }
     }
 
