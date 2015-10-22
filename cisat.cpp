@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
     bool pattern = false;
     bool found_output = false;
     bool found_input = false;
-    bool verb = false;
     std::string input;
     std::string output;
 
@@ -58,22 +57,19 @@ int main(int argc, char *argv[]) {
             input = std::string(argv[i]);
             found_input = true;
         }
-        else if (std::string(argv[i]) == "--verbose"  || std::string(argv[i]) == "-v") {
-            verb = true;
-        }
         else if (std::string(argv[1]) == "--help"     || std::string(argv[i]) == "-h" || argc == 1) {
             std::cout << "You need help, bro" << std::endl;
             return 0;
         }
         else {
-            std::cout << "hsat: Invalid option, '" << std::string(argv[i]) << "' is not recognized. Try running 'hsat --help' for help text." << std::endl;
+            std::cout << "cisat: Invalid option, '" << std::string(argv[i]) << "' is not recognized. Try running 'cisat --help' for help text." << std::endl;
             return 1;
         }
     }
 
     // Make sure there's an input file
     if(!found_input) {
-        std::cout << "hsat: An input file was not provided, but is required for --bench, --univariate, and --pattern." << std::endl;
+        std::cout << "cisat: An input file was not provided, but is required for --bench, --univariate, and --pattern." << std::endl;
         return 1;
     }
 
@@ -82,19 +78,14 @@ int main(int argc, char *argv[]) {
         // Initialize it
         MultipleTeams some_teams(input);
 
-        // Print parameters if verbose
-        if(verb){
-//            Solution::print_surface_characteristics();
-            some_teams.parameters.print_parameters();
-        }
+        // Print parameters
+        some_teams.parameters.print_parameters();
 
         // Print output if requested
         std::cout << std::endl << some_teams.solve() << std::endl << std::endl;
 
-        // Print cdf if verbose
-        if(verb) {
-            print(some_teams.cdf);
-        }
+        // Print cdf
+        print(some_teams.cdf);
 
         // Save output if possible
         if(found_output){
@@ -107,13 +98,11 @@ int main(int argc, char *argv[]) {
         // Make it
         UnivariateSearch US(input);
 
-        // If verbose, print beginning values
-        if(verb){
-            US.best_parameters.print_parameters();
-        }
+        // Print starting values
+        US.best_parameters.print_parameters();
 
         // Solve it all
-        US.solve(max_iter, verb);
+        US.solve(max_iter);
 
         // Output the final solution set to a file defined by argv2
         if(found_output) {
@@ -128,12 +117,10 @@ int main(int argc, char *argv[]) {
         PatternSearch PS(input);
 
         // If verbose, print beginning values
-        if(verb){
-            PS.best_parameters.print_parameters();
-        }
+        PS.best_parameters.print_parameters();
 
         // Solve it all
-        PS.solve(max_iter, verb);
+        PS.solve(max_iter);
 
         // Output the final solution set to a file defined by argv2
         if(found_output) {
@@ -146,8 +133,6 @@ int main(int argc, char *argv[]) {
     delta = ((end.tv_sec - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
 
     std::cout.precision(2);
-    if(verb) {
-        std::cout << std::fixed << delta << " seconds elapsed." << std::endl;
-    }
+    std::cout << std::fixed << delta << " seconds elapsed." << std::endl;
     return 0;
 }

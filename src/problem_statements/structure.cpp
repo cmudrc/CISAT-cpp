@@ -106,7 +106,7 @@ void Solution::create_seed_graph(void){
         // Add the values
         nodes[node_id_counter].parameters["x"] = seed_node_parameters[i]["x"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
         nodes[node_id_counter].parameters["y"] = seed_node_parameters[i]["y"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
-        nodes[node_id_counter].parameters["z"] = seed_node_parameters[i]["z"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
+        nodes[node_id_counter].parameters["z"] = seed_node_parameters[i]["z"];
         nodes[node_id_counter].parameters["rx"] = seed_node_parameters[i]["rx"];
         nodes[node_id_counter].parameters["ry"] = seed_node_parameters[i]["ry"];
         nodes[node_id_counter].parameters["rz"] = seed_node_parameters[i]["rz"];
@@ -356,7 +356,7 @@ void Solution::add_member(int n1, int n2, int r, bool editable){
 // This function adds a member between two random joints
 void Solution::add_member(void){
     // Define some things
-    if(number_of_nodes*number_of_nodes-3 > number_of_edges) {
+    if(number_of_nodes*number_of_nodes > number_of_edges) {
         long double min_distance = LDBL_MAX;
         long double new_distance;
         int n1 = -1;
@@ -364,7 +364,7 @@ void Solution::add_member(void){
         for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
             for (std::map<int, Node>::iterator it2 = std::next(it1, 1); it2 != nodes.end(); it2++) {
                 if (!undirected_edge_exists(it1->first, it2->first)) {
-                    if(!(std::abs((it1->first)-(it2->first)) == 2 && (it1->first)<5 && (it2->first)<5)) {
+                    if(!(std::abs((it1->first)-(it2->first)) > 1 && (it1->first)<5 && (it2->first)<5)) {
                         new_distance = euclidean_distance(it1->first, it2->first);
                         if (new_distance < min_distance) {
                             n1 = it1->first;
@@ -377,7 +377,9 @@ void Solution::add_member(void){
         }
 
         // Add the member
-        add_member(n1, n2, 4, true);
+        if (!(n1 == -1 && n2 == -1)){
+            add_member(n1, n2, 4, true);
+        }
     }
 }
 

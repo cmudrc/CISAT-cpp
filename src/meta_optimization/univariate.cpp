@@ -5,7 +5,7 @@ UnivariateSearch::UnivariateSearch(std::string file_name){
     parse_parameter_file(file_name);
 }
 
-void UnivariateSearch::solve(int max_iter, bool verb){
+void UnivariateSearch::solve(int max_iter){
     // Stores the current iteration and values
     current_iteration = 0;
     ParameterSet current_parameters;
@@ -27,22 +27,16 @@ void UnivariateSearch::solve(int max_iter, bool verb){
     std::vector<long double> regression_results;
     long double safe_upper_bound;
     long double safe_lower_bound;
-    if(verb) {
-        std::cout << "\nBeginning Optimization Routine" << std::endl;
-    }
+    std::cout << "\nBeginning Optimization Routine" << std::endl;
 
     // Do some iterations, bro. Get mad optimized.
     while(current_iteration < max_iter) {
-        if(verb) {
-            std::cout << "\tIteration " << current_iteration + 1 << " of " << max_iter << std::endl;
-        }
+        std::cout << "\tIteration " << current_iteration + 1 << " of " << max_iter << std::endl;
         is_edge_solution = false;
         is_at_bound = false;
         // Within each iteration, step in each direction
         for (int i = 0; i < variable_names.size(); i++) {
-            if(verb) {
-                std::cout << "\t\tComputing " << variable_names[i];
-            }
+            std::cout << "\t\tComputing " << variable_names[i];
 
             // Draw a random variable in the param range
             safe_upper_bound = std::min(variable_values[i]+step_sizes[i], upper_limits[i]);
@@ -86,22 +80,17 @@ void UnivariateSearch::solve(int max_iter, bool verb){
                 }
             }
 
-            if(verb) {
-                std::cout << " = " << best_parameters.get_from_name(variable_names[i])
-                        << ", mean = " << regression_results[2]
-                        << ", r2 = " << regression_results[3]
-                        << ", " << (is_edge_solution ? "edge" : "interior") << std::endl;
-            }
-
+            std::cout << " = " << best_parameters.get_from_name(variable_names[i])
+                    << ", mean = " << regression_results[2]
+                    << ", r2 = " << regression_results[3]
+                    << ", " << (is_edge_solution ? "edge" : "interior") << std::endl;
         }
         // Halve the step-sizes
         if(!is_edge_solution) {
             for (int i = 0; i < step_sizes.size(); i++) {
                 step_sizes[i] /= 2.0;
             }
-            if(verb){
-                std::cout << "\t\t" << "All interior points. Updating step sizes." << std::endl;
-            }
+            std::cout << "\t\t" << "All interior points. Updating step sizes." << std::endl;
         }
         current_iteration++;
     }

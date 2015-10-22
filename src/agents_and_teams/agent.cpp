@@ -25,9 +25,6 @@ Agent::Agent(int ID, ParameterSet x){
     // Set initial temperature
     triki_temperature = parameters.initial_temperature;
     temperature = parameters.initial_temperature;
-
-    // Set last operation to -1 so we know what's up.
-    last_operation = 1;
 }
 
 //// A function that selects a random starting point, and pushes it to other agents.
@@ -66,6 +63,10 @@ void Agent::new_start(void){
                 }
             }
         }
+
+        // Set last operation
+        last_operation = uniform_int(Solution::number_of_move_ops-1, 0);
+        print(last_operation);
     }
     else if(parameters.learning_style == "HIDDEN_MARKOV") {
         // Define a few things
@@ -92,13 +93,17 @@ void Agent::new_start(void){
         }
 
         // Read in the emission matrix
-        for (int i = 0; i < number_of_states; i++) {
+        for (int i = 0; i < Solution::number_of_move_ops; i++) {
             getline(inputFile, line);
             std::istringstream st(line);
-            for (int j = 0; j < Solution::number_of_move_ops; j++) {
-                st >> move_oper_pref[i][j];
+            for (int j = 0; j < number_of_states; j++) {
+                st >> move_oper_pref[j][i];
             }
         }
+
+        //Set last operation
+        last_operation = uniform_int(number_of_states-1, 0);
+        print(last_operation);
     }
     else if(parameters.learning_style == "FREQUENCY_BAYESIAN"){
         // Assign a single vector of weights
@@ -252,6 +257,19 @@ Solution Agent::candidate_solution(void){
 
         // Choose a move operator to apply
         j = weighted_choice(move_oper_pref[last_operation]);
+
+        // Apply the move operator
+        candidate.apply_move_operator(j);
+
+        // Keep track of what happened
+        new_fx = apply_weighting(candidate.quality, objective_weighting);
+
+        // Update move operator preferences
+        if (new_fx < old_fx) {
+            move_oper_pref[last_operation][j] *= (1 + parameters.op_learn);
+        } else if (new_fx > old_fx) {
+            move_oper_pref[last_operation][j] *= (1 - parameters.op_learn);
+        }
     }
     else if(parameters.learning_style == "FREQUENCY_BAYESIAN"){
         // Choose which move operator to apply
