@@ -48,6 +48,7 @@ long double MultipleTeams::solve(void){
         this_team.solve();
 
         // Save results
+        //TODO: Save temperature too
         best_solution[i] = this_team.best_solution;
         cdf.push_back(this_team.best_solution.back());
     }

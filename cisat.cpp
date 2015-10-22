@@ -8,6 +8,9 @@
 #include "./include/meta_optimization/pattern.hpp"
 #include <sys/time.h>
 
+// TODO: Add a status bar. 
+// TODO: Clean up command line options so everything comes from a config.
+// TODO Option to not save results to file
 int main(int argc, char *argv[]) {
 
     // Random seed
@@ -28,6 +31,7 @@ int main(int argc, char *argv[]) {
     bool verb = false;
     std::string input;
     std::string output;
+
 
     // Parse the inputs
     for(int i=1; i < argc; i++) {

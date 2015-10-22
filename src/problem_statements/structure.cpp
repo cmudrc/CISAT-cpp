@@ -238,7 +238,7 @@ void Solution::compute_truss_forces(void) {
     }
 
     // Solve for displacements
-    int ffs = ff.size();
+    int ffs = static_cast<int>(ff.size());
     std::vector<std::vector<long double> > Kff(ff.size(), std::vector<long double>(ff.size() + 1, 0.0));
     for (int i = 0; i < ffs; i++) {
         for (int j = 0; j < ffs; j++) {
@@ -249,8 +249,7 @@ void Solution::compute_truss_forces(void) {
 
     std::vector<long double> deflections_compact = gauss(Kff);
 
-
-    // Compute hte condition number
+    // Compute the condition number
     for(int i=0; i<ffs; i++){
         Kff[i][ffs] = deflections_compact[i];
     }
@@ -324,7 +323,7 @@ void Solution::apply_move_operator(int move_type){
             change_size_all();
             break;
         case 6:
-//            move_joint();
+            move_joint();
             break;
         default:
             break;
@@ -525,7 +524,7 @@ void Solution::move_joint(void){
 
         // Move it somehow
         long double step_size = 2.0;
-        int max_iter = 10;
+        int max_iter = 5;
         long double best_quality = quality[0];
         std::vector< std::vector< long double> > udir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for(int i=0; i<max_iter; i++){

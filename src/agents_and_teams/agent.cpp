@@ -6,6 +6,7 @@
 
 #include "../../include/agents_and_teams/agent.hpp"
 
+
 //// Necessary definitions of static vectors for sharing between agents.
 std::vector<Solution> Agent::all_current_solutions;
 std::vector< std::vector<long double> > Agent::all_current_objective_weightings;
@@ -67,6 +68,73 @@ void Agent::new_start(void){
         }
     }
     else if(parameters.learning_style == "HIDDEN_MARKOV") {
+        // Define a few things
+        std::ifstream inputFile(parameters.init_learn_path);
+        std::string line;
+        int number_of_states;
+
+        // Figure out how many states there are
+        getline(inputFile, line);
+        std::istringstream ss(line);
+        ss >> number_of_states;
+
+        // Initialize the transition and emission matrices
+        trans_prob.assign(number_of_states, std::vector<long double>(number_of_states, 0.0));
+        move_oper_pref.assign(number_of_states, std::vector<long double>(Solution::number_of_move_ops, 0.0));
+
+        // Read in the transition matrix
+        for (int i = 0; i < number_of_states; i++) {
+            getline(inputFile, line);
+            std::istringstream st(line);
+            for (int j = 0; j < number_of_states; j++) {
+                st >> trans_prob[i][j];
+            }
+        }
+
+        // Read in the emission matrix
+        for (int i = 0; i < number_of_states; i++) {
+            getline(inputFile, line);
+            std::istringstream st(line);
+            for (int j = 0; j < Solution::number_of_move_ops; j++) {
+                st >> move_oper_pref[i][j];
+            }
+        }
+    }
+    else if(parameters.learning_style == "FREQUENCY_BAYESIAN"){
+        // Assign a single vector of weights
+        move_oper_pref.assign(1, std::vector<long double> (Solution::number_of_move_ops, parameters.op_learn));
+
+        // Read in initalization from file, if appropriate
+        if(parameters.init_learn_path != "none") {
+            std::ifstream inputFile(parameters.init_learn_path);
+            std::string line;
+
+            getline(inputFile, line);
+            std::istringstream ss(line);
+            for (int i=0; i<Solution::number_of_move_ops; i++) {
+                ss >> move_oper_pref[0][i];
+            }
+        }
+    }
+    else if(parameters.learning_style == "MARKOV_BAYESIAN"){
+        // Assign a matrix of weights
+        move_oper_pref.assign(Solution::number_of_move_ops, std::vector<long double> (Solution::number_of_move_ops, parameters.op_learn));
+
+        // Read in initalization from file, if appropriate
+        if(parameters.init_learn_path != "none") {
+            std::ifstream inputFile(parameters.init_learn_path);
+            std::string line;
+
+            for (int i=0; i<Solution::number_of_move_ops; i++) {
+                getline(inputFile, line);
+                std::istringstream ss(line);
+                for (int j=0; j<Solution::number_of_move_ops; j++) {
+                    ss >> move_oper_pref[i][j];
+                }
+            }
+        }
+    }
+    else if(parameters.learning_style == "HIDDEN_MARKOV_BAYESIAN") {
 
     }
 
@@ -177,6 +245,53 @@ Solution Agent::candidate_solution(void){
 
         // Update the last operation
         last_operation = j;
+    }
+    else if(parameters.learning_style == "HIDDEN_MARKOV") {
+        // Choose a new state
+        last_operation = weighted_choice(trans_prob[last_operation]);
+
+        // Choose a move operator to apply
+        j = weighted_choice(move_oper_pref[last_operation]);
+    }
+    else if(parameters.learning_style == "FREQUENCY_BAYESIAN"){
+        // Choose which move operator to apply
+        j = weighted_choice(move_oper_pref[0]);
+
+        // Apply the move operator
+        candidate.apply_move_operator(j);
+
+        // Keep track of what happened
+        new_fx = apply_weighting(candidate.quality, objective_weighting);
+
+        // Update move operator preferences
+        if (new_fx < old_fx) {
+            move_oper_pref[0][j] += 1;
+        } else if (new_fx > old_fx) {
+            move_oper_pref[0][j] -= 1;
+        }
+    }
+    else if(parameters.learning_style == "MARKOV_BAYESIAN"){
+        // Choose which move operator to apply
+        j = weighted_choice(move_oper_pref[last_operation]);
+
+        // Apply the move operator
+        candidate.apply_move_operator(j);
+
+        // Keep track of what happened
+        new_fx = apply_weighting(candidate.quality, objective_weighting);
+
+        // Update move operator preferences
+        if (new_fx < old_fx) {
+            move_oper_pref[last_operation][j] += 1;
+        } else if (new_fx > old_fx) {
+            move_oper_pref[last_operation][j] -= 1;
+        }
+
+        // Update the last operation
+        last_operation = j;
+    }
+    else if(parameters.learning_style == "HIDDEN_MARKOV_BAYESIAN") {
+
     }
 
 
