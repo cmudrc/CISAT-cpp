@@ -168,7 +168,6 @@ void Solution::compute_quality(void) {
 
 
 // This function computes forces and factors of sfaety
-// TODO: Check condition number
 void Solution::compute_truss_forces(void) {
     // Initialize things
     std::vector<std::vector<long double> > K(static_cast<unsigned long>(3 * number_of_nodes),
@@ -303,8 +302,64 @@ void Solution::compute_truss_forces(void) {
     }
 }
 
-void Solution::apply_move_operator(int move_type){
-    switch(move_type) {
+#if RULE_SET == SHEA_FRAME
+void Solution::apply_move_operator(int rule_number) {
+    switch(rule_number) {
+        case 0:
+            move_joint();
+            break;
+        case 1:
+            change_size_single();
+            break;
+        case 2:
+            add_member();
+            break;
+        case 3:
+            remove_member();
+            break;
+        case 4:
+            biad_to_triad();
+            break;
+        case 5:
+            triad_to_biad();
+            break;
+        default:
+            break;
+    }
+}
+
+
+#elif RULE_SET == SHEA_TRUSS
+void Solution::apply_move_operator(int rule_number){
+    switch(rule_number) {
+        case 0:
+            move_joint();
+            break;
+        case 1:
+            change_size_single();
+            break;
+        case 2:
+            flip_flop();
+            break;
+        case 3:
+            add_bisection();
+            break;
+        case 4:
+            remove_bisection();
+            break;
+        case 5:
+            add_trisection();
+            break;
+        case 6:
+            remove_trisection();
+        default:
+            break;
+    }
+}
+
+#elif RULE_SET == MCCOMB
+void Solution::apply_move_operator(int rule_number){
+    switch(rule_number) {
         case 0:
             add_joint_and_attach();
             break;
@@ -338,6 +393,45 @@ void Solution::apply_move_operator(int move_type){
     solution_id++;
 
 }
+#endif
+
+
+// This adds a bar triad
+void Solution::biad_to_triad(void){
+    //TODO: Write biad_to_triad function
+}
+
+
+// This remove a bar triad
+void Solution::triad_to_biad(void){
+    //TODO: Write triad_to_biad function
+}
+
+
+void Solution::flip_flop(void){
+    //TODO: Write flip_flop function
+}
+
+
+void Solution::add_bisection(void){
+    //TODO: Write add_bisection() function
+}
+
+
+void Solution::remove_bisection(void){
+    //TODO: Write remove_bisection() function
+}
+
+
+void Solution::add_trisection(void){
+    //TODO: Write remove_trisection() function
+}
+
+
+void Solution::remove_trisection(void){
+    //TODO: Write remove_trisection() function
+}
+
 
 
 // This deterministically adds a member as specified. Primarily a utility function.

@@ -24,7 +24,6 @@ public:
 
     // Variables
     std::vector<long double> quality;
-    std::vector<std::vector< std::vector<int> > > move_options;
 
     // Functions
     Solution(bool);

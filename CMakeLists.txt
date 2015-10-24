@@ -15,13 +15,14 @@ add_definitions(-DTRUSS=0
                 -DANNET=2)
 
 # Add macro definitions for ruleset
-add_definitions(-DSHEA=0
-                -DMCCOMB=1
-                -DCAMPBELL=2)
+add_definitions(-DSHEA_FRAME=0
+                -DSHEA_TRUSS=1
+                -DMCCOMB=2
+                -DCAMPBELL=3)
 
 # Define which problem statement to use
-add_definitions(-DPROBLEM_STATEMENT=TRUSS
-                -DRULE_SET=SHEA)
+add_definitions(-DPROBLEM_STATEMENT=FLUID
+                -DRULE_SET=SHEA_TRUSS)
 
 
 set(SOURCE_FILES
