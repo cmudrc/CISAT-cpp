@@ -188,7 +188,7 @@ void Solution::compute_quality(void) {
 
 }
 
-
+#if RULE_SET == MCCOMB
 void Solution::apply_move_operator(int move_type) {
     switch(move_type) {
         case 0:
@@ -223,6 +223,43 @@ void Solution::apply_move_operator(int move_type) {
     solution_counter++;
     solution_id++;
 }
+
+#elif RULE_SET == CAMPBELL
+void Solution::apply_move_operator(int move_type) {
+    switch(move_type) {
+        case 0:
+            inlet_to_outlet();
+            break;
+        case 1:
+            intermediate_inlet();
+            break;
+        case 2:
+            intermediate_outlet();
+            break;
+        case 3:
+            remove_pipe();
+            break;
+        case 4:
+            increase_pipe_size();
+            break;
+        case 5:
+            decrease_pipe_size();
+            break;
+        case 6:
+            move_junction();
+            break;
+        default:
+            break;
+    }
+
+    // Compute the quality
+    compute_quality();
+
+    // asdf
+    solution_counter++;
+    solution_id++;
+}
+#endif
 
 
 void Solution::add_pipe(int n1, int n2, int d, bool editable) {
@@ -374,6 +411,23 @@ void Solution::add_midpoint_junction(void) {
     // Add new edges
     add_pipe(n1, node_id_counter, d, true);
     add_pipe(n2, node_id_counter, d, true);
+}
+
+
+void Solution::inlet_to_outlet(void){
+    //TODO: Write the inlet_to_outlet() function
+}
+
+
+// This adds an intermediate inlet between two other inlets
+void Solution::intermediate_inlet(void){
+    //TODO: Write the intermediate_inlet() function
+}
+
+
+// This adds an intermediate outlet between two other outlets
+void Solution::intermediate_outlet(void){
+    //TODO: Write the intermediate_outlet() function
 }
 
 

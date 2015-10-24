@@ -11,8 +11,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
 
 # Add macro definitons for the problem statement
 add_definitions(-DTRUSS=0
-                -DFLUID=1
-                -DANNET=2)
+                -DFRAME=1
+                -DFLUID=2
+                -DANNET=3
+                -DTHING=4)
 
 # Add macro definitions for ruleset
 add_definitions(-DSHEA_FRAME=0
@@ -22,7 +24,7 @@ add_definitions(-DSHEA_FRAME=0
 
 # Define which problem statement to use
 add_definitions(-DPROBLEM_STATEMENT=FLUID
-                -DRULE_SET=SHEA_TRUSS)
+                -DRULE_SET=CAMPBELL)
 
 
 set(SOURCE_FILES

@@ -52,7 +52,7 @@ private:
     void compute_quality(void);
     void create_seed_graph(void);
 
-    // Move operators
+    // Move operators for McComb
     void add_pipe(int n1, int n2, int d, bool editable);
     void add_pipe(void);
     void add_junction(long double x, long double y, long double z, bool editable);
@@ -62,6 +62,11 @@ private:
     void decrease_pipe_size(void);
     void add_midpoint_junction(void);
     void move_junction(void);
+
+    // Move operators exclusive to Campbell
+    void inlet_to_outlet(void);
+    void intermediate_inlet(void);
+    void intermediate_outlet(void);
 
     int is_valid(void);
     void update_length(int e);
