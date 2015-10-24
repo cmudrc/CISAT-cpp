@@ -87,7 +87,7 @@ private:
     void remove_trisection(void);
 
 
-    int is_valid(void);
+    bool is_valid(void);
     void update_sectional_properties(int e);
     void update_length(int e);
     void calculate_member_mass(int e);

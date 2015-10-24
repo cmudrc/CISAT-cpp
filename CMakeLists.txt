@@ -13,8 +13,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
 add_definitions(-DTRUSS=0
                 -DFRAME=1
                 -DFLUID=2
-                -DANNET=3
-                -DTHING=4)
+                -DNEURAL=3
+                -DTHINGS=4)
 
 # Add macro definitions for ruleset
 add_definitions(-DSHEA_FRAME=0
@@ -23,7 +23,7 @@ add_definitions(-DSHEA_FRAME=0
                 -DCAMPBELL=3)
 
 # Define which problem statement to use
-add_definitions(-DPROBLEM_STATEMENT=FLUID
+add_definitions(-DPROBLEM_STATEMENT=NEURAL
                 -DRULE_SET=CAMPBELL)
 
 
@@ -35,6 +35,9 @@ set(SOURCE_FILES
 
     include/problem_statements/fluid_network.hpp
     src/problem_statements/fluid_network.cpp
+
+    include/problem_statements/neural_network.hpp
+    src/problem_statements/neural_network.cpp
 
     include/problem_statements/graph.hpp
     src/problem_statements/graph.cpp

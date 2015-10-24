@@ -81,6 +81,7 @@ int Solution::solution_counter = 0;
 
 
 // Null constructor
+// TODO: See if this is really needed
 Solution::Solution(void) {}
 
 
@@ -326,6 +327,13 @@ void Solution::apply_move_operator(int rule_number) {
         default:
             break;
     }
+
+    // Compute the quality
+    compute_quality();
+
+    // Increment solution counters and things?
+    solution_counter++;
+    solution_id++;
 }
 
 
@@ -355,6 +363,13 @@ void Solution::apply_move_operator(int rule_number){
         default:
             break;
     }
+
+    // Compute the quality
+    compute_quality();
+
+    // Increment solution counters and things?
+    solution_counter++;
+    solution_id++;
 }
 
 #elif RULE_SET == MCCOMB
@@ -719,7 +734,7 @@ void Solution::calculate_member_mass(int e){
 
 
 // Function to ensure that the solution is valid
-int Solution::is_valid(void) {
+bool Solution::is_valid(void) {
     // Make sure forces nodes are connected by 2, and supports are connected by at least 1
     bool LOADS = true;
     bool SUPPORTS = true;

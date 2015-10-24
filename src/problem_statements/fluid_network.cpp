@@ -56,6 +56,7 @@ int Solution::solution_counter = 0;
 
 
 // Null constructor
+// TODO: See if this is really needed
 Solution::Solution(void) {}
 
 
