@@ -30,7 +30,11 @@ Agent::Agent(int ID, ParameterSet x){
 //// A function that selects a random starting point, and pushes it to other agents.
 void Agent::new_start(void){
     // Define initial move operator preferences
-    if(parameters.learning_style == "FREQUENCY") {
+    if(parameters.learning_style == "NONE"){
+        // Assign a single vector of weights
+        move_oper_pref.assign(1, std::vector<long double> (Solution::number_of_move_ops, 1.0));
+    }
+    else if(parameters.learning_style == "FREQUENCY") {
         // Assign a single vector of weights
         move_oper_pref.assign(1, std::vector<long double> (Solution::number_of_move_ops, 1.0));
 
@@ -66,7 +70,6 @@ void Agent::new_start(void){
 
         // Set last operation
         last_operation = uniform_int(Solution::number_of_move_ops-1, 0);
-        print(last_operation);
     }
     else if(parameters.learning_style == "HIDDEN_MARKOV") {
         // Define a few things
@@ -103,7 +106,6 @@ void Agent::new_start(void){
 
         //Set last operation
         last_operation = uniform_int(number_of_states-1, 0);
-        print(last_operation);
     }
     else if(parameters.learning_style == "FREQUENCY_BAYESIAN"){
         // Assign a single vector of weights
@@ -196,7 +198,14 @@ Solution Agent::candidate_solution(void){
 
 
     // TODO: Add a contextually sensitive learning module (i.e. operation chosen based on degree of nodes, edge weight, etc.).
-    if(parameters.learning_style == "FREQUENCY") {
+    if(parameters.learning_style == "NONE"){
+        // Choose which move operator to apply
+        j = weighted_choice(move_oper_pref[0]);
+
+        // Apply the move operator
+        candidate.apply_move_operator(j);
+    }
+    else if(parameters.learning_style == "FREQUENCY") {
         // Choose which move operator to apply
         j = weighted_choice(move_oper_pref[0]);
 
@@ -312,7 +321,6 @@ Solution Agent::candidate_solution(void){
 
     }
 
-
     return candidate;
 
 }
@@ -369,8 +377,8 @@ void Agent::iterate(int iter){
 //// Updates temperature using simple stretched Cauchy schedule.
 void Agent::update_temp(void) {
 
-//    if(parameters.n_reps == 1)
-//        std::cout << temperature << ", ";
+    if(parameters.n_reps == 1)
+        std::cout << temperature << ", ";
 
     // If history_length is greater than 0, use a sliding window for the update
     if(parameters.history_length > 0) {

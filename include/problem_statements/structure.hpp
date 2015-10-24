@@ -4,6 +4,7 @@
 //  └─┴─────┘  ││   └─problem_statements
 //             ││      └─structure.hpp
 
+#if PROBLEM_STATEMENT == TRUSS
 #ifndef PROBLEM_STATEMENTS__STRUCTURE_HPP
 #define PROBLEM_STATEMENTS__STRUCTURE_HPP
 
@@ -24,7 +25,6 @@ public:
 
     // Variables
     std::vector<long double> quality;
-    std::vector<std::vector< std::vector<int> > > move_options;
 
     // Functions
     Solution(bool);
@@ -81,4 +81,5 @@ private:
     void calculate_member_mass(int e);
 };
 
+#endif
 #endif

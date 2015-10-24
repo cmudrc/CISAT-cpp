@@ -62,9 +62,9 @@ void Team::iterate(int iter){
         Agent::all_current_solutions[agent_list[i].agent_id] = agent_list[i].current_solution;
     }
 
-//    if (parameters.n_reps == 1){
-//        std::cout << std::endl;
-//    }
+    if (parameters.n_reps == 1){
+        std::cout << std::endl;
+    }
 
     // Pull out the best solution
     pull_best_solution(iter);
@@ -78,6 +78,15 @@ void Team::solve(void){
         // Do the iteration
         iterate(i);
     }
+
+    // Save best
+    int iter = parameters.max_iter/ parameters.n_agents - 1;
+    for (int i = 0; i < agent_list.size(); i++) {
+        char buff[50];
+        std::sprintf(buff, "./data/%lu/t%03d/a%03d/d%08d.html", run_id, team_id, i, iter);
+        std::string name(buff);
+        agent_list[i].current_solution.save_as_x3d(name);
+    }
 }
 
 void Team::pull_best_solution(int iter) {
@@ -90,13 +99,13 @@ void Team::pull_best_solution(int iter) {
         best_solution[iter] = best_solution[iter-1];
     }
 
-    for(int i=0; i<agent_list.size(); i++) {
-        char buff[50];
-        std::sprintf(buff, "./data/%lu/t%03d/a%03d/d%08d.html", run_id, team_id, i, iter);
-        std::string name(buff);
-//         agent_list[i].current_solution.save_as_x3d(name);
-
-        temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0/num));
+    for (int i = 0; i < agent_list.size(); i++) {
+//        char buff[50];
+//        std::sprintf(buff, "./data/%lu/t%03d/a%03d/d%08d.html", run_id, team_id, i, iter);
+//        std::string name(buff);
+//        agent_list[i].current_solution.save_as_x3d(name);
+//
+        temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double>(num, 1.0 / num));
         if (temp < best_solution[iter]) {
             best_solution[iter] = temp;
         }

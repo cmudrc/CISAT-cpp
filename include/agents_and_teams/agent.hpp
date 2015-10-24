@@ -12,8 +12,12 @@
 #include "../utilities/make_random.hpp"
 #include "../utilities/stats.hpp"
 #include "../utilities/custom_print.hpp"
-//#include "../problem_statements/fluid_network.hpp"
-#include "../problem_statements/structure.hpp"
+
+#if PROBLEM_STATEMENT == FLUID
+    #include "../problem_statements/fluid_network.hpp"
+# elif PROBLEM_STATEMENT == TRUSS
+    #include "../problem_statements/structure.hpp"
+#endif
 
 class Agent {
 public:

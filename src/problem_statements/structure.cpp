@@ -4,6 +4,7 @@
 //  └─┴─────┘  ││   └─problem_statements
 //             ││      └─structure.cpp
 
+#if PROBLEM_STATEMENT == TRUSS
 #include "../../include/problem_statements/structure.hpp"
 
 // Graph grammar characteristics
@@ -154,12 +155,12 @@ void Solution::compute_quality(void) {
                 FOS_penalty = std::pow(10, 4) * std::pow(1.25 - FOS, 2);
             }
         } else {
-            mass = std::pow(10, 10);
-            FOS_penalty = std::pow(10, 10);
+            mass = std::pow(10, 4);
+            FOS_penalty = std::pow(10, 4);
         }
     } else {
-        mass = std::pow(10, 10);
-        FOS_penalty = std::pow(10, 10);
+        mass = std::pow(10, 4);
+        FOS_penalty = std::pow(10, 4);
     }
 
     quality[0] = mass + FOS_penalty;
@@ -526,7 +527,7 @@ void Solution::move_joint(void){
 
         // Move it somehow
         long double step_size = 2.0;
-        int max_iter = 5;
+        int max_iter = 8;
         long double best_quality = quality[0];
         std::vector< std::vector< long double> > udir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for(int i=0; i<max_iter; i++){
@@ -709,3 +710,5 @@ void Solution::save_as_x3d(std::string save_to_file) {
     x3d.close_scene();
     x3d.close_file();
 }
+
+#endif

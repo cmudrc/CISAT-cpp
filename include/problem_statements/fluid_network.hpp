@@ -4,6 +4,7 @@
 //  └─┴─────┘  ││   └─problem_statements
 //             ││      └─fluid_network.hpp
 
+#if PROBLEM_STATEMENT == FLUID
 #ifndef PROBLEM_STATEMENTS__FLUID_NETWORK_HPP
 #define PROBLEM_STATEMENTS__FLUID_NETWORK_HPP
 
@@ -67,4 +68,5 @@ private:
     void update_length(int e);
 };
 
+#endif
 #endif

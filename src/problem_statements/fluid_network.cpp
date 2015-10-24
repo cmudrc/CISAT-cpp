@@ -4,6 +4,7 @@
 //  └─┴─────┘  ││   └─problem_statements
 //             ││      └─fluid_network.cpp
 
+#if PROBLEM_STATEMENT == FLUID
 #include "../../include/problem_statements/fluid_network.hpp"
 
 // Graph grammar characteristics
@@ -408,3 +409,5 @@ void Solution::update_length(int e){
     // Update the length
     edges[e].parameters["L"] = euclidean_distance(edges[e].initial_node, edges[e].terminal_node);
 }
+
+#endif
