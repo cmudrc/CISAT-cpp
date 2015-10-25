@@ -48,12 +48,12 @@ private:
 
     // Move operators for Campbell
     // TODO: Figure out what the hell these are
-    void connect_with_edge(void);          // rule 1
-    void connecte_with_noded_edge(void);   // rule 2
-    void replace_with_noded_edge(void);    // rule 3
-    void bypass_connection(void);          // rule 4
-    // rule 5
-    void grow_hidden_layer(); // rule 6
+    void r1_connect_with_edge(void);          // rule 1: Connect two nodes in adjacent layers with an edge.
+    void r2_connect_with_noded_edge(void);    // rule 2: Connects two nodes in non-adjacent layers with a node and two edges.
+    void r3_replace_with_noded_edge(void);    // rule 3: Replace connection between two nodes with a node and two edges.
+    void r4_add_bypass(void);                 // rule 4: Adds an edge that bypasses an existing node.
+    void r5_add_parallel_edge(void);          // rule 5: Adds an edge in parallel with an existing edge
+    void r6_add_hidden_node(void);            // rule 6: Add a node in a hidden layer and connect it to adjacent layers.
 
     bool is_valid(void);
 };

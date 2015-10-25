@@ -10,7 +10,6 @@
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 7;
 const  unsigned long  Solution::number_of_objectives = 1;
-const  std::string    Solution::name                 = "Gravity Fed Fluid Network";
 const  long double    Solution::goal                 = 175.0;
 
 // Material constants
@@ -81,7 +80,6 @@ int Solution::solution_counter = 0;
 
 
 // Null constructor
-// TODO: See if this is really needed
 Solution::Solution(void) {}
 
 

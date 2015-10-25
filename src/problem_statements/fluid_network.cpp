@@ -10,7 +10,6 @@
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 7;
 const  unsigned long  Solution::number_of_objectives = 1;
-const  std::string    Solution::name                 = "Gravity Fed Fluid Network";
 const  long double    Solution::goal                 = 0.0;
 
 // Fluid constants
@@ -19,7 +18,7 @@ const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [
 //Available pipe sizes
 const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
 
-enum NodeTypes {INLET=1, INTERMEDIATE, OUTLET};
+enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
@@ -56,7 +55,6 @@ int Solution::solution_counter = 0;
 
 
 // Null constructor
-// TODO: See if this is really needed
 Solution::Solution(void) {}
 
 
@@ -82,9 +80,8 @@ void Solution::create_seed_graph(void) {
                      seed_graph_parameters[i]["y"],
                      seed_graph_parameters[i]["z"],
                      false);
+        nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"]+1;
 
-
-        nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
         if(seed_graph_parameters[i]["type"] == INLET) {
             add_junction(seed_graph_parameters[i]["x"],
                          seed_graph_parameters[i]["y"],
@@ -114,13 +111,16 @@ void Solution::create_seed_graph(void) {
     cy /= seed_graph_parameters.size();
     cz /= seed_graph_parameters.size();
     add_junction(cx, cy, cz, true);
+    nodes[node_id_counter].parameters["type"] = INTERMEDIATE_INLET;
 
     // Connect the central junction to all intermediate nodes
     int k;
     for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); it++) {
         k = (it->first);
-        if(nodes[k].parameters["type"] == INTERMEDIATE && k != node_id_counter){
-            add_pipe(k, node_id_counter, 0, true);
+        if(nodes[k].parameters["type"] == INTERMEDIATE_INLET || nodes[k].parameters["type"] == INTERMEDIATE_OUTLET){
+            if(k != node_id_counter){
+                add_pipe(k, node_id_counter, 0, true);
+            }
         }
     }
 }
@@ -280,8 +280,13 @@ void Solution::add_pipe(int n1, int n2, int d, bool editable) {
 // Adds a pipe randomly between two junctions
 void Solution::add_pipe(void) {
     // Define a couple of things
-    std::vector<int> editable = get_node_ids("type", INTERMEDIATE);
-    std::vector<long double> weights(editable.size(), 1.0);
+    std::vector<int> editable;
+    std::vector<int> editable1 = get_node_ids("type", INTERMEDIATE_INLET);
+    std::vector<int> editable2 = get_node_ids("type", INTERMEDIATE_OUTLET);
+    editable.reserve( editable1.size() + editable2.size() ); // preallocate memory
+    editable.insert( editable.end(), editable1.begin(), editable1.end() );
+    editable.insert( editable.end(), editable2.begin(), editable2.end() );
+    std::vector<long double> weights(editable1.size() + editable2.size(), 1.0);
 
     // Select a pair to connect between at random
     int idx = weighted_choice(weights);
@@ -305,7 +310,6 @@ void Solution::add_junction(long double x, long double y, long double z, bool ed
 
     // Moveable or not
     nodes[node_id_counter].parameters["editable"] = editable;
-    nodes[node_id_counter].parameters["type"] = INTERMEDIATE;
 }
 
 
@@ -362,28 +366,63 @@ void Solution::decrease_pipe_size(void) {
 }
 
 
-void Solution::move_junction(void) {
+// This is the function that moves a junction with some level of determinicity
+void Solution::move_junction(void){
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 1.0);
+    if(editable.size() > 0){
 
-    // Select one to move at random
-    int idx = weighted_choice(weights);
+        // Select one to move at random
+        std::vector<long double> weights(editable.size(), 1.0);
+        int key = editable[weighted_choice(weights)];
 
-    // Move it somehow TODO: Make this more intelligent
-    nodes[editable[idx]].parameters["x"] += uniform(-1.0, 1.0);
-    nodes[editable[idx]].parameters["y"] += uniform(-1.0, 1.0);
+        // Move it somehow
+        long double step_size = 2.0;
+        int max_iter = 8;
+        long double best_quality = quality[0];
+        std::vector< std::vector< long double> > udir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for(int i=0; i<max_iter; i++){
+            for(int j=0; j<4; j++){
+                // Try a move in the j^th direction
+                nodes[key].parameters["x"] += udir[j][0]*step_size;
+                nodes[key].parameters["y"] += udir[j][1]*step_size;
 
-    //Update length related properties for the node that we moved.
-    for(int i=0; i < nodes[editable[idx]].outgoing_edges.size(); i++){
-        update_length(nodes[editable[idx]].outgoing_edges[i]);
-    }
-    for(int i=0; i < nodes[editable[idx]].incoming_edges.size(); i++){
-        update_length(nodes[editable[idx]].incoming_edges[i]);
+                // Compute quality
+                compute_quality();
+
+                // If improved, keep and break. Else, reverse.
+                if(quality[0] < best_quality) {
+                    best_quality = quality[0];
+                    break;
+                } else {
+                    nodes[key].parameters["x"] -= udir[j][0]*step_size;
+                    nodes[key].parameters["y"] -= udir[j][1]*step_size;
+                };
+
+                // If j == 4 without improvement, halve step size
+                if (j==4) {
+                    step_size /= 2.0;
+                }
+
+                // If the step size gets too small, exit. Its good enough.
+                if (step_size < 0.1) {
+                    i = max_iter;
+                }
+            }
+        }
+
+        //Update length related properties for the node that we moved.
+        for(int i=0; i < nodes[key].outgoing_edges.size(); i++){
+            update_length(nodes[key].outgoing_edges[i]);
+        }
+        for(int i=0; i < nodes[key].incoming_edges.size(); i++){
+            update_length(nodes[key].incoming_edges[i]);
+        }
     }
 }
 
 
+// This functions adds a junction at the midpoint
 void Solution::add_midpoint_junction(void) {
     // Define a couple of things
     std::vector<int> editable = get_edge_ids("editable", true);
@@ -416,21 +455,93 @@ void Solution::add_midpoint_junction(void) {
 
 
 void Solution::inlet_to_outlet(void){
-    //TODO: Write the inlet_to_outlet() function
+    // Find out where the available inlets nad outlets are
+    std::vector<int> inlets  = get_node_ids("type", INTERMEDIATE_INLET);
+    std::vector<int> outlets = get_node_ids("type", INTERMEDIATE_OUTLET);
+    std::vector<int> fixed_inlets  = get_node_ids("type", INLET);
+    std::vector<int> fixed_outlets = get_node_ids("type", OUTLET);
+
+    if(inlets.size()*outlets.size() > number_of_edges - fixed_inlets.size() - fixed_outlets.size()) {
+        // Make weighting vectors to accomodate future weightings
+        std::vector<long double> inlet_weights(inlets.size(), 1.0);
+        std::vector<long double> outlet_weights(outlets.size(), 1.0);
+
+        // Select an inlet and an outlet and connect it
+        bool SUCCESS = false;
+        int n1, n2;
+        int iter_counter = 0;
+        while (!SUCCESS) {
+            // Pick two edges
+            n1 = inlets[weighted_choice(inlet_weights)];
+            n2 = outlets[weighted_choice(outlet_weights)];
+
+            // See if the edges exist
+            if (!undirected_edge_exists(n1, n2)) {
+                SUCCESS = true;
+                add_pipe(n1, n2, 2, true);
+            }
+            if (iter_counter > 10) {
+                break;
+            }
+        }
+    }
 }
 
 
 // This adds an intermediate inlet between two other inlets
 void Solution::intermediate_inlet(void){
-    //TODO: Write the intermediate_inlet() function
+    // Find out where the inlets are
+    std::vector<int> inlets  = get_node_ids("type", INTERMEDIATE_INLET);
+
+    // Make a weighting vector for future use
+    std::vector<long double> inlet_weights(inlets.size(), 1.0);
+
+    // Select the inlet and outlet to use
+    int n1 = weighted_choice(inlet_weights);
+    inlet_weights[n1] = 0.0;
+    int n2 = weighted_choice(inlet_weights);
+
+    // Add a joint between them
+    add_junction(
+        (nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
+        (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
+        (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
+        false
+    );
+    nodes[node_id_counter].parameters["type"] = INTERMEDIATE_INLET;
+
+    // Add new edges
+    add_pipe(inlets[n1], node_id_counter, 2, true);
+    add_pipe(inlets[n2], node_id_counter, 2, true);
 }
 
 
 // This adds an intermediate outlet between two other outlets
-void Solution::intermediate_outlet(void){
-    //TODO: Write the intermediate_outlet() function
-}
+void Solution::intermediate_outlet(void) {
+    // Find out where the inlets are
+    std::vector<int> outlets = get_node_ids("type", INTERMEDIATE_OUTLET);
 
+    // Make a weighting vector for future use
+    std::vector<long double> outlet_weights(outlets.size(), 1.0);
+
+    // Select the inlet and outlet to use
+    int n1 = weighted_choice(outlet_weights);
+    outlet_weights[n1] = 0.0;
+    int n2 = weighted_choice(outlet_weights);
+
+    // Add a joint between them
+    add_junction(
+        (nodes[n1].parameters["x"] + nodes[n2].parameters["x"]) / 2,
+        (nodes[n1].parameters["y"] + nodes[n2].parameters["y"]) / 2,
+        (nodes[n1].parameters["z"] + nodes[n2].parameters["z"]) / 2,
+        false
+    );
+    nodes[node_id_counter].parameters["type"] = INTERMEDIATE_OUTLET;
+
+    // Add new edges
+    add_pipe(outlets[n1], node_id_counter, 2, true);
+    add_pipe(outlets[n2], node_id_counter, 2, true);
+}
 
 // Function to ensure that the solution is valid
 int Solution::is_valid(void) {
