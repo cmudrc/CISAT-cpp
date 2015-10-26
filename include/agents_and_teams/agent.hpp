@@ -17,6 +17,12 @@
     #include "../problem_statements/fluid_network.hpp"
 # elif PROBLEM_STATEMENT == TRUSS
     #include "../problem_statements/structure.hpp"
+# elif PROBLEM_STATEMENT == FRAME
+    #include "../problem_statements/structure.hpp"
+# elif PROBLEM_STATEMENT == NEURAL
+    #include "../problem_statements/neural_network.hpp"
+# elif PROBLEM_STATEMENT == THINGS
+    #include ""
 #endif
 
 class Agent {

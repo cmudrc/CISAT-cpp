@@ -118,7 +118,10 @@ void Solution::create_seed_graph(void){
 
     // Connect these joints
     for(int i=0; i < seed_edge_parameters.size(); i++) {
-        add_member(seed_edge_parameters[i]["initial"], seed_edge_parameters[i]["terminal"], seed_edge_parameters[i]["radius"], true);
+        add_member(static_cast<int>(seed_edge_parameters[i]["initial"]),
+                   static_cast<int>(seed_edge_parameters[i]["terminal"]),
+                   static_cast<int>(seed_edge_parameters[i]["radius"]),
+                   true);
     }
 }
 
@@ -335,6 +338,18 @@ void Solution::apply_move_operator(int rule_number) {
 }
 
 
+// This adds a bar triad
+void Solution::biad_to_triad(void){
+    //TODO: Write biad_to_triad function
+}
+
+
+// This remove a bar triad
+void Solution::triad_to_biad(void){
+    //TODO: Write triad_to_biad function
+}
+
+
 #elif RULE_SET == SHEA_TRUSS
 void Solution::apply_move_operator(int rule_number){
     switch(rule_number) {
@@ -368,6 +383,100 @@ void Solution::apply_move_operator(int rule_number){
     // Increment solution counters and things?
     solution_counter++;
     solution_id++;
+}
+
+
+// Comment
+void Solution::flip_flop(void){
+    //Initialize a few things
+    std::vector<int> common;
+    std::vector< std::vector<int> > list;
+    std::vector<long double> weights;
+    int cs;
+
+    // Find the valid things
+    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1){
+        common = find_common_neighbors(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+        cs = static_cast<int> (common.size());
+        if(cs >=2){
+            for(int i=0; i<cs; i++){
+                for(int j=i+1; j<cs; j++){
+                    list.push_back(std::vector<int> {it1->first, common[i], common[j]});
+                    weights.push_back(1.0);
+                }
+            }
+        }
+    }
+
+    // Select a flip-flop at random
+    int idx = weighted_choice(weights);
+
+    // Delete the edge
+    remove_edge(list[idx][0]);
+
+    // Add the edge
+    add_member(list[idx][1], list[idx][2], 4, true);
+}
+
+
+// Comment
+void Solution::add_bisection(void){
+
+    //Initialize a few things
+    std::vector<int> common;
+    std::vector< std::vector<int> > list;
+    std::vector<long double> weights;
+    int cs;
+
+    // Find the valid things
+    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1){
+        common = find_common_neighbors(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+        cs = static_cast<int> (common.size());
+        for(int i=0; i<cs; i++){
+            list.push_back(std::vector<int> {it1->first, common[i]});
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select a flip-flop at random
+    int idx = weighted_choice(weights);
+
+    // Pull information from the doomed edge
+    int n1 = edges[list[idx][0]].initial_node;
+    int n2 = edges[list[idx][0]].terminal_node;
+    int d = static_cast<int>(edges[list[idx][0]].parameters["r"]);
+
+    // Add a joint at the midpoint
+    add_joint((nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
+              (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
+              (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
+              true);
+
+    // Remove the doomed edge
+    remove_edge(list[idx][0]);
+
+    // Save its children
+    add_member(node_id_counter, list[idx][1], 4, true);
+    add_member(node_id_counter, n1, d, true);
+    add_member(node_id_counter, n2, d, true);
+}
+
+
+// Comment
+void Solution::remove_bisection(void){
+    //TODO: Write remove_bisection() function
+}
+
+
+// Comment
+void Solution::add_trisection(void){
+    //TODO: Write remove_trisection() function
+}
+
+
+// Comment
+void Solution::remove_trisection(void){
+    //TODO: Write remove_trisection() function
 }
 
 #elif RULE_SET == MCCOMB
@@ -407,44 +516,6 @@ void Solution::apply_move_operator(int rule_number){
 
 }
 #endif
-
-
-// This adds a bar triad
-void Solution::biad_to_triad(void){
-    //TODO: Write biad_to_triad function
-}
-
-
-// This remove a bar triad
-void Solution::triad_to_biad(void){
-    //TODO: Write triad_to_biad function
-}
-
-
-void Solution::flip_flop(void){
-    //TODO: Write flip_flop function
-}
-
-
-void Solution::add_bisection(void){
-    //TODO: Write add_bisection() function
-}
-
-
-void Solution::remove_bisection(void){
-    //TODO: Write remove_bisection() function
-}
-
-
-void Solution::add_trisection(void){
-    //TODO: Write remove_trisection() function
-}
-
-
-void Solution::remove_trisection(void){
-    //TODO: Write remove_trisection() function
-}
-
 
 
 // This deterministically adds a member as specified. Primarily a utility function.
@@ -681,7 +752,7 @@ void Solution::move_joint(void){
 // Function to add a joint and attach it to the nearest available joints.
 void Solution::add_joint_and_attach(void){
     // Add the new joint
-    add_joint(uniform(-5, 5), uniform(-3, 3), 0.0, true);
+    add_joint(uniform(5, -5), uniform(3, -3), 0.0, true);
 
     // Find distance between current joint and other joints
     std::vector<long double> distances;
@@ -774,7 +845,46 @@ bool Solution::is_valid(void) {
     return LOADS && SUPPORTS && STABLE;
 }
 
+// Find the edges that two
+std::vector<int> Solution::find_common_neighbors(int n1, int n2){
+    // Make vectors to store the two initial nodes
+    std::vector<int> neighbors1;
+    std::vector<int> neighbors2;
+    std::vector<int> matches;
+    int idx;
 
+    // Pushback the neighbors of node 1
+    for(int i=0; i<nodes[n1].incoming_edges.size(); i++){
+        idx = nodes[n1].incoming_edges[i];
+        neighbors1.push_back(edges[idx].initial_node);
+    }
+    for(int i=0; i<nodes[n1].outgoing_edges.size(); i++){
+        idx = nodes[n1].outgoing_edges[i];
+        neighbors1.push_back(edges[idx].terminal_node);
+    }
+
+    // Pushback the neighbors of node 2
+    for(int i=0; i<nodes[n2].incoming_edges.size(); i++){
+        idx = nodes[n2].incoming_edges[i];
+        neighbors2.push_back(edges[idx].initial_node);
+    }
+    for(int i=0; i<nodes[n2].outgoing_edges.size(); i++){
+        idx = nodes[n2].outgoing_edges[i];
+        neighbors2.push_back(edges[idx].terminal_node);
+    }
+
+    // Find the matches in the two lists
+    for(int i=0; i<neighbors1.size(); i++){
+        for(int j=0; j<neighbors2.size(); j++){
+            if(neighbors1[i]==neighbors2[j]){
+                matches.push_back(neighbors1[i]);
+            }
+        }
+    }
+    return matches;
+}
+
+// Save in an X3D file format
 void Solution::save_as_x3d(std::string save_to_file) {
     WriteX3D x3d;
     int n1, n2;
