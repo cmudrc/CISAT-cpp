@@ -470,7 +470,38 @@ void Solution::remove_bisection(void){
 
 // Comment
 void Solution::add_trisection(void){
-    //TODO: Write remove_trisection() function
+    //Initialize a few things
+    std::vector<int> common;
+    std::vector< std::vector<int> > list;
+    std::vector<long double> weights;
+    int cs;
+
+    // Find the valid things
+    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1){
+        common = find_common_neighbors(edges[it1->first].initial_node, edges[it1->first].terminal_node);
+        cs = static_cast<int> (common.size());
+        for(int i=0; i<cs; i++){
+            list.push_back(std::vector<int> {edges[it1->first].initial_node, edges[it1->first].terminal_node, common[i]});
+            weights.push_back(1.0);
+        }
+    }
+
+    // Select a flip-flop at random
+    int idx = weighted_choice(weights);
+
+    save_as_x3d("before.html");
+
+    // Add a node in the middle of all the other nodes
+    add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][2]].parameters["x"])/3,
+              (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][2]].parameters["y"])/3,
+              (nodes[list[idx][0]].parameters["z"] + nodes[list[idx][1]].parameters["z"] + nodes[list[idx][2]].parameters["z"])/3,
+              true);
+
+    // Add three connecting edges
+    add_member(node_id_counter, list[idx][0], 4, true);
+    add_member(node_id_counter, list[idx][1], 4, true);
+    add_member(node_id_counter, list[idx][2], 4, true);
+    save_as_x3d("after.html");
 }
 
 
