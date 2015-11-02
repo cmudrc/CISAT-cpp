@@ -54,8 +54,8 @@ void ParameterSet::print_parameters(void) {
 //// Sets parameters based on a vector
 void ParameterSet::set_from_pair(std::string name, long double x) {
     if(name == "DELT")         delt = x;
-    else if(name == "L_HIST")  history_length =static_cast <int> (round(x));
-    else if(name == "NAGENTS") n_agents = static_cast <unsigned long> (round(x));
+    else if(name == "L_HIST")  history_length =static_cast <int> (std::round(x));
+    else if(name == "NAGENTS") n_agents = static_cast <unsigned long> (std::round(x));
     else if(name == "TINIT")   initial_temperature = x;
     else if(name == "INTER")   interaction = x;
     else if(name == "S_BIAS")  s_bias = x;

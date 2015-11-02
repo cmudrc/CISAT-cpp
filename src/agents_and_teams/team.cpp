@@ -16,15 +16,15 @@ Team::Team(ParameterSet x){
 //// Give the team a new start
 void Team::new_start(void){
     // Make a new folder for team results
-    char dirname[50];
-    std::sprintf(dirname, "./data/%lu/t%03d", run_id, team_id);
-    mkdir(dirname, ACCESSPERMS);
+    char directory_name[50];
+    std::sprintf(directory_name, "./data/%lu/t%03d", run_id, team_id);
+    mkdir(directory_name, ACCESSPERMS);
 
     // Make a subdirectory for every agent
     for(int i=0; i<parameters.n_agents; i++){
-        char subdirname[50];
-        std::sprintf(subdirname, "./data/%lu/t%03d/a%03d/", run_id, team_id, i);
-        mkdir(subdirname, ACCESSPERMS);
+        char sub_directory_name[50];
+        std::sprintf(sub_directory_name, "./data/%lu/t%03d/a%03d/", run_id, team_id, i);
+        mkdir(sub_directory_name, ACCESSPERMS);
     }
 
     // If 
@@ -51,10 +51,10 @@ void Team::new_start(void){
 };
 
 //// Iterate the team
-void Team::iterate(int iter){
+void Team::iterate(int iteration){
     // Iterate each agentf
     for(int i=0; i<agent_list.size(); i++){
-        agent_list[i].iterate(iter);
+        agent_list[i].iterate(iteration);
     }
 
     // Share new results between agents
@@ -67,7 +67,7 @@ void Team::iterate(int iter){
     }
 
     // Pull out the best solution
-    pull_best_solution(iter);
+    pull_best_solution(iteration);
 }
 
 
@@ -80,7 +80,7 @@ void Team::solve(void){
     }
 
     // Save best
-    int iter = parameters.max_iter/ parameters.n_agents - 1;
+    int iter = static_cast<int> (parameters.max_iter/ parameters.n_agents - 1);
     for (int i = 0; i < agent_list.size(); i++) {
         char buff[50];
         std::sprintf(buff, "./data/%lu/t%03d/a%03d/d%08d.html", run_id, team_id, i, iter);
@@ -89,14 +89,14 @@ void Team::solve(void){
     }
 }
 
-void Team::pull_best_solution(int iter) {
+void Team::pull_best_solution(int iteration) {
     long double temp;
     unsigned long num = Solution::number_of_objectives;
 
-    if(iter == 0) {
-        best_solution[iter] = LDBL_MAX;
+    if(iteration == 0) {
+        best_solution[iteration] = LDBL_MAX;
     } else {
-        best_solution[iter] = best_solution[iter-1];
+        best_solution[iteration] = best_solution[iteration-1];
     }
 
     for (int i = 0; i < agent_list.size(); i++) {
@@ -105,9 +105,9 @@ void Team::pull_best_solution(int iter) {
 //        std::string name(buff);
 //        agent_list[i].current_solution.save_as_x3d(name);
 //
-        temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double>(num, 1.0 / num));
-        if (temp < best_solution[iter]) {
-            best_solution[iter] = temp;
+        temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0 / num));
+        if (temp < best_solution[iteration]) {
+            best_solution[iteration] = temp;
         }
     }
 }

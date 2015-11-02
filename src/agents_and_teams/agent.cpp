@@ -4,6 +4,8 @@
 //  └─┴─────┘  ││   └─agents_and_teams
 //             ││      └─agent.cpp
 
+// TODO Consider replacing ints with long ints
+
 #include "../../include/agents_and_teams/agent.hpp"
 
 
@@ -69,13 +71,13 @@ void Agent::new_start(void){
         }
 
         // Set last operation
-        last_operation = uniform_int(Solution::number_of_move_ops-1, 0);
+        last_operation = uniform_int(static_cast<int> (Solution::number_of_move_ops-1), 0);
     }
     else if(parameters.learning_style == "HIDDEN_MARKOV") {
         // Define a few things
         std::ifstream inputFile(parameters.init_learn_path);
         std::string line;
-        int number_of_states;
+        unsigned long number_of_states;
 
         // Figure out how many states there are
         getline(inputFile, line);
@@ -105,13 +107,13 @@ void Agent::new_start(void){
         }
 
         //Set last operation
-        last_operation = uniform_int(number_of_states-1, 0);
+        last_operation = uniform_int(static_cast<int> (number_of_states-1), 0);
     }
     else if(parameters.learning_style == "FREQUENCY_BAYESIAN"){
         // Assign a single vector of weights
         move_oper_pref.assign(1, std::vector<long double> (Solution::number_of_move_ops, parameters.op_learn));
 
-        // Read in initalization from file, if appropriate
+        // Read in initialization from file, if appropriate
         if(parameters.init_learn_path != "none") {
             std::ifstream inputFile(parameters.init_learn_path);
             std::string line;
@@ -127,7 +129,7 @@ void Agent::new_start(void){
         // Assign a matrix of weights
         move_oper_pref.assign(Solution::number_of_move_ops, std::vector<long double> (Solution::number_of_move_ops, parameters.op_learn));
 
-        // Read in initalization from file, if appropriate
+        // Read in initialization from file, if appropriate
         if(parameters.init_learn_path != "none") {
             std::ifstream inputFile(parameters.init_learn_path);
             std::string line;
@@ -142,7 +144,7 @@ void Agent::new_start(void){
         }
 
         // Set last operation
-        last_operation = uniform_int(Solution::number_of_move_ops-1, 0);
+        last_operation = uniform_int(static_cast<int> (Solution::number_of_move_ops-1), 0);
     }
     else if(parameters.learning_style == "HIDDEN_MARKOV_BAYESIAN") {
 
@@ -169,7 +171,7 @@ Solution Agent::candidate_solution(void){
     long double wmax;              // Maximum in weight vector
     long double sum_w = 0;
     long double old_fx = 0, new_fx = 0;
-    int j, k;                    // Index for random draw
+    int j;                    // Index for random draw
 
     // If a random draw is lower than teh probability of interaction, then interact.
     if(parameters.interaction > uniform(1.0, 0.0)) {

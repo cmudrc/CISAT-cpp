@@ -380,12 +380,12 @@ void Solution::move_junction(void){
         long double step_size = 2.0;
         int max_iter = 8;
         long double best_quality = quality[0];
-        std::vector< std::vector< long double> > udir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        std::vector< std::vector< long double> > unit_direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for(int i=0; i<max_iter; i++){
             for(int j=0; j<4; j++){
                 // Try a move in the j^th direction
-                nodes[key].parameters["x"] += udir[j][0]*step_size;
-                nodes[key].parameters["y"] += udir[j][1]*step_size;
+                nodes[key].parameters["x"] += unit_direction[j][0]*step_size;
+                nodes[key].parameters["y"] += unit_direction[j][1]*step_size;
 
                 // Compute quality
                 compute_quality();
@@ -395,8 +395,8 @@ void Solution::move_junction(void){
                     best_quality = quality[0];
                     break;
                 } else {
-                    nodes[key].parameters["x"] -= udir[j][0]*step_size;
-                    nodes[key].parameters["y"] -= udir[j][1]*step_size;
+                    nodes[key].parameters["x"] -= unit_direction[j][0]*step_size;
+                    nodes[key].parameters["y"] -= unit_direction[j][1]*step_size;
                 };
 
                 // If j == 4 without improvement, halve step size

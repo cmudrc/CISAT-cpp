@@ -462,23 +462,22 @@ void Solution::add_bisection(void){
 }
 
 
-void Solution::remove_bisection(void){
+void Solution::remove_bisection(void) {
     //Initialize a few things
-    std::vector< std::vector<int> > list;
+    std::vector<std::vector<int> > list;
     std::vector<long double> weights;
-    int cs;
 
     // Find the valid bisections
-    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1){
-        if (nodes[it1->first].parameters["editable"]){
-            if(nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3){
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
+        if (nodes[it1->first].parameters["editable"]) {
+            if (nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3) {
                 std::vector<int> att;
                 att.push_back(it1->first);
-                for(int i=0; i<nodes[it1->first].incoming_edges.size(); i++){
+                for (int i = 0; i < nodes[it1->first].incoming_edges.size(); i++) {
                     att.push_back(edges[nodes[it1->first].incoming_edges[i]].initial_node);
                 }
 
-                for(int i=0; i<nodes[it1->first].outgoing_edges.size(); i++){
+                for (int i = 0; i < nodes[it1->first].outgoing_edges.size(); i++) {
                     att.push_back(edges[nodes[it1->first].outgoing_edges[i]].terminal_node);
                 }
 
@@ -490,19 +489,16 @@ void Solution::remove_bisection(void){
     }
 
     // Select a bisection at random
-    int idx = weighted_choice(weights);
+    if (weights.size() > 0) {
+        int idx = weighted_choice(weights);
 
-    print(list);
+        // Remove that bisection
+        remove_node(list[idx][0]);
 
-    save_as_x3d("before.html");
-    // Remove that bisection
-    remove_node(list[idx][0]);
-
-    // Add the member back
-    add_member(list[idx][1], list[idx][2], 4, true);
-    save_as_x3d("after.html");
+        // Add the member back
+        add_member(list[idx][1], list[idx][2], 4, true);
+    }
 }
-
 
 // Comment
 void Solution::add_trisection(void){
@@ -540,7 +536,42 @@ void Solution::add_trisection(void){
 
 // Comment
 void Solution::remove_trisection(void){
-    //TODO: Write remove_trisection() function
+    //Initialize a few things
+    std::vector<int> list;
+    std::vector<long double> weights;
+
+    // Find the valid trisecitons
+    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1){
+        // Check if node is editable
+        if (nodes[it1->first].parameters["editable"]){
+            // Check if it has three connections
+            if(nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3) {
+                std::vector<int> att;
+                for (int i = 0; i < nodes[it1->first].incoming_edges.size(); i++) {
+                    att.push_back(edges[nodes[it1->first].incoming_edges[i]].initial_node);
+                }
+
+                for (int i = 0; i < nodes[it1->first].outgoing_edges.size(); i++) {
+                    att.push_back(edges[nodes[it1->first].outgoing_edges[i]].terminal_node);
+                }
+
+                // Check if its connections are connected
+                if (undirected_edge_exists(att[0], att[1]) && undirected_edge_exists(att[2], att[1]) && undirected_edge_exists(att[0], att[2])) {
+                    list.push_back(it1->first);
+                    weights.push_back(1.0);
+                }
+            }
+        }
+    }
+
+    // Select a bisection at random
+    if (weights.size() > 0){
+        int idx = weighted_choice(weights);
+        // Remove that trisection
+        save_as_x3d("before.html");
+        remove_node(list[idx]);
+        save_as_x3d("after.html");
+    }
 }
 
 #elif RULE_SET == MCCOMB
@@ -771,12 +802,12 @@ void Solution::move_joint(void){
         long double step_size = 2.0;
         int max_iter = 8;
         long double best_quality = quality[0];
-        std::vector< std::vector< long double> > udir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        std::vector< std::vector< long double> > unit_direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for(int i=0; i<max_iter; i++){
             for(int j=0; j<4; j++){
                 // Try a move in the j^th direction
-                nodes[key].parameters["x"] += udir[j][0]*step_size;
-                nodes[key].parameters["y"] += udir[j][1]*step_size;
+                nodes[key].parameters["x"] += unit_direction[j][0]*step_size;
+                nodes[key].parameters["y"] += unit_direction[j][1]*step_size;
 
                 // Compute quality
                 compute_quality();
@@ -786,8 +817,8 @@ void Solution::move_joint(void){
                     best_quality = quality[0];
                     break;
                 } else {
-                    nodes[key].parameters["x"] -= udir[j][0]*step_size;
-                    nodes[key].parameters["y"] -= udir[j][1]*step_size;
+                    nodes[key].parameters["x"] -= unit_direction[j][0]*step_size;
+                    nodes[key].parameters["y"] -= unit_direction[j][1]*step_size;
                 };
 
                 // If j == 4 without improvement, halve step size
@@ -982,7 +1013,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
 
     x3d.start_scene(0, 1, 10);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.25);
+        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.05);
     }
 
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
@@ -990,7 +1021,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
         n2 = edges[it1->first].terminal_node;
         x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
                        nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
-                       edges[it1->first].parameters["r"]);
+                       static_cast<int> (edges[it1->first].parameters["r"]));
     }
 
     x3d.close_scene();
