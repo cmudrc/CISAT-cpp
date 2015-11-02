@@ -3,3 +3,6 @@ build/*
 analysis/.ipynb_checkpoints/*
 data/*
 runs/*
+./after.html
+./before.html
+./test/hmm*
