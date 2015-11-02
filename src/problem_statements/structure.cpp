@@ -462,9 +462,45 @@ void Solution::add_bisection(void){
 }
 
 
-// Comment
 void Solution::remove_bisection(void){
-    //TODO: Write remove_bisection() function
+    //Initialize a few things
+    std::vector< std::vector<int> > list;
+    std::vector<long double> weights;
+    int cs;
+
+    // Find the valid bisections
+    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1){
+        if (nodes[it1->first].parameters["editable"]){
+            if(nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3){
+                std::vector<int> att;
+                att.push_back(it1->first);
+                for(int i=0; i<nodes[it1->first].incoming_edges.size(); i++){
+                    att.push_back(edges[nodes[it1->first].incoming_edges[i]].initial_node);
+                }
+
+                for(int i=0; i<nodes[it1->first].outgoing_edges.size(); i++){
+                    att.push_back(edges[nodes[it1->first].outgoing_edges[i]].terminal_node);
+                }
+
+                list.push_back({att[0], att[1], att[2]}); weights.push_back(1.0);
+                list.push_back({att[0], att[3], att[1]}); weights.push_back(1.0);
+                list.push_back({att[0], att[2], att[3]}); weights.push_back(1.0);
+            }
+        }
+    }
+
+    // Select a bisection at random
+    int idx = weighted_choice(weights);
+
+    print(list);
+
+    save_as_x3d("before.html");
+    // Remove that bisection
+    remove_node(list[idx][0]);
+
+    // Add the member back
+    add_member(list[idx][1], list[idx][2], 4, true);
+    save_as_x3d("after.html");
 }
 
 
@@ -489,8 +525,6 @@ void Solution::add_trisection(void){
     // Select a flip-flop at random
     int idx = weighted_choice(weights);
 
-    save_as_x3d("before.html");
-
     // Add a node in the middle of all the other nodes
     add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][2]].parameters["x"])/3,
               (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][2]].parameters["y"])/3,
@@ -501,7 +535,6 @@ void Solution::add_trisection(void){
     add_member(node_id_counter, list[idx][0], 4, true);
     add_member(node_id_counter, list[idx][1], 4, true);
     add_member(node_id_counter, list[idx][2], 4, true);
-    save_as_x3d("after.html");
 }
 
 
@@ -941,6 +974,11 @@ void Solution::save_as_x3d(std::string save_to_file) {
     the_quality.append(std::to_string(quality[0]));
     x3d.add_html("h1", the_quality);
 
+    // Add the SWR
+    std::string the_swr;
+    the_swr.append("SWR = ");
+    the_swr.append(std::to_string((FOS/1.25)*(175/mass)));
+    x3d.add_html("h1", the_swr);
 
     x3d.start_scene(0, 1, 10);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {

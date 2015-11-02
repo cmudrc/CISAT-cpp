@@ -140,6 +140,9 @@ void Agent::new_start(void){
                 }
             }
         }
+
+        // Set last operation
+        last_operation = uniform_int(Solution::number_of_move_ops-1, 0);
     }
     else if(parameters.learning_style == "HIDDEN_MARKOV_BAYESIAN") {
 

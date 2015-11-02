@@ -36,6 +36,9 @@ long double MultipleTeams::solve(void){
 
     // Do the run
     for(int i = 0; i< parameters.n_reps; i++) {
+
+        print(i);
+
         // Instantiate a new team
         Team this_team(parameters);
         this_team.run_id = id;
