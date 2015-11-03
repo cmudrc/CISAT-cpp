@@ -30,9 +30,11 @@ long double MultipleTeams::solve(void){
     id = static_cast <unsigned long> (time(0));
 
     // Make a new folder for team results
-    char dirname[50];
-    std::sprintf(dirname, "./data/%lu/", id);
-    mkdir(dirname, ACCESSPERMS);
+    if(parameters.save_designs >= 1){
+        char dirname[50];
+        std::sprintf(dirname, "./data/%lu/", id);
+        mkdir(dirname, ACCESSPERMS);
+    }
 
     // Do the run
     for(int i = 0; i< parameters.n_reps; i++) {
@@ -51,7 +53,6 @@ long double MultipleTeams::solve(void){
         this_team.solve();
 
         // Save results
-        //TODO: Save temperature too
         best_solution[i] = this_team.best_solution;
         cdf.push_back(this_team.best_solution.back());
     }

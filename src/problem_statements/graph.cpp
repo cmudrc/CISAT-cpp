@@ -35,6 +35,40 @@ void Graph::Node::remove_outgoing_edge(int e) {
     }
 }
 
+std::vector<int> Graph::get_neighbors(int n){
+    std::vector<int> neighbors;
+    int idx;
+    for(int i=0; i<nodes[n].incoming_edges.size(); i++){
+        idx = nodes[n].incoming_edges[i];
+        neighbors.push_back(edges[idx].initial_node);
+    }
+    for(int i=0; i<nodes[n].outgoing_edges.size(); i++){
+        idx = nodes[n].outgoing_edges[i];
+        neighbors.push_back(edges[idx].terminal_node);
+    }
+
+    return neighbors;
+}
+
+
+// Find the edges that two
+std::vector<int> Graph::find_common_neighbors(int n1, int n2){
+    // Make vectors to store the two initial nodes
+    std::vector<int> neighbors1 = get_neighbors(n1);
+    std::vector<int> neighbors2 = get_neighbors(n2);;
+    std::vector<int> matches;
+
+    // Find the matches in the two lists
+    for(int i=0; i<neighbors1.size(); i++){
+        for(int j=0; j<neighbors2.size(); j++){
+            if(neighbors1[i]==neighbors2[j]){
+                matches.push_back(neighbors1[i]);
+            }
+        }
+    }
+    return matches;
+}
+
 
 Graph::Edge::Edge() {};
 Graph::Edge::Edge(int n1, int n2) {
@@ -82,32 +116,6 @@ void Graph::remove_edge(int e) {
     edges.erase(e);
     number_of_edges--;
 }
-
-//void Graph::remove_node(int n) {
-//    // Remove from connectivity map
-//    connectivity_map.erase(n);
-//
-//    // Pull valid junction addition and edge deletion moves
-//    int k;
-//    for (std::map<int, Node>::iterator it1 =nodes.begin(); it1 !=nodes.end(); it1++) {
-//        k = (it1->first);
-//        connectivity_map[k].erase(n);
-//    }
-//
-//    // Remove edges attached to the node
-//    for(int i=0; i<nodes[n].outgoing_edges.size(); i++) {
-//        edges.erase(nodes[n].outgoing_edges[i]);
-//        number_of_edges--;
-//    }
-//    for(int i=0; i<nodes[n].incoming_edges.size(); i++) {
-//        edges.erase(nodes[n].incoming_edges[i]);
-//        number_of_edges--;
-//    }
-//
-//    // Remove the node itself
-//    nodes.erase(n);
-//    number_of_nodes--;
-//}
 
 void Graph::remove_node(int n) {
 

@@ -10,7 +10,6 @@
 
 // TODO: Add a status bar. 
 // TODO: Clean up command line options so everything comes from a config.
-// TODO Option to not save results to file
 int main(int argc, char *argv[]) {
 
     // Random seed

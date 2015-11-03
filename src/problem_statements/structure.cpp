@@ -9,11 +9,11 @@
 
 // Graph grammar characteristics
 #if RULESET == SHEA_FRAME
-const  unsigned long  Solution::number_of_move_ops   = 6;
+    const  unsigned long  Solution::number_of_move_ops   = 6;
 #elif RULESET == SHEA_TRUSS
-const  unsigned long  Solution::number_of_move_ops   = 7;
+    const  unsigned long  Solution::number_of_move_ops   = 7;
 #elif RULESET == MCCOMB
-const  unsigned long  Solution::number_of_move_ops   = 7;
+    const  unsigned long  Solution::number_of_move_ops   = 7;
 #endif
 
 const  unsigned long  Solution::number_of_objectives = 1;
@@ -374,24 +374,26 @@ void Solution::biad_to_triad(void){
     }
 
     // Select a node to operate on
-    int idx = weighted_choice(weights);
+    if(weights.size()) {
+        int idx = weighted_choice(weights);
 
-    // Remove edges
-    int d1 = static_cast<int> (edges[list[idx][2]].parameters["r"]);
-    int d2 = static_cast<int> (edges[list[idx][4]].parameters["r"]);
-    remove_edge(list[idx][2]);
-    remove_edge(list[idx][4]);
+        // Remove edges
+        int d1 = static_cast<int> (edges[list[idx][2]].parameters["r"]);
+        int d2 = static_cast<int> (edges[list[idx][4]].parameters["r"]);
+        remove_edge(list[idx][2]);
+        remove_edge(list[idx][4]);
 
-    // Add joint
-    add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][3]].parameters["x"])/3,
-              (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][3]].parameters["y"])/3,
-              (nodes[list[idx][0]].parameters["z"] + nodes[list[idx][1]].parameters["z"] + nodes[list[idx][3]].parameters["z"])/3,
-              true);
+        // Add joint
+        add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][3]].parameters["x"])/3,
+                  (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][3]].parameters["y"])/3,
+                  (nodes[list[idx][0]].parameters["z"] + nodes[list[idx][1]].parameters["z"] + nodes[list[idx][3]].parameters["z"])/3,
+                  true);
 
-    // Connect joint
-    add_member(node_id_counter, list[idx][0], (d1 + d2)/2, true);
-    add_member(node_id_counter, list[idx][1], d1, true);
-    add_member(node_id_counter, list[idx][3], d2, true);
+        // Connect joint
+        add_member(node_id_counter, list[idx][0], (d1 + d2)/2, true);
+        add_member(node_id_counter, list[idx][1], d1, true);
+        add_member(node_id_counter, list[idx][3], d2, true);
+    }
 }
 
 
@@ -408,13 +410,7 @@ void Solution::triad_to_biad(void){
         if(nodes[editable[i]].incoming_edges.size() + nodes[editable[i]].outgoing_edges.size()== 3){
 
             // Find out which nodes are connected
-            std::vector<int> connected;
-            for (int j = 0; j < nodes[editable[i]].incoming_edges.size(); j++) {
-                connected.push_back(edges[nodes[editable[i]].incoming_edges[j]].initial_node);
-            }
-            for (int j = 0; j < nodes[editable[i]].outgoing_edges.size(); j++) {
-                connected.push_back(edges[nodes[editable[i]].outgoing_edges[j]].terminal_node);
-            }
+            std::vector<int> connected = get_neighbors(editable[i]);
 
             // Push back move options
             list.push_back({editable[i], connected[0], connected[1], connected[2]}); weights.push_back(1.0);
@@ -424,14 +420,16 @@ void Solution::triad_to_biad(void){
     }
 
     // Select what will be removed
-    int idx = weighted_choice(weights);
+    if(weights.size() > 0){
+        int idx = weighted_choice(weights);
 
-    // Delete the central node
-    remove_node(list[idx][0]);
+        // Delete the central node
+        remove_node(list[idx][0]);
 
-    // Add edges
-    add_member(list[idx][1], list[idx][2], 4, true);
-    add_member(list[idx][2], list[idx][3], 4, true);
+        // Add edges
+        add_member(list[idx][1], list[idx][2], 4, true);
+        add_member(list[idx][2], list[idx][3], 4, true);
+    }
 }
 
 
@@ -494,13 +492,15 @@ void Solution::flip_flop(void){
     }
 
     // Select a flip-flop at random
-    int idx = weighted_choice(weights);
+    if(weights.size() > 0){
+        int idx = weighted_choice(weights);
 
-    // Delete the edge
-    remove_edge(list[idx][0]);
+        // Delete the edge
+        remove_edge(list[idx][0]);
 
-    // Add the edge
-    add_member(list[idx][1], list[idx][2], 4, true);
+        // Add the edge
+        add_member(list[idx][1], list[idx][2], 4, true);
+    }
 }
 
 
@@ -523,27 +523,29 @@ void Solution::add_bisection(void){
         }
     }
 
-    // Select a flip-flop at random
-    int idx = weighted_choice(weights);
+    // Select a bisection to add at random
+    if(weights.size() > 0){
+        int idx = weighted_choice(weights);
 
-    // Pull information from the doomed edge
-    int n1 = edges[list[idx][0]].initial_node;
-    int n2 = edges[list[idx][0]].terminal_node;
-    int d = static_cast<int>(edges[list[idx][0]].parameters["r"]);
+        // Pull information from the doomed edge
+        int n1 = edges[list[idx][0]].initial_node;
+        int n2 = edges[list[idx][0]].terminal_node;
+        int d = static_cast<int>(edges[list[idx][0]].parameters["r"]);
 
-    // Add a joint at the midpoint
-    add_joint((nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
-              (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
-              (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
-              true);
+        // Add a joint at the midpoint
+        add_joint((nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
+                  (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
+                  (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
+                  true);
 
-    // Remove the doomed edge
-    remove_edge(list[idx][0]);
+        // Remove the doomed edge
+        remove_edge(list[idx][0]);
 
-    // Save its children
-    add_member(node_id_counter, list[idx][1], 4, true);
-    add_member(node_id_counter, n1, d, true);
-    add_member(node_id_counter, n2, d, true);
+        // Save its children
+        add_member(node_id_counter, list[idx][1], 4, true);
+        add_member(node_id_counter, n1, d, true);
+        add_member(node_id_counter, n2, d, true);
+    }
 }
 
 
@@ -556,19 +558,10 @@ void Solution::remove_bisection(void) {
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
         if (nodes[it1->first].parameters["editable"]) {
             if (nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3) {
-                std::vector<int> att;
-                att.push_back(it1->first);
-                for (int i = 0; i < nodes[it1->first].incoming_edges.size(); i++) {
-                    att.push_back(edges[nodes[it1->first].incoming_edges[i]].initial_node);
-                }
-
-                for (int i = 0; i < nodes[it1->first].outgoing_edges.size(); i++) {
-                    att.push_back(edges[nodes[it1->first].outgoing_edges[i]].terminal_node);
-                }
-
-                list.push_back({att[0], att[1], att[2]}); weights.push_back(1.0);
-                list.push_back({att[0], att[3], att[1]}); weights.push_back(1.0);
-                list.push_back({att[0], att[2], att[3]}); weights.push_back(1.0);
+                std::vector<int> neighbors = get_neighbors(it1->first);
+                list.push_back({it1->first, neighbors[0], neighbors[1]}); weights.push_back(1.0);
+                list.push_back({it1->first, neighbors[2], neighbors[0]}); weights.push_back(1.0);
+                list.push_back({it1->first, neighbors[1], neighbors[2]}); weights.push_back(1.0);
             }
         }
     }
@@ -604,18 +597,20 @@ void Solution::add_trisection(void){
     }
 
     // Select a flip-flop at random
-    int idx = weighted_choice(weights);
+    if(weights.size() > 0){
+        int idx = weighted_choice(weights);
 
-    // Add a node in the middle of all the other nodes
-    add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][2]].parameters["x"])/3,
-              (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][2]].parameters["y"])/3,
-              (nodes[list[idx][0]].parameters["z"] + nodes[list[idx][1]].parameters["z"] + nodes[list[idx][2]].parameters["z"])/3,
-              true);
+        // Add a node in the middle of all the other nodes
+        add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][2]].parameters["x"])/3,
+                  (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][2]].parameters["y"])/3,
+                  (nodes[list[idx][0]].parameters["z"] + nodes[list[idx][1]].parameters["z"] + nodes[list[idx][2]].parameters["z"])/3,
+                  true);
 
-    // Add three connecting edges
-    add_member(node_id_counter, list[idx][0], 4, true);
-    add_member(node_id_counter, list[idx][1], 4, true);
-    add_member(node_id_counter, list[idx][2], 4, true);
+        // Add three connecting edges
+        add_member(node_id_counter, list[idx][0], 4, true);
+        add_member(node_id_counter, list[idx][1], 4, true);
+        add_member(node_id_counter, list[idx][2], 4, true);
+    }
 }
 
 
@@ -631,17 +626,13 @@ void Solution::remove_trisection(void){
         if (nodes[it1->first].parameters["editable"]){
             // Check if it has three connections
             if(nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3) {
-                std::vector<int> att;
-                for (int i = 0; i < nodes[it1->first].incoming_edges.size(); i++) {
-                    att.push_back(edges[nodes[it1->first].incoming_edges[i]].initial_node);
-                }
-
-                for (int i = 0; i < nodes[it1->first].outgoing_edges.size(); i++) {
-                    att.push_back(edges[nodes[it1->first].outgoing_edges[i]].terminal_node);
-                }
+                // Find neighboring nodes
+                std::vector<int> neighbors = get_neighbors(it1->first);
 
                 // Check if its connections are connected
-                if (undirected_edge_exists(att[0], att[1]) && undirected_edge_exists(att[2], att[1]) && undirected_edge_exists(att[0], att[2])) {
+                if (   undirected_edge_exists(neighbors[0], neighbors[1])
+                    && undirected_edge_exists(neighbors[2], neighbors[1])
+                    && undirected_edge_exists(neighbors[0], neighbors[2])) {
                     list.push_back(it1->first);
                     weights.push_back(1.0);
                 }
@@ -1025,45 +1016,6 @@ bool Solution::is_valid(void) {
     }
 
     return LOADS && SUPPORTS && STABLE;
-}
-
-// Find the edges that two
-std::vector<int> Solution::find_common_neighbors(int n1, int n2){
-    // Make vectors to store the two initial nodes
-    std::vector<int> neighbors1;
-    std::vector<int> neighbors2;
-    std::vector<int> matches;
-    int idx;
-
-    // Pushback the neighbors of node 1
-    for(int i=0; i<nodes[n1].incoming_edges.size(); i++){
-        idx = nodes[n1].incoming_edges[i];
-        neighbors1.push_back(edges[idx].initial_node);
-    }
-    for(int i=0; i<nodes[n1].outgoing_edges.size(); i++){
-        idx = nodes[n1].outgoing_edges[i];
-        neighbors1.push_back(edges[idx].terminal_node);
-    }
-
-    // Pushback the neighbors of node 2
-    for(int i=0; i<nodes[n2].incoming_edges.size(); i++){
-        idx = nodes[n2].incoming_edges[i];
-        neighbors2.push_back(edges[idx].initial_node);
-    }
-    for(int i=0; i<nodes[n2].outgoing_edges.size(); i++){
-        idx = nodes[n2].outgoing_edges[i];
-        neighbors2.push_back(edges[idx].terminal_node);
-    }
-
-    // Find the matches in the two lists
-    for(int i=0; i<neighbors1.size(); i++){
-        for(int j=0; j<neighbors2.size(); j++){
-            if(neighbors1[i]==neighbors2[j]){
-                matches.push_back(neighbors1[i]);
-            }
-        }
-    }
-    return matches;
 }
 
 // Save in an X3D file format

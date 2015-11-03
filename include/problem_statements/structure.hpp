@@ -87,7 +87,6 @@ private:
     void remove_trisection(void);
 
     // Random additional utilities
-    std::vector<int> find_common_neighbors(int n1, int n2);
     bool is_valid(void);
     void update_sectional_properties(int e);
     void update_length(int e);

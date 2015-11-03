@@ -24,7 +24,7 @@ add_definitions(-DSHEA_FRAME=0
 
 # Define which problem statement to use
 add_definitions(-DPROBLEM_STATEMENT=TRUSS
-                -DRULE_SET=SHEA_FRAME)
+                -DRULE_SET=MCCOMB)
 
 
 set(SOURCE_FILES
