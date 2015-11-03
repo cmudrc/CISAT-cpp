@@ -1,6 +1,6 @@
 #include "../../include/utilities/optimization.hpp"
 
-// Compute the x value fo the optimium of a linear regression
+// Compute the x value fo the optimum of a linear regression
 std::vector<long double> quad_max(std::vector<long double> x, std::vector<long double> y){
 
     // Initialize things
@@ -98,7 +98,7 @@ std::vector<bool> get_pareto_front(std::vector< std::vector<long double> > y){
                 }
             }
 
-            // If point j i sbetter than point i for all criteria, remove point i from pareto
+            // If point j is better than point i for all criteria, remove point i from pareto
             if (counter == y[0].size()) {
                 is_pareto[i] = false;
                 break;
@@ -132,6 +132,5 @@ std::vector<int> get_pareto_tiers(std::vector< std::vector<long double> > y){
             }
         }
     }
-
     return tiers;
 }

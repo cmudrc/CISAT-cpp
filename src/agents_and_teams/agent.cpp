@@ -56,7 +56,7 @@ void Agent::new_start(void){
         // Assign a matrix of weights
         move_oper_pref.assign(Solution::number_of_move_ops, std::vector<long double> (Solution::number_of_move_ops, 1.0));
 
-        // Read in initalization from file, if appropriate
+        // Read in initialization from file, if appropriate
         if(parameters.init_learn_path != "none") {
             std::ifstream inputFile(parameters.init_learn_path);
             std::string line;
@@ -337,10 +337,10 @@ void Agent::iterate(int iter){
     iteration_number = iter;
 
     // Vector for saving new candidate solution
-    Solution x_cand = candidate_solution();
+    Solution x_candidate = candidate_solution();
 
     // Objective function value of current solution, and probability of accepting new solution
-    long double fx_cand = apply_weighting(x_cand.quality, objective_weighting);
+    long double fx_cand = apply_weighting(x_candidate.quality, objective_weighting);
 
 
     if(parameters.history_length < 0) {
@@ -350,7 +350,7 @@ void Agent::iterate(int iter){
     // If it is better, accept it
     if(fx_cand < current_solution_quality){
         // Save locally
-        current_solution = x_cand;
+        current_solution = x_candidate;
         current_solution_quality = fx_cand;
 //        std::cout << "Accepted" << ", ";
     } else {
@@ -358,7 +358,7 @@ void Agent::iterate(int iter){
         long double p_accept = std::exp((current_solution_quality - fx_cand)/temperature);
         if(uniform(1.0, 0.0) < p_accept){
             // Save locally
-            current_solution = x_cand;
+            current_solution = x_candidate;
             current_solution_quality = fx_cand;
 //            std::cout << "Accepted" << ", ";
         } else {

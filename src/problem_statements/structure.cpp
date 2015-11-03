@@ -176,7 +176,7 @@ void Solution::compute_quality(void) {
 }
 
 
-// This function computes forces and factors of sfaety
+// This function computes forces and factors of safety
 void Solution::compute_truss_forces(void) {
     // Initialize things
     std::vector<std::vector<long double> > K(static_cast<unsigned long>(3 * number_of_nodes),

@@ -31,9 +31,9 @@ long double MultipleTeams::solve(void){
 
     // Make a new folder for team results
     if(parameters.save_designs >= 1){
-        char dirname[50];
-        std::sprintf(dirname, "./data/%lu/", id);
-        mkdir(dirname, ACCESSPERMS);
+        char directory_name[50];
+        std::sprintf(directory_name, "./data/%lu/", id);
+        mkdir(directory_name, ACCESSPERMS);
     }
 
     // Do the run
