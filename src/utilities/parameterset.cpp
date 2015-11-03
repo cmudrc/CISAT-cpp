@@ -31,6 +31,7 @@ void ParameterSet::set_from_file(std::string file_name) {
         else if(name == "LEARN_INIT")  ss >> init_learn_path;
         else if(name == "LEARN")  ss >> learning_style;
         else if(name == "SATFRAC") ss >> satisficing_fraction;
+        else if(name == "SAVE_DESIGNS") ss >> save_designs;
     }
 }
 
@@ -49,6 +50,7 @@ void ParameterSet::print_parameters(void) {
     std::cout << "Initial knowledge: " <<  init_learn_path                 << std::endl;
     std::cout << "Operation learn:   " <<  op_learn                        << std::endl;
     std::cout << "Satisficing frac:  " <<  satisficing_fraction            << std::endl;
+    std::cout << "Saving designs:    " <<  save_designs                    << std::endl;
 }
 
 //// Sets parameters based on a vector

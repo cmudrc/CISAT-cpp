@@ -18,6 +18,7 @@ public:
     // Float storing interaction
     long double interaction;
     int history_length;
+    int save_designs;
     unsigned long n_agents;
     long double initial_temperature;
     long double delt;

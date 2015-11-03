@@ -39,7 +39,7 @@ private:
     // Material constants
     static const long double E;
     static const long double Fy;
-    static const long double rho;
+    static const long double density;
 
     // Member parameters
     static const std::vector< long double > member_radius;

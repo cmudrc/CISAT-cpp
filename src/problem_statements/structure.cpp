@@ -8,14 +8,21 @@
 #include "../../include/problem_statements/structure.hpp"
 
 // Graph grammar characteristics
+#if RULESET == SHEA_FRAME
+const  unsigned long  Solution::number_of_move_ops   = 6;
+#elif RULESET == SHEA_TRUSS
 const  unsigned long  Solution::number_of_move_ops   = 7;
+#elif RULESET == MCCOMB
+const  unsigned long  Solution::number_of_move_ops   = 7;
+#endif
+
 const  unsigned long  Solution::number_of_objectives = 1;
 const  long double    Solution::goal                 = 175.0;
 
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
 const  long double    Solution::Fy              = 344*std::pow(10,6); // Pa
-const  long double    Solution::rho             = 7870; // kg/m3
+const  long double    Solution::density             = 7870; // kg/m3
 
 // Member radius and wall thickness
 const std::vector< long double > Solution::member_radius  = {0.005, 0.010, 0.015, 0.020, 0.025,
@@ -340,13 +347,91 @@ void Solution::apply_move_operator(int rule_number) {
 
 // This adds a bar triad
 void Solution::biad_to_triad(void){
-    //TODO: Write biad_to_triad function
+    // Define some things
+    std::vector<long double> weights;
+    std::vector<std::vector< int > > list;
+    int cs;
+
+    // Step through all nodes and remember which have at least 2 connections
+    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1){
+        cs = static_cast<int> (nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size());
+        // TODO Only add edge pairs that are adjacent in terms of angle
+        if(cs >= 2 ){
+            std::vector< std::vector<int> > connected;
+            for(int i=0; i<nodes[it1->first].incoming_edges.size(); i++){
+                connected.push_back({edges[nodes[it1->first].incoming_edges[i]].initial_node, nodes[it1->first].incoming_edges[i]});
+            }
+            for(int i=0; i<nodes[it1->first].outgoing_edges.size(); i++){
+                connected.push_back({edges[nodes[it1->first].outgoing_edges[i]].terminal_node, nodes[it1->first].outgoing_edges[i]});
+            }
+            for(int i=0; i<cs; i++){
+                for(int j=i+1; j<cs; j++){
+                    list.push_back(std::vector<int> {it1->first, connected[i][0], connected[i][1], connected[j][0], connected[j][1]});
+                    weights.push_back(1.0);
+                }
+            }
+        }
+    }
+
+    // Select a node to operate on
+    int idx = weighted_choice(weights);
+
+    // Remove edges
+    int d1 = static_cast<int> (edges[list[idx][2]].parameters["r"]);
+    int d2 = static_cast<int> (edges[list[idx][4]].parameters["r"]);
+    remove_edge(list[idx][2]);
+    remove_edge(list[idx][4]);
+
+    // Add joint
+    add_joint((nodes[list[idx][0]].parameters["x"] + nodes[list[idx][1]].parameters["x"] + nodes[list[idx][3]].parameters["x"])/3,
+              (nodes[list[idx][0]].parameters["y"] + nodes[list[idx][1]].parameters["y"] + nodes[list[idx][3]].parameters["y"])/3,
+              (nodes[list[idx][0]].parameters["z"] + nodes[list[idx][1]].parameters["z"] + nodes[list[idx][3]].parameters["z"])/3,
+              true);
+
+    // Connect joint
+    add_member(node_id_counter, list[idx][0], (d1 + d2)/2, true);
+    add_member(node_id_counter, list[idx][1], d1, true);
+    add_member(node_id_counter, list[idx][3], d2, true);
 }
 
 
 // This remove a bar triad
 void Solution::triad_to_biad(void){
-    //TODO: Write triad_to_biad function
+    // Define some things
+    std::vector<int> editable = get_node_ids("editable", true);
+    std::vector<long double> weights;
+    std::vector<std::vector< int > > list;
+    int cs;
+
+    // step through all nodes adn remember which have three connections exactly
+    for(int i=0; i<editable.size(); i++){
+        if(nodes[editable[i]].incoming_edges.size() + nodes[editable[i]].outgoing_edges.size()== 3){
+
+            // Find out which nodes are connected
+            std::vector<int> connected;
+            for (int j = 0; j < nodes[editable[i]].incoming_edges.size(); j++) {
+                connected.push_back(edges[nodes[editable[i]].incoming_edges[j]].initial_node);
+            }
+            for (int j = 0; j < nodes[editable[i]].outgoing_edges.size(); j++) {
+                connected.push_back(edges[nodes[editable[i]].outgoing_edges[j]].terminal_node);
+            }
+
+            // Push back move options
+            list.push_back({editable[i], connected[0], connected[1], connected[2]}); weights.push_back(1.0);
+            list.push_back({editable[i], connected[1], connected[2], connected[0]}); weights.push_back(1.0);
+            list.push_back({editable[i], connected[2], connected[0], connected[1]}); weights.push_back(1.0);
+        }
+    }
+
+    // Select what will be removed
+    int idx = weighted_choice(weights);
+
+    // Delete the central node
+    remove_node(list[idx][0]);
+
+    // Add edges
+    add_member(list[idx][1], list[idx][2], 4, true);
+    add_member(list[idx][2], list[idx][3], 4, true);
 }
 
 
@@ -615,15 +700,17 @@ void Solution::apply_move_operator(int rule_number){
 
 // This deterministically adds a member as specified. Primarily a utility function.
 void Solution::add_member(int n1, int n2, int r, bool editable){
-    // Add the edge to the graph
-    add_edge(n1, n2);
+    if(!undirected_edge_exists(n1, n2)) {
+        // Add the edge to the graph
+        add_edge(n1, n2);
 
-    // Add parameters to the edges
-    edges[edge_id_counter].parameters["editable"] = editable;
-    edges[edge_id_counter].parameters["r"] = r;
-    edges[edge_id_counter].parameters["t"] = r;
-    update_length(edge_id_counter);
-    update_sectional_properties(edge_id_counter);
+        // Add parameters to the edges
+        edges[edge_id_counter].parameters["editable"] = editable;
+        edges[edge_id_counter].parameters["r"] = r;
+        edges[edge_id_counter].parameters["t"] = r;
+        update_length(edge_id_counter);
+        update_sectional_properties(edge_id_counter);
+    }
 }
 
 
@@ -893,7 +980,7 @@ void Solution::update_sectional_properties(int e){
 // Updates the mass of the member
 void Solution::calculate_member_mass(int e){
     // Compute the mass of the member
-    edges[e].parameters["m"] = edges[e].parameters["L"]*edges[e].parameters["A"]*rho;
+    edges[e].parameters["m"] = edges[e].parameters["L"]*edges[e].parameters["A"]*density;
 }
 
 
