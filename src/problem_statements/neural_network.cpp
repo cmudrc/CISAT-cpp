@@ -8,9 +8,14 @@
 #include "../../include/problem_statements/neural_network.hpp"
 
 // Graph grammar characteristics
-const  unsigned long  Solution::number_of_move_ops   = 6;
+#if RULE_SET == CAMPBELL
+    const  unsigned long  Solution::number_of_move_ops   = 6;
+#elif RULE_SET == MCCOMB
+    const  unsigned long  Solution::number_of_move_ops   = 8;
+#endif
+
 const  unsigned long  Solution::number_of_objectives = 1;
-const  long double    Solution::goal                 = 0.0;
+const  std::vector<long double>    Solution::goal    = {0.0};
 
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
         {}
@@ -73,9 +78,49 @@ void Solution::apply_move_operator(int rule_number){
 }
 #endif
 
+#if RULE_SET == MCCOMB
+void Solution::apply_move_operator(int rule_number){
+    switch(rule_number) {
+        case 0:
+            r1_connect_with_edge();
+            break;
+        case 1:
+            r2_connect_with_noded_edge();
+            break;
+        case 2:
+            r3_replace_with_noded_edge();
+            break;
+        case 3:
+            r4_add_bypass();
+            break;
+        case 4:
+            r5_add_parallel_edge();
+            break;
+        case 5:
+            r6_add_hidden_node();
+            break;
+        case 6:
+            r7_remove_eddge();
+            break;
+        case 7:
+            r8_remove_eddge();
+            break;
+        default:
+            break;
+    }
+
+    // Compute the quality
+    compute_quality();
+
+    // Increment solution counters and things?
+    solution_counter++;
+    solution_id++;
+}
+#endif
+
 // Functions
 void Solution::compute_quality(void){
-    quality[0] = uniform(10.0, 0.0);
+    quality[0] = uniform(1.0, 0.0);
 }
 
 
@@ -154,7 +199,6 @@ void Solution::r2_connect_with_noded_edge(void){
         nodes[node_id_counter].parameters["layer"] = (nodes[list[idx][0]].parameters["layer"]+nodes[list[idx][1]].parameters["layer"])/2;
         add_layer(nodes[node_id_counter].parameters["layer"]);
         nodes[node_id_counter].parameters["editable"] = true;
-        nodes[node_id_counter].parameters["y"] = 0;
         nodes[node_id_counter].parameters["z"] = uniform(0.25, -0.25);
 
         // Connect the edges
@@ -192,7 +236,6 @@ void Solution::r3_replace_with_noded_edge(void){
         nodes[node_id_counter].parameters["type"] = HIDDEN;
         nodes[node_id_counter].parameters["layer"] = (nodes[n1].parameters["layer"]+nodes[n2].parameters["layer"])/2;
         add_layer(nodes[node_id_counter].parameters["layer"]);
-        nodes[node_id_counter].parameters["y"] = (nodes[n1].parameters["y"]+nodes[n2].parameters["y"])/2;
         nodes[node_id_counter].parameters["editable"] = true;
         nodes[node_id_counter].parameters["z"] = uniform(0.25, -0.25);
 
@@ -236,19 +279,65 @@ void Solution::r4_add_bypass(void) {
     if (weights.size() > 0) {
         int idx = weighted_choice(weights);
         add_edge(list[idx][0], list[idx][1]);
+        edges[edge_id_counter].parameters["editable"] = true;
     }
 }
 
 
 // This function...
 void Solution::r5_add_parallel_edge(void){
-    //TODO: Write function for Rule #5
+    r1_connect_with_edge();
 }
 
 
 // This function...
 void Solution::r6_add_hidden_node(void){
-    //TODO: Write function for Rule #6
+// First define some things
+    std::vector<long double> weights;
+    std::vector<std::vector<int> > list;
+
+    // Find all eligible node combinations. A combination is eligible if an edge doesnt already exist, and if nodes aren't in teh same layer
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
+        for (std::map<int, Node>::iterator it2 = std::next(it1, 1); it2 != nodes.end(); ++it2) {
+            // Pull node numbers
+            int n1 = it1->first;
+            int n2 = it2->first;
+
+            // Make sure we're not dealing with nodes in teh same layer.
+            if (nodes[n1].parameters["layer"] != nodes[n2].parameters["layer"]) {
+                // Find out if nodes have any neighbors
+                std::vector<int> common = find_common_neighbors(n1, n2);
+
+                // If the nodes have a common neighbor, save them as an option.
+                for(int i=0; i<common.size(); i++) {
+                    if(std::abs(nodes[common[i]].parameters["layer"]) != 1.0) {
+                        list.push_back({common[i], n1, n2});
+                        weights.push_back(1.0);
+                    }
+                }
+            }
+        }
+    }
+
+    if (weights.size() > 0) {
+        // Select an option adn implement it
+        int idx = weighted_choice(weights);
+
+
+        // Add a node
+        add_node();
+        nodes[node_id_counter].parameters["type"] = HIDDEN;
+        nodes[node_id_counter].parameters["layer"] = nodes[list[idx][0]].parameters["layer"];
+        nodes[node_id_counter].parameters["editable"] = true;
+        nodes[node_id_counter].parameters["z"] = uniform(0.25, -0.25);
+
+        // Connect the node
+        add_edge(node_id_counter, list[idx][1]);
+        edges[edge_id_counter].parameters["editable"] = true;
+        add_edge(node_id_counter, list[idx][2]);
+        edges[edge_id_counter].parameters["editable"] = true;
+    }
+
 }
 
 
@@ -278,7 +367,6 @@ void Solution::save_as_x3d(std::string save_to_file){
         // Give them value
         for(int j=0; j<nn; j++){
             nodes[nodes_in_layer[j]].parameters["y"] = -0.5 + static_cast<long double> (j+1)/(nn+1);
-            nodes[nodes_in_layer[j]].parameters["z"] = 0;
         }
     }
 
@@ -302,6 +390,7 @@ void Solution::add_layer(long double L){
     if(std::find(layers.begin(), layers.end(), L) == layers.end()) {
         layers.push_back(L);
     }
+    std::sort(layers.begin(), layers.end());
 }
 
 

@@ -10,7 +10,7 @@
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 7;
 const  unsigned long  Solution::number_of_objectives = 1;
-const  long double    Solution::goal                 = 0.0;
+const  std::vector<long double>    Solution::goal                 = {0.0};
 
 // Fluid constants
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
@@ -180,7 +180,7 @@ void Solution::compute_quality(void) {
 
     quality[0] = 0;
     for(int i=2; i<4; i++) {
-        print(edges[i].parameters["Q"]);
+//        print(edges[i].parameters["Q"]);
 //        quality[0] += 10000000*std::pow((0.001 + edges[i].parameters["Q"]), 2);
         quality[0] += 10000000*std::abs((0.001 + edges[i].parameters["Q"]));
     }
