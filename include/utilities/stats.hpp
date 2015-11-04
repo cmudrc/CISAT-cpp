@@ -13,6 +13,7 @@
 #include <numeric>
 #include <cfloat>
 #include <deque>
+#include "./custom_print.hpp"
 
 // Function to return maximum value of vector
 long double vector_maximum(std::vector<long double> v);
@@ -39,8 +40,15 @@ long double stdev(std::deque<long double> x);
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b);
 
 // Computes signum, or sign
-template <typename T> int sgn(T val) {
+template <typename T>
+int sgn(T val) {
     return (T(0) < val) - (val < T(0));
+}
+
+// Logistic sigmoidal function for neural networks
+template <typename Type>
+Type logistic_sigmoid(Type x) {
+    return 1.0/(1.0 + std::exp(-x));
 }
 
 #endif

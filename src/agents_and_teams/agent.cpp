@@ -393,6 +393,7 @@ void Agent::update_temp(void) {
             triki_temperature = update_triki();
 
             // Compute the satisficing penalty
+            //TODO Check this computation
             std::vector<long double> satisficing_penalty(Solution::number_of_objectives, 0.0);
             for(int i=0; i<Solution::number_of_objectives; i++){
                 satisficing_penalty[i] = std::max(static_cast <long double> (0.0), current_solution.quality[i] - sgn(Solution::goal[i]))/current_solution.quality[i];
@@ -436,6 +437,7 @@ void Agent::update_temp(void) {
 long double Agent::update_triki(void){
     long double q_std = stdev(history);
     long double update_factor = parameters.delt * triki_temperature / std::pow(q_std, 2);
+    std::cout << "temp stuff: " << q_std << " " << update_factor << std::endl;
     if (q_std > 0.0) {
         if (update_factor > 1.0) {
             // Update delt and update_factor
