@@ -21,7 +21,7 @@ public:
     // Constants
     static const unsigned long number_of_move_ops;
     static const unsigned long number_of_objectives;
-    static const long double goal;
+    static const std::vector<long double> goal;
 
     // Variables
     std::vector<long double> quality;

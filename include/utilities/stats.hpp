@@ -35,6 +35,12 @@ long double stdev(std::deque<long double> x);
 // Compute standard deviation of a list
 long double stdev(std::deque<long double> x);
 
+// Applies weighting
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b);
+
+// Computes signum, or sign
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
 
 #endif

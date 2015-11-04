@@ -151,7 +151,7 @@ void Agent::new_start(void){
     }
 
     // Define objective weighting
-    objective_weighting.assign(Solution::number_of_objectives, 1.0);
+    objective_weighting.assign(Solution::number_of_objectives, 1.0/Solution::number_of_objectives);
     all_current_objective_weightings[agent_id] = objective_weighting;
 
     // Select a random starting point and evaluate it
@@ -392,10 +392,14 @@ void Agent::update_temp(void) {
             history.pop_front();
             triki_temperature = update_triki();
 
-            temperature = parameters.satisficing_fraction* parameters.initial_temperature*(std::max(static_cast <long double> (0.0),
-                                                                  best_solution_so_far - Solution::goal)/
-                                                                        best_solution_so_far)
-                          + (1.0- parameters.satisficing_fraction)*triki_temperature;
+            // Compute the satisficing penalty
+            std::vector<long double> satisficing_penalty(Solution::number_of_objectives, 0.0);
+            for(int i=0; i<Solution::number_of_objectives; i++){
+                satisficing_penalty[i] = std::max(static_cast <long double> (0.0), current_solution.quality[i] - sgn(Solution::goal[i]))/current_solution.quality[i];
+            }
+
+            // Update hte temperature
+            temperature = parameters.satisficing_fraction* parameters.initial_temperature*apply_weighting(satisficing_penalty, objective_weighting) + (1.0 - parameters.satisficing_fraction)*triki_temperature;
         }
     }
 
@@ -411,11 +415,17 @@ void Agent::update_temp(void) {
         // If adaptive and time to update, update triki and clear the cache
         if(update){
             triki_temperature = update_triki();
-            temperature = parameters.satisficing_fraction* parameters.initial_temperature*(std::max(static_cast <long double> (0.0),
-                                                                            best_solution_so_far - Solution::goal)/
-                                                                        best_solution_so_far)
-                          + (1.0- parameters.satisficing_fraction)*triki_temperature;
 
+            // Compute the satisficing penalty
+            std::vector<long double> satisficing_penalty(Solution::number_of_objectives, 0.0);
+            for(int i=0; i<Solution::number_of_objectives; i++){
+                satisficing_penalty[i] = std::max(static_cast <long double> (0.0), current_solution.quality[i] - sgn(Solution::goal[i]))/current_solution.quality[i];
+            }
+
+            // Update the temperature
+            temperature = parameters.satisficing_fraction* parameters.initial_temperature*apply_weighting(satisficing_penalty, objective_weighting) + (1.0 - parameters.satisficing_fraction)*triki_temperature;
+
+            // Clear the history
             history.clear();
         }
     }

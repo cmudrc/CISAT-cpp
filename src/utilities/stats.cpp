@@ -86,7 +86,7 @@ long double stdev(std::deque<long double> x) {
     return std::sqrt(s/x.size());
 }
 
-
+// Applies a weighted sum to a vector
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b) {
     long double sum = 0;
     for (int i = 0; i < a.size(); i++) {
@@ -94,3 +94,6 @@ long double apply_weighting(std::vector<long double> a, std::vector<long double>
     }
     return sum;
 }
+
+
+

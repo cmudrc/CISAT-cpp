@@ -16,8 +16,8 @@
     const  unsigned long  Solution::number_of_move_ops   = 7;
 #endif
 
-const  unsigned long  Solution::number_of_objectives = 1;
-const  long double    Solution::goal                 = 175.0;
+const  unsigned long  Solution::number_of_objectives = 2;
+const  std::vector<long double>    Solution::goal    = {175.0, -1.25};
 
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
@@ -147,32 +147,34 @@ void Solution::compute_quality(void) {
         // Compute the mass
         for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); ++it1) {
             mass += edges[it1->first].parameters["m"];
-            if (edges[it1->first].parameters["FOS_y"] < FOS) {
-                FOS = edges[it1->first].parameters["FOS_y"];
-            }
-            if (edges[it1->first].parameters["FOS_b"] < FOS) {
-                FOS = edges[it1->first].parameters["FOS_b"];
+            if (edges[it1->first].parameters["FOS_lim"] < FOS) {
+                FOS = edges[it1->first].parameters["FOS_lim"];
             }
         }
 
         // Compute FOS penalty
-        if(FOS < LDBL_MAX) {
-            if (FOS > 1.25) {
-                FOS_penalty = 0;
-            }
-            else {
-                FOS_penalty = std::pow(10, 4) * std::pow(1.25 - FOS, 2);
-            }
-        } else {
-            mass = std::pow(10, 4);
-            FOS_penalty = std::pow(10, 4);
+        if(FOS == LDBL_MAX) {
+            mass = 100*goal[0];
+            FOS = 100*goal[1];
         }
     } else {
-        mass = std::pow(10, 4);
-        FOS_penalty = std::pow(10, 4);
+        mass = 100*goal[0];
+        FOS = 100*goal[1];
     }
 
-    quality[0] = mass + FOS_penalty;
+    // Adjust with respect to goals
+    long double quality_mass = mass;
+    if(mass > goal[0]) {
+        quality_mass += std::pow((mass - goal[0]), 2);
+    }
+    quality_mass /= goal[0];
+
+    long double quality_fos = -FOS;
+    if(FOS < -goal[1]) {
+        quality_fos = -10*std::log(-FOS/goal[1]);
+    }
+
+    quality = {quality_mass, quality_fos};
 }
 
 
@@ -1039,17 +1041,17 @@ void Solution::save_as_x3d(std::string save_to_file) {
     the_mass.append(std::to_string(mass));
     x3d.add_html("h1", the_mass);
 
-    // Add the quality
-    std::string the_quality;
-    the_quality.append("quality = ");
-    the_quality.append(std::to_string(quality[0]));
-    x3d.add_html("h1", the_quality);
-
     // Add the SWR
     std::string the_swr;
     the_swr.append("SWR = ");
     the_swr.append(std::to_string((FOS/1.25)*(175/mass)));
     x3d.add_html("h1", the_swr);
+
+    // Add the SWR
+    std::string the_q;
+    the_q.append("Q = ");
+    the_q.append(std::to_string(apply_weighting(quality, {0.5, 0.5})));
+    x3d.add_html("h1", the_q);
 
     x3d.start_scene(0, 1, 10);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
