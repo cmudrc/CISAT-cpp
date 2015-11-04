@@ -76,15 +76,19 @@ private:
     void add_joint_and_attach(void);
 
     // Move operators unique to Shea Frame grammar
-    void biad_to_triad(void);
-    void triad_to_biad(void);
+    #if RULE_SET == SHEA_FRAME
+        void biad_to_triad(void);
+        void triad_to_biad(void);
+    #endif
 
     // Move operators unique to Shea Truss grammar
-    void flip_flop(void);
-    void add_bisection(void);
-    void remove_bisection(void);
-    void add_trisection(void);
-    void remove_trisection(void);
+    #if RULE_SET == SHEA_TRUSS
+        void flip_flop(void);
+        void add_bisection(void);
+        void remove_bisection(void);
+        void add_trisection(void);
+        void remove_trisection(void);
+    #endif
 
     // Random additional utilities
     bool is_valid(void);

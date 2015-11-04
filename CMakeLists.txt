@@ -23,8 +23,8 @@ add_definitions(-DSHEA_FRAME=0
                 -DCAMPBELL=3)
 
 # Define which problem statement to use
-add_definitions(-DPROBLEM_STATEMENT=TRUSS
-                -DRULE_SET=MCCOMB)
+add_definitions(-DPROBLEM_STATEMENT=NEURAL
+                -DRULE_SET=CAMPBELL)
 
 
 set(SOURCE_FILES

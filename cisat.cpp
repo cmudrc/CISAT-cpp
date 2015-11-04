@@ -8,7 +8,6 @@
 #include "./include/meta_optimization/pattern.hpp"
 #include <sys/time.h>
 
-// TODO: Add a status bar. 
 // TODO: Clean up command line options so everything comes from a config.
 int main(int argc, char *argv[]) {
 

@@ -38,6 +38,7 @@ private:
     // Variables
     int solution_id;
     static int solution_counter;
+    std::vector<long double> layers;
 
     // Inlet location
     static std::vector< std::map<std::string, long double> > seed_graph_parameters;
@@ -55,6 +56,8 @@ private:
     void r5_add_parallel_edge(void);          // rule 5: Adds an edge in parallel with an existing edge
     void r6_add_hidden_node(void);            // rule 6: Add a node in a hidden layer and connect it to adjacent layers.
 
+
+    void add_layer(long double L);
     bool is_valid(void);
 };
 

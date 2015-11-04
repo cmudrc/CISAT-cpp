@@ -8,11 +8,11 @@
 #include "../../include/problem_statements/structure.hpp"
 
 // Graph grammar characteristics
-#if RULESET == SHEA_FRAME
+#if RULE_SET == SHEA_FRAME
     const  unsigned long  Solution::number_of_move_ops   = 6;
-#elif RULESET == SHEA_TRUSS
+#elif RULE_SET == SHEA_TRUSS
     const  unsigned long  Solution::number_of_move_ops   = 7;
-#elif RULESET == MCCOMB
+#elif RULE_SET == MCCOMB
     const  unsigned long  Solution::number_of_move_ops   = 7;
 #endif
 
@@ -431,9 +431,9 @@ void Solution::triad_to_biad(void){
         add_member(list[idx][2], list[idx][3], 4, true);
     }
 }
+#endif
 
-
-#elif RULE_SET == SHEA_TRUSS
+#if RULE_SET == SHEA_TRUSS
 void Solution::apply_move_operator(int rule_number){
     switch(rule_number) {
         case 0:
@@ -649,8 +649,9 @@ void Solution::remove_trisection(void){
         save_as_x3d("after.html");
     }
 }
+#endif
 
-#elif RULE_SET == MCCOMB
+#if RULE_SET == MCCOMB
 void Solution::apply_move_operator(int rule_number){
     switch(rule_number) {
         case 0:
