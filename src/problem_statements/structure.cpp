@@ -32,20 +32,20 @@ const std::vector< long double > Solution::wall_thickness = {0.005/7.5, 0.010/7.
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
-    {{"x", -5.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"editable", false}},
-    {{"x", -2.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", false}},
-    {{"x", 1.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 1}, {"rz", 1}, {"editable", false}},
-    {{"x", 3.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", false}},
-    {{"x", 5.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"editable", false}},
-    {{"x", -5.00}, {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", -3.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", -0.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", 2.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", 4.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", 5.00},  {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", -2.00}, {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", 1.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
-    {{"x", 3.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"editable", true}},
+    {{"x", -5.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+    {{"x", -2.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+    {{"x", 1.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+    {{"x", 3.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+    {{"x", 5.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+    {{"x", -5.00}, {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", -3.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", -0.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", 2.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", 4.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", 5.00},  {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", -2.00}, {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", 1.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", 3.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
 };
 
 // Problem definition
@@ -141,6 +141,7 @@ void Solution::compute_quality(void) {
 
     // Compute the force-based solution for the truss
     compute_truss_forces();
+    compute_frame_forces();
 
     if (is_valid()) {
 
@@ -178,7 +179,7 @@ void Solution::compute_quality(void) {
 }
 
 
-// This function computes forces and factors of safety
+// This function computes forces and factors of safety trusses
 void Solution::compute_truss_forces(void) {
     // Initialize things
     std::vector<std::vector<long double> > K(static_cast<unsigned long>(3 * number_of_nodes),
@@ -311,6 +312,180 @@ void Solution::compute_truss_forces(void) {
             edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_y"];
         }
     }
+}
+
+
+// This function computes forces and factors of safety for frames
+void Solution::compute_frame_forces(void){
+    // Initialize things
+    std::vector<std::vector<long double> > K_global(static_cast<unsigned long>(3 * number_of_nodes),
+                                             std::vector<long double>(static_cast<unsigned long>(3 * number_of_nodes),
+                                                                      0.0));
+    std::vector<std::vector<long double> > deflections(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
+    std::vector<std::vector<long double> > loads(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
+    std::vector<std::vector<long double> > K(6, std::vector<long double>(6, 0.0));
+    std::vector<int> ee(6, 0.0);
+    std::vector<long double> ff;
+    std::vector<long double> loads_ff;
+    std::map<int, int> node_id_map;
+    long double lx, ly, theta, A, I, L, EAL, twEIL3, EIL2, EIL1, lx2, ly2, lxy;
+    int idx, idx1, idx2, k, n1, n2, counter=0;
+
+    // Get the vector that will relate entries in the node map to entries in the global stiffness matrix
+    for (std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        node_id_map[it->first] = counter;
+        counter++;
+    }
+
+    // Define a matrix that will later to be used to hold deflections and other things
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
+        idx = node_id_map[it1->first];
+        deflections[0][idx] = 1 - nodes[it1->first].parameters["rx"];
+        deflections[1][idx] = 1 - nodes[it1->first].parameters["ry"];
+        deflections[2][idx] = 1 - nodes[it1->first].parameters["mz"];
+        loads[0][idx] = nodes[it1->first].parameters["Fx"];
+        loads[1][idx] = nodes[it1->first].parameters["Fy"];
+        loads[2][idx] = nodes[it1->first].parameters["Mz"];
+    }
+
+    // Find out which joints can deflect
+    counter = 0;
+    for (int i = 0; i < number_of_nodes; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (deflections[j][i] == 1) {
+                ff.push_back(counter);
+                loads_ff.push_back(loads[j][i]);
+            }
+            counter++;
+        }
+    }
+
+
+    // Define the global stiffness matrix
+    for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+        // Define things for the member
+        k = (it->first);
+        A = edges[k].parameters["A"];
+        I = edges[k].parameters["I"];
+        L = edges[k].parameters["L"];
+        n1 = edges[k].initial_node;
+        n2 = edges[k].terminal_node;
+        EAL = E*A/L;
+        twEIL3 = 12*E*I/std::pow(L, 3);
+        EIL2 = E*I/std::pow(L, 2);
+        EIL1 = E*I/L;
+
+        // Figure out the angle of the member in the x-y plane
+        theta = std::atan2(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], nodes[n1].parameters["x"] - nodes[n2].parameters["x"]);
+        lx = std::cos(theta); lx2 = std::pow(lx, 2);
+        ly = std::sin(theta); ly2 = std::pow(ly, 2);
+        lxy = lx*ly;
+
+        // For each member, define a 6x6 stiffness matrix
+        // First row
+        K[0][0] = EAL*lx2 + twEIL3*ly2;          // Symmetric condition
+        K[0][1] = (EAL - twEIL3)*lxy;               K[1][0] = K[0][1];
+        K[0][2] = -6*EIL2*ly;                       K[2][0] = K[0][2];
+        K[0][3] = -K[0][1];                         K[3][0] = K[0][3];
+        K[0][4] = -K[0][1];                         K[4][0] = K[0][4];
+        K[0][5] = K[0][2];                          K[5][0] = K[0][5];
+        // Second row
+        K[1][1] = EAL*ly2 + twEIL3*lx2;          // Symmetric condition
+        K[1][2] = 6*EIL2*lx;                        K[2][1] = K[1][2];
+        K[1][3] = K[0][4];                          K[3][1] = K[1][3];
+        K[1][4] = -K[1][1];                         K[4][1] = K[1][4];
+        K[1][5] = K[1][2];                          K[5][1] = K[1][5];
+        // Third row
+        K[2][2] = 4*EIL1;                        // Symmetric condition
+        K[2][3] = -K[0][2];                         K[3][2] = K[2][3];
+        K[2][4] = -K[2][1];                         K[4][2] = K[2][4];
+        K[2][5] = 2*EIL1;                           K[5][2] = K[2][5];
+        // Fourth row
+        K[3][3] = K[0][0];                       // Symmetric condition
+        K[3][4] = K[0][1];                          K[4][3] = K[3][4];
+        K[3][5] = K[2][3];                          K[5][3] = K[3][5];
+        // Fifth row
+        K[4][4] = K[1][1];                       // Symmetric condition
+        K[4][5] = -K[1][2];                         K[5][4] = K[4][5];
+        // Sixth row
+        K[5][5] = 4*EIL1;
+
+        // Now, assemble the global matrix
+        idx1 = node_id_map[n1];
+        idx2 = node_id_map[n2];
+        ee = {3 * idx1, 3 * idx1 + 1, 3 * idx1 + 2, 3 * idx2, 3 * idx2 + 1, 3 * idx2 + 2};
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                K_global[ee[i]][ee[j]] += K[i][j];
+            }
+        }
+    }
+
+    // Solve for displacements
+    int ffs = static_cast<int>(ff.size());
+    std::vector<std::vector<long double> > Kff(ff.size(), std::vector<long double>(ff.size() + 1, 0.0));
+    for (int i = 0; i < ffs; i++) {
+        for (int j = 0; j < ffs; j++) {
+            Kff[i][j] = K_global[ff[i]][ff[j]];
+        }
+        Kff[i][ffs] = loads_ff[i];
+    }
+
+    std::vector<long double> deflections_compact = gauss(Kff);
+
+    // Compute the condition number
+    for(int i=0; i<ffs; i++){
+        Kff[i][ffs] = deflections_compact[i];
+    }
+    std::vector<long double> backed_out_loads = matrix_vector_mult(Kff);
+    cond = 0;
+    for(int i=0; i<ffs; i++){
+        cond += std::abs(loads_ff[i] - backed_out_loads[i]);
+    }
+
+
+    // Fit the compacted deflection matrix back into the original
+    counter = 0;
+    for (int i = 0; i < number_of_nodes; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (deflections[j][i] == 1) {
+                deflections[j][i] = deflections_compact[counter];
+                counter++;
+            }
+        }
+    }
+
+
+
+//    // From displacements, solve for forces
+//    for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+//        // Define a few things
+//        int k = (it->first);
+//        idx1 = node_id_map[edges[k].initial_node];
+//        idx2 = node_id_map[edges[k].terminal_node];
+//
+//        // Define the force
+//        edges[k].parameters["F"] =   edges[k].parameters["kx"] * (deflections[0][idx1] - deflections[0][idx2])
+//                                     + edges[k].parameters["ky"] * (deflections[1][idx1] - deflections[1][idx2])
+//                                     + edges[k].parameters["kz"] * (deflections[2][idx1] - deflections[2][idx2]);
+//
+//        // Calculate factor of safety against yielding
+//        edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
+//
+//        // Calculate factor of safety against buckling
+//        if (edges[k].parameters["F"] < 0) {
+//            edges[k].parameters["FOS_b"] = -(std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
+//        } else {
+//            edges[k].parameters["FOS_b"] = LDBL_MAX;
+//        }
+//
+//        // Save the limiting factor of safety
+//        if(edges[k].parameters["FOS_b"] < edges[k].parameters["FOS_y"]){
+//            edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_b"];
+//        } else {
+//            edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_y"];
+//        }
+//    }
 }
 
 #if RULE_SET == SHEA_FRAME
