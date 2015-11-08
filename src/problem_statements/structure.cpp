@@ -181,7 +181,6 @@ void Solution::compute_quality(void) {
 //        quality_fos = -10*std::log(-FOS/goal[1]);
 //    }
 
-    std::cout << "FOS: " << mass << ", FOS_qual:" << quality_mass <<std::endl;
     quality = {quality_mass, quality_fos};
 }
 

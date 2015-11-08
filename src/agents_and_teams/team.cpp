@@ -111,6 +111,8 @@ void Team::pull_best_solution(int iteration) {
             agent_list[i].current_solution.save_as_x3d(name);
         }
 
+        //TODO: Find and extract the pareto set
+
         temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0 / num));
         if (temp < best_solution[iteration]) {
             best_solution[iteration] = temp;
