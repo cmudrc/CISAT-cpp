@@ -141,7 +141,6 @@ void Solution::compute_quality(void) {
 
     // Compute the force-based solution for the truss
     compute_truss_forces();
-    compute_frame_forces();
 
     if (is_valid()) {
 
@@ -156,11 +155,11 @@ void Solution::compute_quality(void) {
         // Compute FOS penalty
         if(FOS == LDBL_MAX) {
             mass = 100*goal[0];
-            FOS = 100*goal[1];
+            FOS = 0.01;
         }
     } else {
         mass = 100*goal[0];
-        FOS = 100*goal[1];
+        FOS = 0.01;
     }
 
     // Adjust with respect to goals
@@ -170,11 +169,19 @@ void Solution::compute_quality(void) {
     }
     quality_mass /= goal[0];
 
-    long double quality_fos = -FOS;
+    long double quality_fos = -FOS/goal[1];
     if(FOS < -goal[1]) {
-        quality_fos = -10*std::log(-FOS/goal[1]);
+        quality_fos = -10*std::log(-FOS/goal[1]) + 1;
+    } else {
+        quality_fos = 2 - quality_fos;
     }
 
+//    long double quality_fos = -FOS;
+//    if(FOS < -goal[1]) {
+//        quality_fos = -10*std::log(-FOS/goal[1]);
+//    }
+
+    std::cout << "FOS: " << mass << ", FOS_qual:" << quality_mass <<std::endl;
     quality = {quality_mass, quality_fos};
 }
 
@@ -324,7 +331,7 @@ void Solution::compute_frame_forces(void){
     std::vector<std::vector<long double> > deflections(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
     std::vector<std::vector<long double> > loads(3, std::vector<long double>(static_cast<unsigned long>(number_of_nodes), 0));
     std::vector<std::vector<long double> > K(6, std::vector<long double>(6, 0.0));
-    std::vector<int> ee(6, 0.0);
+    std::vector<int> ee(6, 0);
     std::vector<long double> ff;
     std::vector<long double> loads_ff;
     std::map<int, int> node_id_map;
@@ -370,15 +377,17 @@ void Solution::compute_frame_forces(void){
         L = edges[k].parameters["L"];
         n1 = edges[k].initial_node;
         n2 = edges[k].terminal_node;
-        EAL = E*A/L;
-        twEIL3 = 12*E*I/std::pow(L, 3);
-        EIL2 = E*I/std::pow(L, 2);
-        EIL1 = E*I/L;
+        EAL = E*A/L;                        edges[k].parameters["EAL"] = EAL;
+        twEIL3 = 12*E*I/std::pow(L, 3);     edges[k].parameters["twEIL3"] = twEIL3;
+        EIL2 = E*I/std::pow(L, 2);          edges[k].parameters["EIL2"] = EIL2;
+        EIL1 = E*I/L;                       edges[k].parameters["EIL1"] = EIL1;
 
         // Figure out the angle of the member in the x-y plane
         theta = std::atan2(nodes[n1].parameters["y"] - nodes[n2].parameters["y"], nodes[n1].parameters["x"] - nodes[n2].parameters["x"]);
-        lx = std::cos(theta); lx2 = std::pow(lx, 2);
-        ly = std::sin(theta); ly2 = std::pow(ly, 2);
+        lx = std::cos(theta);               edges[k].parameters["lx"] = lx;
+        lx2 = std::pow(lx, 2);
+        ly = std::sin(theta);               edges[k].parameters["ly"] = ly;
+        ly2 = std::pow(ly, 2);
         lxy = lx*ly;
 
         // For each member, define a 6x6 stiffness matrix
@@ -457,35 +466,38 @@ void Solution::compute_frame_forces(void){
 
 
 
-//    // From displacements, solve for forces
-//    for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
-//        // Define a few things
-//        int k = (it->first);
-//        idx1 = node_id_map[edges[k].initial_node];
-//        idx2 = node_id_map[edges[k].terminal_node];
-//
-//        // Define the force
-//        edges[k].parameters["F"] =   edges[k].parameters["kx"] * (deflections[0][idx1] - deflections[0][idx2])
-//                                     + edges[k].parameters["ky"] * (deflections[1][idx1] - deflections[1][idx2])
-//                                     + edges[k].parameters["kz"] * (deflections[2][idx1] - deflections[2][idx2]);
-//
-//        // Calculate factor of safety against yielding
-//        edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
-//
-//        // Calculate factor of safety against buckling
-//        if (edges[k].parameters["F"] < 0) {
-//            edges[k].parameters["FOS_b"] = -(std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
-//        } else {
-//            edges[k].parameters["FOS_b"] = LDBL_MAX;
-//        }
-//
-//        // Save the limiting factor of safety
-//        if(edges[k].parameters["FOS_b"] < edges[k].parameters["FOS_y"]){
-//            edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_b"];
-//        } else {
-//            edges[k].parameters["FOS_lim"] = edges[k].parameters["FOS_y"];
-//        }
-//    }
+    // From displacements, solve for forces
+    // TODO: Finish this
+    for (std::map<int, Edge>::iterator it = edges.begin(); it != edges.end(); it++) {
+        // Define a few things
+        k = (it->first);
+        idx1 = node_id_map[edges[k].initial_node];
+        idx2 = node_id_map[edges[k].terminal_node];
+
+        // Define the axial force
+        edges[k].parameters["F"] = 0;
+
+        // Define the maximum shear force
+        edges[k].parameters["V"] = 0;
+
+        // Define the maximum moment
+        edges[k].parameters["M"] = 0;
+
+        // Calculate factor of safety against normal yielding
+        edges[k].parameters["FOS_y"] = std::abs((Fy*edges[k].parameters["A"])/edges[k].parameters["F"]);
+
+        // Calculate the factor of safety against buckling
+        edges[k].parameters["FOS_b"] = 0;
+
+        // Calculate the factor of safety against bending
+        edges[k].parameters["FOS_m"] = 0;
+
+        // Calculate the factor of safety against shear failure
+        edges[k].parameters["FOS_v"] = 0;
+
+        // Save the limiting factor of safety
+        edges[k].parameters["FOS_lim"] = vector_minimum({edges[k].parameters["FOS_y"], edges[k].parameters["FOS_b"], edges[k].parameters["FOS_v"], edges[k].parameters["FOS_m"]});
+    }
 }
 
 #if RULE_SET == SHEA_FRAME
