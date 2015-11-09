@@ -69,3 +69,5 @@ void PatternSearch::solve(int max_iter){
         current_iteration++;
     }
 }
+
+//TODO: Pareto dominance statistics instead of whether or not targets are met.

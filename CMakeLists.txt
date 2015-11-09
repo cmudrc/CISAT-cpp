@@ -47,7 +47,7 @@ set(SOURCE_FILES
     include/agents_and_teams/multiple_teams.hpp
     include/meta_optimization/search.hpp
     include/meta_optimization/pattern.hpp
-    include/meta_optimization/univariate.hpp
+#    include/meta_optimization/univariate.hpp
     include/utilities/parameterset.hpp
     include/utilities/make_random.hpp
     include/utilities/custom_print.hpp
@@ -60,7 +60,7 @@ set(SOURCE_FILES
     src/agents_and_teams/multiple_teams.cpp
     src/meta_optimization/search.cpp
     src/meta_optimization/pattern.cpp
-    src/meta_optimization/univariate.cpp
+#    src/meta_optimization/univariate.cpp
     src/utilities/parameterset.cpp
     src/utilities/make_random.cpp
     src/utilities/custom_print.cpp

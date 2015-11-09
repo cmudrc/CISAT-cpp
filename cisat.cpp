@@ -82,9 +82,6 @@ int main(int argc, char *argv[]) {
         // Print output if requested
         std::cout << std::endl << some_teams.solve() << std::endl << std::endl;
 
-        // Print cdf
-        print(some_teams.cdf);
-
         // Save output if possible
         if(found_output){
             save_to_file(output, some_teams.best_solution);
@@ -92,22 +89,22 @@ int main(int argc, char *argv[]) {
     }
 
     // Run stochastic univariate search
-    if(univariate){
-        // Make it
-        UnivariateSearch US(input);
-
-        // Print starting values
-        US.best_parameters.print_parameters();
-
-        // Solve it all
-        US.solve(max_iter);
-
-        // Output the final solution set to a file defined by argv2
-        if(found_output) {
-            US.save_settings(output);
-        }
-
-    }
+//    if(univariate){
+//        // Make it
+//        UnivariateSearch US(input);
+//
+//        // Print starting values
+//        US.best_parameters.print_parameters();
+//
+//        // Solve it all
+//        US.solve(max_iter);
+//
+//        // Output the final solution set to a file defined by argv2
+//        if(found_output) {
+//            US.save_settings(output);
+//        }
+//
+//    }
 
     // Run pattern search
     if(pattern){

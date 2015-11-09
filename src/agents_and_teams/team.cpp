@@ -10,7 +10,7 @@
 Team::Team(ParameterSet x){
     parameters = x;
     // Make a vector of the appropriate length for storing things.
-    best_solution.assign(parameters.max_iter/parameters.n_agents, 0.0);
+    best_solution.assign(Solution::number_of_objectives, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
 }
 
 //// Give the team a new start
@@ -97,10 +97,12 @@ void Team::pull_best_solution(int iteration) {
     long double temp;
     unsigned long num = Solution::number_of_objectives;
 
-    if(iteration == 0) {
-        best_solution[iteration] = LDBL_MAX;
-    } else {
-        best_solution[iteration] = best_solution[iteration-1];
+    for(int i=0; i<Solution::number_of_objectives; i++) {
+        if (iteration == 0) {
+            best_solution[i][iteration] = LDBL_MAX;
+        } else {
+            best_solution[i][iteration] = best_solution[i][iteration - 1];
+        }
     }
 
     for (int i = 0; i < agent_list.size(); i++) {
@@ -111,11 +113,18 @@ void Team::pull_best_solution(int iteration) {
             agent_list[i].current_solution.save_as_x3d(name);
         }
 
-        //TODO: Find and extract the pareto set
+        // Make vectors for comparison
+        std::vector<long double> x(Solution::number_of_objectives), y(Solution::number_of_objectives);
+        for(int j=0; j<Solution::number_of_objectives; j++) {
+            x[j] = agent_list[i].current_solution.quality[j];
+            y[j] = best_solution[j][iteration];
+        }
 
-        temp = apply_weighting(agent_list[i].current_solution.quality, std::vector<long double> (num, 1.0 / num));
-        if (temp < best_solution[iteration]) {
-            best_solution[iteration] = temp;
+        // Compare vectors
+        if (pareto_comparison(x, y) > 0) {
+            for(int j=0; j<Solution::number_of_objectives; j++) {
+                best_solution[j][iteration] = x[j];
+            }
         }
     }
 }

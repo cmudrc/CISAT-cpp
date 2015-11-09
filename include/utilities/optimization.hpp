@@ -14,4 +14,7 @@ std::vector<bool> get_pareto_front(std::vector< std::vector<long double> > y);
 // Returns the pareto tiers for a data set
 std::vector<int> get_pareto_tiers(std::vector< std::vector<long double> > y);
 
+// Performs a Pareto comparison
+long double pareto_comparison(std::vector<long double> x, std::vector<long double> y);
+
 #endif

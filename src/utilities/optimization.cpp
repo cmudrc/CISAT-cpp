@@ -81,6 +81,34 @@ std::vector<long double> quad_max(std::vector<long double> x, std::vector<long d
 
 }
 
+// This performs a Pareto comparison (minimization) between two vectors. Returns:
+// +1 if x is pareto-better than y
+// 0 if neither pareto-dominates the other
+// -1 if y is pareto-better than x
+long double pareto_comparison(std::vector<long double> x, std::vector<long double> y) {
+    // Define a few things
+    long double comparison = 0;
+    long double n = x.size();
+
+    // Do the comparison
+    for (int i=0; i<n; i++){
+        if(x[i] < y[i]){
+            comparison  += 1;
+        }else if(x[i] > y[i]) {
+            comparison -= 1;
+        }
+    }
+
+    // Figure out what the comparison means
+    if(comparison == n) {
+        return +1;
+    }else if(comparison == -n) {
+        return -1;
+    }else{
+        return comparison/n;
+    }
+}
+
 // Computes the pareto front for a set of data
 std::vector<bool> get_pareto_front(std::vector< std::vector<long double> > y){
     std::vector<bool> is_pareto(y.size(), true);

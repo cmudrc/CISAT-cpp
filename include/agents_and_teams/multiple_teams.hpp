@@ -20,7 +20,7 @@ public:
     //// Variables
     ParameterSet parameters;       // The parameters of the simulation
     std::vector< std::vector<long double > > best_solution; // Stores the string of best values from every run.
-    std::vector<long double> cdf;
+    long double fraction_goals_met;
 
 private:
     // nothing yet

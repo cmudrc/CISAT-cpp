@@ -1,12 +1,13 @@
-ADAPT   1      0
-INTER   0.5    0    0   1
-NREPS   10     0
-MAX_IT  10000  0
-NAGENTS 10     0    1   30
-TINIT   0.01   1    0   1
-DELT    0.001  1    0   1
-L_HIST  -10    0    -100    -10
-S_BIAS  0.1    0    0   1
-Q_BIAS  0.1    0    0   1
-OLEARN  0.1    0    0   1
-SATFRAC 0.2    0    0   1
+INTER   0.1         1   0   1
+NREPS   100         0
+MAX_IT  720         0
+NAGENTS 3           0
+TINIT   1.0         0
+DELT    1e10        0
+L_HIST  -10         0
+S_BIAS  30.0        1   0   1000
+Q_BIAS  1.0         0
+LEARN   MARKOV      0
+LEARN_CONST 0.1     0
+SATFRAC 0.65        0
+SAVE_DESIGNS    1   0

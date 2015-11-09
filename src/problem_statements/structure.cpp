@@ -17,7 +17,8 @@
 #endif
 
 const  unsigned long  Solution::number_of_objectives = 2;
-const  std::vector<long double>    Solution::goal    = {175.0, -1.25};
+//const  std::vector<long double>    Solution::goal    = {175.0, -1.25};
+const  std::vector<long double>    Solution::goal    = {200.0, -1.00};
 
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
@@ -164,9 +165,9 @@ void Solution::compute_quality(void) {
 
     // Adjust with respect to goals
     long double quality_mass = mass;
-    if(mass > goal[0]) {
-        quality_mass += std::pow((mass - goal[0]), 2);
-    }
+//    if(mass > goal[0]) {
+//        quality_mass += std::pow((mass - goal[0]), 2);
+//    }
     quality_mass /= goal[0];
 
     long double quality_fos = -FOS/goal[1];
