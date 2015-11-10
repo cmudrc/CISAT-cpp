@@ -38,15 +38,20 @@ std::vector< std::map<std::string, long double> > Solution::seed_node_parameters
     {{"x", 1.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
     {{"x", 3.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
     {{"x", 5.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
-    {{"x", -5.00}, {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
     {{"x", -3.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
     {{"x", -0.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
     {{"x", 2.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
     {{"x", 4.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
-    {{"x", 5.00},  {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
-    {{"x", -2.00}, {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
     {{"x", 1.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+    {{"x", -2.00}, {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
     {{"x", 3.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+    {{"x", -5.00}, {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+    {{"x", 5.00},  {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
 };
 
 // Problem definition
@@ -55,31 +60,38 @@ std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters
     {{"initial",  1}, {"terminal", 2}, {"radius", 4}},
     {{"initial",  2}, {"terminal", 3}, {"radius", 4}},
     {{"initial",  3}, {"terminal", 4}, {"radius", 4}},
-    {{"initial",  0}, {"terminal", 6}, {"radius", 4}},
-    {{"initial",  6}, {"terminal", 1}, {"radius", 4}},
-    {{"initial",  1}, {"terminal", 7}, {"radius", 4}},
-    {{"initial",  7}, {"terminal", 2}, {"radius", 4}},
-    {{"initial",  2}, {"terminal", 8}, {"radius", 4}},
-    {{"initial",  8}, {"terminal", 3}, {"radius", 4}},
-    {{"initial",  3}, {"terminal", 9}, {"radius", 4}},
-    {{"initial",  9}, {"terminal", 4}, {"radius", 4}},
+
     {{"initial",  5}, {"terminal", 6}, {"radius", 4}},
     {{"initial",  6}, {"terminal", 7}, {"radius", 4}},
     {{"initial",  7}, {"terminal", 8}, {"radius", 4}},
-    {{"initial",  8}, {"terminal", 9}, {"radius", 4}},
-    {{"initial",  9}, {"terminal", 10}, {"radius", 4}},
-    {{"initial",  5}, {"terminal", 11}, {"radius", 4}},
-    {{"initial", 11}, {"terminal", 12}, {"radius", 4}},
-    {{"initial", 12}, {"terminal", 13}, {"radius", 4}},
-    {{"initial", 13}, {"terminal", 10}, {"radius", 4}},
-    {{"initial",  6}, {"terminal", 11}, {"radius", 4}},
-    {{"initial",  7}, {"terminal", 11}, {"radius", 4}},
-    {{"initial",  7}, {"terminal", 12}, {"radius", 4}},
-    {{"initial",  8}, {"terminal", 12}, {"radius", 4}},
-    {{"initial",  8}, {"terminal", 13}, {"radius", 4}},
-    {{"initial",  9}, {"terminal", 13}, {"radius", 4}},
+
     {{"initial",  0}, {"terminal", 5}, {"radius", 4}},
-    {{"initial",  4}, {"terminal", 10}, {"radius", 4}},
+    {{"initial",  5}, {"terminal", 1}, {"radius", 4}},
+    {{"initial",  1}, {"terminal", 6}, {"radius", 4}},
+    {{"initial",  6}, {"terminal", 2}, {"radius", 4}},
+    {{"initial",  2}, {"terminal", 7}, {"radius", 4}},
+    {{"initial",  7}, {"terminal", 3}, {"radius", 4}},
+    {{"initial",  3}, {"terminal", 8}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 4}, {"radius", 4}},
+
+    {{"initial",  6}, {"terminal", 9}, {"radius", 4}},
+    {{"initial",  7}, {"terminal", 9}, {"radius", 4}},
+
+    {{"initial",  5}, {"terminal", 10}, {"radius", 4}},
+    {{"initial",  6}, {"terminal", 10}, {"radius", 4}},
+    {{"initial",  9}, {"terminal", 10}, {"radius", 4}},
+
+    {{"initial",  7}, {"terminal", 11}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 11}, {"radius", 4}},
+    {{"initial",  9}, {"terminal", 11}, {"radius", 4}},
+
+    {{"initial",  0}, {"terminal", 12}, {"radius", 4}},
+    {{"initial",  5}, {"terminal", 12}, {"radius", 4}},
+    {{"initial",  10}, {"terminal", 12}, {"radius", 4}},
+
+    {{"initial",  4}, {"terminal", 13}, {"radius", 4}},
+    {{"initial",  8}, {"terminal", 13}, {"radius", 4}},
+    {{"initial",  11}, {"terminal", 13}, {"radius", 4}},
 };
 
 
@@ -106,8 +118,11 @@ Solution::Solution(bool) {
 }
 
 void Solution::create_seed_graph(void){
+    // Draw a uniform int to decide how many joints to add
+    int joints_to_add = uniform_int(14, 8);
+
     // Add all joints
-    for(int i=0; i < seed_node_parameters.size(); i++) {
+    for(int i=0; i < joints_to_add; i++) {
         // Add the node
         add_node();
 
@@ -126,10 +141,12 @@ void Solution::create_seed_graph(void){
 
     // Connect these joints
     for(int i=0; i < seed_edge_parameters.size(); i++) {
-        add_member(static_cast<int>(seed_edge_parameters[i]["initial"]),
-                   static_cast<int>(seed_edge_parameters[i]["terminal"]),
-                   static_cast<int>(seed_edge_parameters[i]["radius"]),
-                   true);
+        if(node_exists(static_cast<int> (seed_edge_parameters[i]["initial"])) && node_exists(static_cast<int> (seed_edge_parameters[i]["terminal"]))){
+            add_member(static_cast<int>(seed_edge_parameters[i]["initial"]),
+                       static_cast<int>(seed_edge_parameters[i]["terminal"]),
+                       static_cast<int>(seed_edge_parameters[i]["radius"]),
+                       true);
+        }
     }
 }
 

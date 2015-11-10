@@ -80,7 +80,8 @@ int main(int argc, char *argv[]) {
         some_teams.parameters.print_parameters();
 
         // Print output if requested
-        std::cout << std::endl << some_teams.solve() << std::endl << std::endl;
+        some_teams.solve();
+//        std::cout << std::endl << some_teams.solve() << std::endl << std::endl;
 
         // Save output if possible
         if(found_output){

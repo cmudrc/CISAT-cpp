@@ -69,7 +69,9 @@ public:
     std::vector<int> get_neighbors(int n);
     std::vector<int> find_common_neighbors(int n1, int n2);
 
-        bool directed_edge_exists(int n1, int n2);
+    // Find out if a node exists
+    bool node_exists(int n1);
+    bool directed_edge_exists(int n1, int n2);
     bool undirected_edge_exists(int n1, int n2);
     int is_connected(void);
 

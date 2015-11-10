@@ -13,6 +13,7 @@ MultipleTeams::MultipleTeams(ParameterSet x){
 
     // Initialize the best solution vector
     best_solution.assign(2*parameters.n_reps, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
+    final_solutions.assign(parameters.n_reps, std::vector<long double> (2, 0.0));
 }
 
 // This does the things, and initializes parameters from file
@@ -22,10 +23,11 @@ MultipleTeams::MultipleTeams(std::string file_name){
 
     // Initialize the best solution vector
     best_solution.assign(2*parameters.n_reps, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
+    final_solutions.assign(parameters.n_reps, std::vector<long double> (2, 0.0));
 }
 
 //// This actually solves the problem LOTS of times.
-long double MultipleTeams::solve(void){
+std::vector<std::vector<long double> > MultipleTeams::solve(void){
     // Assign an id for the run
     id = static_cast <unsigned long> (time(0));
 
@@ -37,7 +39,6 @@ long double MultipleTeams::solve(void){
     }
 
     // Do the run
-    fraction_goals_met = 0;
     for(int i = 0; i< parameters.n_reps; i++) {
 
         // Instantiate a new team
@@ -56,20 +57,11 @@ long double MultipleTeams::solve(void){
             best_solution[2*i + j] = this_team.best_solution[j];
         }
 
-        // If the teams' best solutions meet goals, increment fraction_goals_met
-        int counter = 0;
+        // Save the team's best results
         for(int j=0; j<Solution::number_of_objectives; j++){
-            if(best_solution[2*i + j].back() < 1.0) {
-                counter++;
-            }
+            final_solutions[i][j] = best_solution[2*i + j].back();
         }
-        if(counter == Solution::number_of_objectives){
-            fraction_goals_met++;
-        }
-
-//        best_solution[i] = this_team.best_solution;
-//        cdf.push_back(this_team.best_solution.back());
     }
 
-    return -fraction_goals_met/parameters.n_reps;
+    return final_solutions;
 }

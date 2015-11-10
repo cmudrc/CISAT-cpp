@@ -74,6 +74,7 @@ long double mean(std::deque<long double> x) {
     return sum/x.size();
 }
 
+
 // Compute standard deviation of a vector
 long double stdev(std::deque<long double> x) {
     long double mean_val = mean(x);
@@ -86,6 +87,7 @@ long double stdev(std::deque<long double> x) {
     return std::sqrt(s/x.size());
 }
 
+
 // Applies a weighted sum to a vector
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b) {
     long double sum = 0;
@@ -96,4 +98,20 @@ long double apply_weighting(std::vector<long double> a, std::vector<long double>
 }
 
 
-
+// Computes cliff's delta for
+long double pareto_cliff_delta(std::vector<std::vector<long double> > x, std::vector<std::vector<long double> > y) {
+    unsigned long n = x.size();
+    long double counter = 0;
+    long double d = 0;
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            d = pareto_comparison(x[i], y[j]);
+            if(d == 1){
+                counter += 1;
+            } else if (d == -1){
+                counter -= 1;
+            }
+        }
+    }
+    return counter/(n*n);
+}

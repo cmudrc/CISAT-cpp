@@ -15,12 +15,12 @@ public:
     //// Functions
     MultipleTeams(ParameterSet x); // A function to construct the thing from an object
     MultipleTeams(std::string file_name); // A function to construct the thing from file
-    long double solve(void);  // A function to solve the problem.
+    std::vector<std::vector<long double> > solve(void);  // A function to solve the problem.
 
     //// Variables
     ParameterSet parameters;       // The parameters of the simulation
     std::vector< std::vector<long double > > best_solution; // Stores the string of best values from every run.
-    long double fraction_goals_met;
+    std::vector< std::vector<long double > > final_solutions; // Stores the string of best values from every run.
 
 private:
     // nothing yet

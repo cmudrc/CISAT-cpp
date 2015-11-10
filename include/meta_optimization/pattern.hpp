@@ -18,7 +18,7 @@ public:
 
     //// Variables
     int current_iteration;
-    long double fx_best;
+    std::vector<std::vector<long double> > fx_best;
 
 private:
     // nothing yet

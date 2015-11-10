@@ -8,15 +8,17 @@ PatternSearch::PatternSearch(std::string file_name){
 void PatternSearch::solve(int max_iter){
     // Do some initial things
     current_iteration = 0;
-    long double fx_current;
+    std::vector<std::vector<long double> > fx_current;
     long double new_val;
     bool has_improved;
     ParameterSet p_current;
+    long double comp;
 
     // Find average initial quality
     MultipleTeams MT1(best_parameters);
     fx_best = MT1.solve();
-    std::cout << "\nBeginning Optimization Routine, fx = " << fx_best << std::endl;
+//    std::cout << "\nBeginning Optimization Routine, fx = " << fx_best << std::endl;
+    std::cout << "\nBeginning Optimization Routine" << std::endl;
 
     while(current_iteration < max_iter){
         // This variable will keep track of whether or not an improvement has been made
@@ -43,10 +45,11 @@ void PatternSearch::solve(int max_iter){
                 // Evalute the new combination
                 MultipleTeams MTR(p_current);
                 fx_current = MTR.solve();
-                std::cout << "fx = " << fx_current << std::endl;
+                comp = pareto_cliff_delta(fx_current, fx_best);
+                std::cout << "d = " << comp << std::endl;
 
                 // Keep track of the best solution
-                if(fx_current < fx_best){
+                if(comp > 0){
                     std::cout << "\t\tImprovement." << std::endl;
                     variable_values[i] = new_val;
                     fx_best = fx_current;
@@ -69,5 +72,3 @@ void PatternSearch::solve(int max_iter){
         current_iteration++;
     }
 }
-
-//TODO: Pareto dominance statistics instead of whether or not targets are met.

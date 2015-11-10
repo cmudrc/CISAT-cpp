@@ -14,6 +14,7 @@
 #include <cfloat>
 #include <deque>
 #include "./custom_print.hpp"
+#include "./optimization.hpp"
 
 // Function to return maximum value of vector
 long double vector_maximum(std::vector<long double> v);
@@ -38,6 +39,9 @@ long double stdev(std::deque<long double> x);
 
 // Applies weighting
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b);
+
+// Computes cliff's delta for
+long double pareto_cliff_delta(std::vector<std::vector<long double> > x, std::vector<std::vector<long double> > y);
 
 // Computes signum, or sign
 template <typename T>

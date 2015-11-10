@@ -249,3 +249,11 @@ long double Graph::euclidean_distance(int n1, int n2) {
             + std::pow(nodes[n1].parameters["z"] - nodes[n2].parameters["z"], 2)
     );
 }
+
+bool Graph::node_exists(int n1) {
+    if(nodes.find(n1) != nodes.end()){
+        return true;
+    } else {
+        return false;
+    }
+}
