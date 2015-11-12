@@ -6,3 +6,4 @@ runs/*
 ./after.html
 ./before.html
 ./test/hmm*
+./test/output*
