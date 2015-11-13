@@ -165,9 +165,19 @@ void Solution::compute_quality(void) {
     quality[0] = 0;
     std::vector<int> outlets = get_node_ids("type", OUTLET);
     for(int i=0; i<outlets.size(); i++){
-        print(edges[outlets[i]].parameters["Q"]);
-        quality[0] += std::abs((0.0001 + edges[outlets[i]].parameters["Q"]));
+        k = nodes[outlets[i]].outgoing_edges[0];
+        if(edges[k].parameters["Q"] > -0.001){
+            quality[0] += std::abs((0.0001 + edges[k].parameters["Q"]));
+        }
     }
+
+    quality[0] += is_valid();
+    quality[0] += total_length;
+    quality[0] += number_of_nodes;
+    // TODO: Add checkgate for connectivity
+    // TODO: Add condition calculation
+    // TODO: Add objectie for total length
+    // TODO: Add objective for complexity
 
 }
 
@@ -301,11 +311,13 @@ void Solution::remove_pipe(void) {
     std::vector<int> editable = get_edge_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
-    // Select one to remove at random
-    int idx = weighted_choice(weights);
+    if(editable.size() > 0){
+        // Select one to remove at random
+        int idx = weighted_choice(weights);
 
-    // Remove the chosen edge
-    remove_edge(editable[idx]);
+        // Remove the chosen edge
+        remove_edge(editable[idx]);
+    }
 }
 
 
@@ -314,12 +326,13 @@ void Solution::remove_junction(void) {
     std::vector<int> editable = get_node_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
+    if(editable.size() > 0) {
+        // Select one to remove at random
+        int idx = weighted_choice(weights);
 
-    // Select one to remove at random
-    int idx = weighted_choice(weights);
-
-    // Remove the specific node
-    remove_node(editable[idx]);
+        // Remove the specific node
+        remove_node(editable[idx]);
+    }
 }
 
 
@@ -328,11 +341,13 @@ void Solution::increase_pipe_size(void) {
     std::vector<int> editable = get_edge_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
-    // Select one to remove at random
-    int idx = weighted_choice(weights);
+    if (editable.size() > 0) {
+        // Select one to remove at random
+        int idx = weighted_choice(weights);
 
-    // Increase the size of the chosen edge
-    edges[editable[idx]].parameters["d"]++;
+        // Increase the size of the chosen edge
+        edges[editable[idx]].parameters["d"]++;
+    }
 }
 
 
@@ -341,11 +356,13 @@ void Solution::decrease_pipe_size(void) {
     std::vector<int> editable = get_edge_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
-    // Select one to remove at random
-    int idx = weighted_choice(weights);
+    if (editable.size() > 0) {
+        // Select one to remove at random
+        int idx = weighted_choice(weights);
 
-    // Decrease the size of the chosen edge
-    edges[editable[idx]].parameters["d"]--;
+        // Decrease the size of the chosen edge
+        edges[editable[idx]].parameters["d"]--;
+    }
 }
 
 
