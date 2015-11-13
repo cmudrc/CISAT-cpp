@@ -12,8 +12,8 @@ MultipleTeams::MultipleTeams(ParameterSet x){
     parameters = x;
 
     // Initialize the best solution vector
-    best_solution.assign(2*parameters.n_reps, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
-    final_solutions.assign(parameters.n_reps, std::vector<long double> (2, 0.0));
+    best_solution.assign(Solution::number_of_objectives*parameters.n_reps, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
+    final_solutions.assign(parameters.n_reps, std::vector<long double> (Solution::number_of_objectives, 0.0));
 }
 
 // This does the things, and initializes parameters from file
@@ -22,8 +22,8 @@ MultipleTeams::MultipleTeams(std::string file_name){
     parameters.set_from_file(file_name);
 
     // Initialize the best solution vector
-    best_solution.assign(2*parameters.n_reps, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
-    final_solutions.assign(parameters.n_reps, std::vector<long double> (2, 0.0));
+    best_solution.assign(Solution::number_of_objectives*parameters.n_reps, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
+    final_solutions.assign(parameters.n_reps, std::vector<long double> (Solution::number_of_objectives, 0.0));
 }
 
 //// This actually solves the problem LOTS of times.
@@ -54,12 +54,12 @@ std::vector<std::vector<long double> > MultipleTeams::solve(void){
 
         // Save results from the team
         for(int j=0; j<Solution::number_of_objectives; j++){
-            best_solution[2*i + j] = this_team.best_solution[j];
+            best_solution[Solution::number_of_objectives*i + j] = this_team.best_solution[j];
         }
 
         // Save the team's best results
         for(int j=0; j<Solution::number_of_objectives; j++){
-            final_solutions[i][j] = best_solution[2*i + j].back();
+            final_solutions[i][j] = best_solution[Solution::number_of_objectives*i + j].back();
         }
     }
 

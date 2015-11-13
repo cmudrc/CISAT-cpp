@@ -22,32 +22,16 @@ enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
-    {
-        {"x",      0.00}, // [m]
-        {"y",      0.00}, // [m]
-        {"z",      0.00}, // [m]
-        {"p",  35000.00}, // [Pa]
-        {"type", INLET}
-    }, {
-        {"x",  5.00},
-        {"y",  0.00},
-        {"z",  0.00},
-        {"p", 35000.00}, // [Pa]
-        {"type", INLET}
-    }, {
-        {"x",  0.00},
-        {"y",  25.00},
-        {"z",  0.00},
-        {"p", -1.00}, // [Pa]
-        {"type", OUTLET}
-    }, {
-        {"x",  5.00},
-        {"y", 25.00},
-        {"z",  0.00},
-        {"p", -1.00}, // [Pa]
-        {"type", OUTLET}
-    }
-};
+    {{"x", 0.00},   {"y", 0.00},  {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
+    {{"x", -10.00}, {"y", 20.00}, {"z", 0.00}, {"p", 0.00},     {"type", OUTLET}},
+    {{"x", -10.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
+    {{"x", -10.00}, {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
+    {{"x", 10.00},  {"y", 20.00}, {"z", 0.00}, {"p", 0.00},     {"type", OUTLET}},
+    {{"x", 10.00},  {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
+    {{"x", 10.00},  {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
+    {{"x", -5.00},  {"y", 40.00}, {"z", 0.00}, {"p", 0.00},     {"type", OUTLET}},
+    {{"x", 5.00},   {"y", 40.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
+    {{"x", 0.00},   {"y", 40.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}}};
 
 
 // Integer to assign unique IDs to solutions
@@ -179,18 +163,17 @@ void Solution::compute_quality(void) {
     }
 
     quality[0] = 0;
-    for(int i=2; i<4; i++) {
-//        print(edges[i].parameters["Q"]);
-//        quality[0] += 10000000*std::pow((0.001 + edges[i].parameters["Q"]), 2);
-        quality[0] += 10000000*std::abs((0.001 + edges[i].parameters["Q"]));
+    std::vector<int> outlets = get_node_ids("type", OUTLET);
+    for(int i=0; i<outlets.size(); i++){
+        print(edges[outlets[i]].parameters["Q"]);
+        quality[0] += std::abs((0.0001 + edges[outlets[i]].parameters["Q"]));
     }
-//    quality[0] += 100000*is_valid();
-    quality[0] += 10000*is_valid() + total_length*10 + 100*number_of_nodes;
 
 }
 
 #if RULE_SET == MCCOMB
 void Solution::apply_move_operator(int move_type) {
+    std::cout << "Trying move: " << move_type << std::endl;
     switch(move_type) {
         case 0:
             add_pipe();
