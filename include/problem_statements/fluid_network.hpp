@@ -44,6 +44,7 @@ private:
     // Variables
     int solution_id;
     static int solution_counter;
+    long double cond;
 
     // Inlet location
     static std::vector< std::map<std::string, long double> > seed_graph_parameters;

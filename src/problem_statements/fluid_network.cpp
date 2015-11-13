@@ -23,13 +23,13 @@ enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
     {{"x", 0.00},   {"y", 0.00},  {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
-    {{"x", -10.00}, {"y", 20.00}, {"z", 0.00}, {"p", 0.00},     {"type", OUTLET}},
+    {{"x", -10.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
     {{"x", -10.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
     {{"x", -10.00}, {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", 10.00},  {"y", 20.00}, {"z", 0.00}, {"p", 0.00},     {"type", OUTLET}},
+    {{"x", 10.00},  {"y", 20.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
     {{"x", 10.00},  {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
     {{"x", 10.00},  {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", -5.00},  {"y", 40.00}, {"z", 0.00}, {"p", 0.00},     {"type", OUTLET}},
+    {{"x", -5.00},  {"y", 40.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
     {{"x", 5.00},   {"y", 40.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
     {{"x", 0.00},   {"y", 40.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}}};
 
@@ -151,8 +151,25 @@ void Solution::compute_quality(void) {
         }
     }
 
-    // Solve the matrix and find the elemental flow rates
+    // Solve the matrix and compute the condition number
     std::vector<long double> p = gauss(k_global);
+
+    // Push solution back into last column of and multiple
+    std::vector<long double> known_pressures(static_cast<unsigned long> (number_of_nodes), 0.0);
+    for(int i=0; i<number_of_nodes; i++){
+        known_pressures[i] = k_global[i][number_of_nodes];
+        k_global[i][number_of_nodes] = p[i];
+    }
+    std::vector<long double> backed_out_pressures = matrix_vector_mult(k_global);
+
+    // Compute condition number
+    cond = 0;
+    for(int i=0; i<number_of_nodes; i++){
+        cond += std::abs(known_pressures[i] - backed_out_pressures[i]);
+    }
+    std::cout << "Condition number: " << cond << std::endl;
+
+    // Find the elemental information
     long double total_length = 0;
     for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
         k = (it->first);
@@ -171,19 +188,16 @@ void Solution::compute_quality(void) {
         }
     }
 
-    quality[0] += is_valid();
+//    quality[0] += is_valid();
     quality[0] += total_length;
     quality[0] += number_of_nodes;
-    // TODO: Add checkgate for connectivity
-    // TODO: Add condition calculation
+    // TODO: Add checkgate for connectivity/condition number
     // TODO: Add objectie for total length
     // TODO: Add objective for complexity
-
 }
 
 #if RULE_SET == MCCOMB
 void Solution::apply_move_operator(int move_type) {
-    std::cout << "Trying move: " << move_type << std::endl;
     switch(move_type) {
         case 0:
             add_pipe();
@@ -428,29 +442,31 @@ void Solution::add_midpoint_junction(void) {
     std::vector<int> editable = get_edge_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
-    // Select one to remove at random
-    int idx = weighted_choice(weights);
-    int e = editable[idx];
+    if(editable.size() > 0){
+        // Select one to remove at random
+        int idx = weighted_choice(weights);
+        int e = editable[idx];
 
-    // Save the indices of the endpoints
-    int n1 = edges[e].initial_node;
-    int n2 = edges[e].terminal_node;
-    int d = static_cast <int> (edges[e].parameters["d"]);
+        // Save the indices of the endpoints
+        int n1 = edges[e].initial_node;
+        int n2 = edges[e].terminal_node;
+        int d = static_cast <int> (edges[e].parameters["d"]);
 
-    // Remove the edge
-    remove_edge(e);
+        // Remove the edge
+        remove_edge(e);
 
-    // Add a new node
-    add_junction(
+        // Add a new node
+        add_junction(
             (nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
             (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
             (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
             false
-    );
+        );
 
-    // Add new edges
-    add_pipe(n1, node_id_counter, d, true);
-    add_pipe(n2, node_id_counter, d, true);
+        // Add new edges
+        add_pipe(n1, node_id_counter, d, true);
+        add_pipe(n2, node_id_counter, d, true);
+    }
 }
 
 
