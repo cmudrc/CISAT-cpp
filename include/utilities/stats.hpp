@@ -34,8 +34,11 @@ long double mean(std::vector<long double> x);
 // Compute mean of a deque
 long double stdev(std::deque<long double> x);
 
-// Compute standard deviation of a list
+// Compute standard deviation of a deque
 long double stdev(std::deque<long double> x);
+
+// Compute standard deviation of a vector
+long double stdev(std::vector<long double> x);
 
 // Applies weighting
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b);

@@ -88,6 +88,19 @@ long double stdev(std::deque<long double> x) {
 }
 
 
+// Compute standard deviation of a vector
+long double stdev(std::vector<long double> x) {
+    long double mean_val = mean(x);
+    long double s = 0;
+
+    for(std::vector<long double>::iterator j=x.begin(); j!=x.end();++j){
+        s += std::pow((*j - mean_val), 2.0);
+    }
+
+    return std::sqrt(s/x.size());
+}
+
+
 // Applies a weighted sum to a vector
 long double apply_weighting(std::vector<long double> a, std::vector<long double> b) {
     long double sum = 0;

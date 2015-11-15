@@ -14,6 +14,7 @@
 #include "../utilities/make_random.hpp"
 #include "../utilities/write_x3d.hpp"
 #include "../utilities/custom_print.hpp"
+#include "../utilities/stats.hpp"
 
 class Solution : public Graph{
 public:
@@ -37,6 +38,7 @@ private:
 
     // Fluid constants
     static const long double fluid_u;
+    static const long double target_flowrate;
 
     // Pipe diameters
     static const std::vector< long double > pipe_diam;
@@ -51,6 +53,7 @@ private:
 
     // Functions
     void compute_quality(void);
+    void compute_fluid_solution(void);
     void create_seed_graph(void);
 
     // Move operators for McComb

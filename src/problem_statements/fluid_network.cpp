@@ -9,11 +9,12 @@
 
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 7;
-const  unsigned long  Solution::number_of_objectives = 1;
-const  std::vector<long double>    Solution::goal                 = {0.0};
+const  unsigned long  Solution::number_of_objectives = 3;
+const  std::vector<long double>    Solution::goal                 = {5*std::pow(10, -4), 200, 40};
 
 // Fluid constants
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
+const  long double    Solution::target_flowrate      = 0.01; //
 
 //Available pipe sizes
 const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
@@ -97,20 +98,90 @@ void Solution::create_seed_graph(void) {
     add_junction(cx, cy, cz, true);
     nodes[node_id_counter].parameters["type"] = INTERMEDIATE_INLET;
 
-    // Connect the central junction to all intermediate nodes
-    int k;
-    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-        k = (it->first);
-        if(nodes[k].parameters["type"] == INTERMEDIATE_INLET || nodes[k].parameters["type"] == INTERMEDIATE_OUTLET){
-            if(k != node_id_counter){
-                add_pipe(k, node_id_counter, 0, true);
+    // Connect all nodes probabilitisticaly
+    std::vector<int> editable;
+    std::vector<int> editable1 = get_node_ids("type", INTERMEDIATE_INLET);
+    std::vector<int> editable2 = get_node_ids("type", INTERMEDIATE_OUTLET);
+    editable.reserve( editable1.size() + editable2.size() ); // preallocate memory
+    editable.insert( editable.end(), editable1.begin(), editable1.end() );
+    editable.insert( editable.end(), editable2.begin(), editable2.end() );
+
+    for(int i=0; i<editable.size(); i++){
+        for(int j=i+1; j<editable.size(); j++){
+            if(uniform(1.0, 0.0) < 0.75){
+                add_pipe(editable[i], editable[j], 2, true);
             }
         }
     }
+
+
+//    // Connect the central junction to all intermediate nodes
+//    int k;
+//    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+//        k = (it->first);
+//        if(nodes[k].parameters["type"] == INTERMEDIATE_INLET || nodes[k].parameters["type"] == INTERMEDIATE_OUTLET){
+//            if(k != node_id_counter){
+//                add_pipe(k, node_id_counter, 0, true);
+//            }
+//        }
+//    }
 }
 
-
 void Solution::compute_quality(void) {
+    // Define a few things
+    int k;
+    std::vector<long double> q;
+    quality.assign(number_of_objectives, 0.0);
+
+    // Solve it all
+    compute_fluid_solution();
+
+    // Extract the necessary flowrates
+    std::vector<int> outlets = get_node_ids("type", OUTLET);
+    for(int i=0; i<outlets.size(); i++){
+        k = nodes[outlets[i]].outgoing_edges[0];
+        q.push_back(std::abs(edges[k].parameters["Q"]));
+    }
+
+    // Now, compute qualities
+    if(is_valid()) {
+        // Compute objective for target rate of outflows
+        quality[0] = std::pow(10, -8);
+        for(int i=0; i<q.size(); i++){
+            if(q[i] < target_flowrate) {
+                quality[0] += (target_flowrate - q[i]);
+            }
+        }
+
+        // Compute total length
+        for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
+            k = (it->first);
+            quality[1] += edges[k].parameters["L"];
+        }
+
+        // Complexity
+        quality[2] = number_of_edges + number_of_nodes;
+    } else {
+        for(int i=0; i<number_of_objectives; i++){
+            quality[i] = 100*goal[i];
+        }
+    }
+
+    // Normalize objectives
+    for(int i=0; i<number_of_objectives; i++){
+        // Normalize
+        quality[i]/=goal[i];
+
+        // Penalize
+        if(quality[i] > 1.0){
+            quality[i] += std::pow((quality[i] - 1.0), 2.0);
+        }
+    }
+
+//    print(quality);
+}
+
+void Solution::compute_fluid_solution(void) {
 
     // Define the global stiffness matrix
     std::vector< std::vector<long double> > k_global(static_cast<unsigned long>(number_of_nodes), std::vector<long double>(static_cast<unsigned long>(number_of_nodes+1), 0.0));
@@ -167,33 +238,14 @@ void Solution::compute_quality(void) {
     for(int i=0; i<number_of_nodes; i++){
         cond += std::abs(known_pressures[i] - backed_out_pressures[i]);
     }
-    std::cout << "Condition number: " << cond << std::endl;
 
     // Find the elemental information
-    long double total_length = 0;
     for (std::map<int, Edge>::iterator it=edges.begin(); it!=edges.end(); it++) {
         k = (it->first);
         idx1 = node_id_map[edges[k].initial_node];
         idx2 = node_id_map[edges[k].terminal_node];
         edges[k].parameters["Q"] = edges[k].parameters["R"]*(p[idx1] - p[idx2]);
-        total_length += edges[k].parameters["L"];
     }
-
-    quality[0] = 0;
-    std::vector<int> outlets = get_node_ids("type", OUTLET);
-    for(int i=0; i<outlets.size(); i++){
-        k = nodes[outlets[i]].outgoing_edges[0];
-        if(edges[k].parameters["Q"] > -0.001){
-            quality[0] += std::abs((0.0001 + edges[k].parameters["Q"]));
-        }
-    }
-
-//    quality[0] += is_valid();
-    quality[0] += total_length;
-    quality[0] += number_of_nodes;
-    // TODO: Add checkgate for connectivity/condition number
-    // TODO: Add objectie for total length
-    // TODO: Add objective for complexity
 }
 
 #if RULE_SET == MCCOMB
@@ -302,7 +354,9 @@ void Solution::add_pipe(void) {
     int n2 = editable[weighted_choice(weights)];
 
     // Add an edge
-    add_pipe(n1, n2, 2, true);
+    if(!undirected_edge_exists(n1, n2)){
+        add_pipe(n1, n2, 2, true);
+    }
 }
 
 
@@ -325,6 +379,17 @@ void Solution::remove_pipe(void) {
     std::vector<int> editable = get_edge_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
+    // Add weighting
+    for (int i=0; i<editable.size(); i++){
+        weights[i] = std::abs(edges[editable[i]].parameters["Q"]);
+    }
+
+    // Invert weighting
+    long double the_max = vector_maximum(weights);
+    for (int i=0; i<weights.size(); i++){
+        weights[i] = the_max - weights[i];
+    }
+
     if(editable.size() > 0){
         // Select one to remove at random
         int idx = weighted_choice(weights);
@@ -339,6 +404,25 @@ void Solution::remove_junction(void) {
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
+    int k;
+
+    // Add weighting
+    for (int i=0; i<editable.size(); i++){
+        for(int j=0; j<nodes[editable[i]].incoming_edges.size(); j++) {
+            k = nodes[editable[i]].incoming_edges[i];
+            weights[i] += std::abs(edges[k].parameters["Q"]);
+        }
+        for(int j=0; j<nodes[editable[i]].outgoing_edges.size(); j++) {
+            k = nodes[editable[i]].outgoing_edges[i];
+            weights[i] += std::abs(edges[k].parameters["Q"]);
+        }
+    }
+
+    // Invert weighting
+    long double the_max = vector_maximum(weights);
+    for (int i=0; i<weights.size(); i++){
+        weights[i] = the_max - weights[i];
+    }
 
     if(editable.size() > 0) {
         // Select one to remove at random
@@ -561,7 +645,29 @@ void Solution::intermediate_outlet(void) {
 
 // Function to ensure that the solution is valid
 int Solution::is_valid(void) {
-    return is_connected();
+    // Define some things
+    bool ALL_CONNECTED = true;
+    bool GOOD_COND = true;
+    int k;
+
+    // Check the flow out of every outlet
+    std::vector<int> outlets = get_node_ids("type", OUTLET);
+    for(int i=0; i<outlets.size(); i++){
+        k = nodes[outlets[i]].outgoing_edges[0];
+        if(std::abs(edges[k].parameters["Q"]) > std::pow(10, -10)) {
+            // Do nothing. The comparison needs to be this way to handle nans
+        } else {
+            ALL_CONNECTED = false;
+
+        }
+    }
+
+    // Check the condition number
+    if(cond > std::pow(10, -10)){
+        GOOD_COND = false;
+    }
+
+    return ALL_CONNECTED && GOOD_COND;
 }
 
 
@@ -580,7 +686,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
         n2 = edges[it1->first].terminal_node;
         x3d.write_line(nodes[n1].parameters["x"], nodes[n1].parameters["y"], nodes[n1].parameters["z"],
                        nodes[n2].parameters["x"], nodes[n2].parameters["y"], nodes[n2].parameters["z"],
-                       edges[it1->first].parameters["d"]);
+                       static_cast<int> (edges[it1->first].parameters["d"]));
     }
 
     x3d.close_scene();
