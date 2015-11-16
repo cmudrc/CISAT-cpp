@@ -14,7 +14,7 @@ const  std::vector<long double>    Solution::goal                 = {0.01, 200, 
 
 // Fluid constants
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
-const  long double    Solution::target_flowrate      = 0.1; //
+const  long double    Solution::target_flowrate      = 0.05; //
 
 //Available pipe sizes
 const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
