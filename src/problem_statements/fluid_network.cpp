@@ -10,11 +10,11 @@
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 7;
 const  unsigned long  Solution::number_of_objectives = 3;
-const  std::vector<long double>    Solution::goal                 = {5*std::pow(10, -4), 200, 40};
+const  std::vector<long double>    Solution::goal                 = {0.01, 200, 40};
 
 // Fluid constants
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
-const  long double    Solution::target_flowrate      = 0.01; //
+const  long double    Solution::target_flowrate      = 0.1; //
 
 //Available pipe sizes
 const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
@@ -23,7 +23,7 @@ enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 
 // Problem definition
 std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
-    {{"x", 0.00},   {"y", 0.00},  {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
+    {{"x", 0.00},   {"y", 5.00},  {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
     {{"x", -10.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
     {{"x", -10.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
     {{"x", -10.00}, {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
@@ -108,23 +108,12 @@ void Solution::create_seed_graph(void) {
 
     for(int i=0; i<editable.size(); i++){
         for(int j=i+1; j<editable.size(); j++){
-            if(uniform(1.0, 0.0) < 0.75){
+            if(uniform(1.0, 0.0) < 0.5){
                 add_pipe(editable[i], editable[j], 2, true);
             }
         }
     }
 
-
-//    // Connect the central junction to all intermediate nodes
-//    int k;
-//    for(std::map<int, Node>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-//        k = (it->first);
-//        if(nodes[k].parameters["type"] == INTERMEDIATE_INLET || nodes[k].parameters["type"] == INTERMEDIATE_OUTLET){
-//            if(k != node_id_counter){
-//                add_pipe(k, node_id_counter, 0, true);
-//            }
-//        }
-//    }
 }
 
 void Solution::compute_quality(void) {
@@ -397,23 +386,26 @@ void Solution::remove_pipe(void) {
         // Remove the chosen edge
         remove_edge(editable[idx]);
     }
+
+    // Clean up
+    clean_dangly_bits();
 }
 
 
 void Solution::remove_junction(void) {
     // Define a couple of things
     std::vector<int> editable = get_node_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 1.0);
+    std::vector<long double> weights(editable.size(), 0.0);
     int k;
 
     // Add weighting
     for (int i=0; i<editable.size(); i++){
         for(int j=0; j<nodes[editable[i]].incoming_edges.size(); j++) {
-            k = nodes[editable[i]].incoming_edges[i];
+            k = nodes[editable[i]].incoming_edges[j];
             weights[i] += std::abs(edges[k].parameters["Q"]);
         }
         for(int j=0; j<nodes[editable[i]].outgoing_edges.size(); j++) {
-            k = nodes[editable[i]].outgoing_edges[i];
+            k = nodes[editable[i]].outgoing_edges[j];
             weights[i] += std::abs(edges[k].parameters["Q"]);
         }
     }
@@ -431,6 +423,9 @@ void Solution::remove_junction(void) {
         // Remove the specific node
         remove_node(editable[idx]);
     }
+
+    // Clean up
+    clean_dangly_bits();
 }
 
 
@@ -544,7 +539,7 @@ void Solution::add_midpoint_junction(void) {
             (nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
             (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
             (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
-            false
+            true
         );
 
         // Add new edges
@@ -606,7 +601,7 @@ void Solution::intermediate_inlet(void){
         (nodes[n1].parameters["x"] + nodes[n2].parameters["x"])/2,
         (nodes[n1].parameters["y"] + nodes[n2].parameters["y"])/2,
         (nodes[n1].parameters["z"] + nodes[n2].parameters["z"])/2,
-        false
+        true
     );
     nodes[node_id_counter].parameters["type"] = INTERMEDIATE_INLET;
 
@@ -634,7 +629,7 @@ void Solution::intermediate_outlet(void) {
         (nodes[n1].parameters["x"] + nodes[n2].parameters["x"]) / 2,
         (nodes[n1].parameters["y"] + nodes[n2].parameters["y"]) / 2,
         (nodes[n1].parameters["z"] + nodes[n2].parameters["z"]) / 2,
-        false
+        true
     );
     nodes[node_id_counter].parameters["type"] = INTERMEDIATE_OUTLET;
 
@@ -678,7 +673,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
     x3d.open_file(save_to_file);
     x3d.start_scene(12.5, 12.5, 75);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 1);
+        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.5);
     }
 
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
@@ -696,6 +691,45 @@ void Solution::save_as_x3d(std::string save_to_file) {
 void Solution::update_length(int e){
     // Update the length
     edges[e].parameters["L"] = euclidean_distance(edges[e].initial_node, edges[e].terminal_node);
+}
+
+void Solution::clean_dangly_bits(void) {
+    compute_quality();
+    save_as_x3d("before.html");
+    // Remove edges that have 0 flow rate
+    std::vector<int> edges_to_remove;
+    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++){
+        if((std::abs(edges[it1->first].parameters["Q"]) < std::pow(10, -10))
+           && edges[it1->first].parameters["editable"]){
+            edges_to_remove.push_back(it1->first);
+        }
+    }
+    for(int i=0; i<edges_to_remove.size(); i++){
+        remove_edge(edges_to_remove[i]);
+    }
+
+    // Remove nodes that have no connections
+    std::vector<int> nodes_to_remove;
+    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++){
+        if(((nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size()) == 0)
+           && nodes[it1->first].parameters["editable"]){
+            nodes_to_remove.push_back(it1->first);
+        }
+    }
+    for(int i=0; i<nodes_to_remove.size(); i++){
+        remove_node(nodes_to_remove[i]);
+    }
+
+
+    if(nodes_to_remove.size() > 0) {
+        std::cout << "Removed " << nodes_to_remove.size() << " nodes" << std::endl;
+    }
+
+    if(edges_to_remove.size() > 0) {
+        std::cout << "Removed " << edges_to_remove.size() << " edges" << std::endl;
+    }
+
+    save_as_x3d("after.html");
 }
 
 #endif

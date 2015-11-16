@@ -72,6 +72,8 @@ private:
     void intermediate_inlet(void);
     void intermediate_outlet(void);
 
+    //Utilities
+    void clean_dangly_bits(void);
     int is_valid(void);
     void update_length(int e);
 };
