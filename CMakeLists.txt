@@ -23,8 +23,8 @@ add_definitions(-DSHEA_FRAME=0
                 -DCAMPBELL=3)
 
 # Define which problem statement to use
-add_definitions(-DPROBLEM_STATEMENT=FLUID
-                -DRULE_SET=MCCOMB)
+add_definitions(-DPROBLEM_STATEMENT=TRUSS
+                -DRULE_SET=SHEA_TRUSS)
 
 
 set(SOURCE_FILES

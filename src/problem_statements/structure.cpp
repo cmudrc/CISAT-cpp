@@ -326,7 +326,7 @@ void Solution::compute_truss_forces(void) {
         if (edges[k].parameters["F"] < 0) {
             edges[k].parameters["FOS_b"] = -(std::pow(M_PI, 2) * E * edges[k].parameters["I"]/std::pow(edges[k].parameters["L"], 2))/edges[k].parameters["F"];
         } else {
-            edges[k].parameters["FOS_b"] = LDBL_MAX;
+            edges[k].parameters["FOS_b"] = 1000;
         }
 
         // Save the limiting factor of safety
@@ -725,7 +725,7 @@ void Solution::add_bisection(void){
         cs = static_cast<int> (common.size());
         for(int i=0; i<cs; i++){
             list.push_back(std::vector<int> {it1->first, common[i]});
-            weights.push_back(1.0);
+            weights.push_back(1.0/edges[it1->first].parameters["FOS_b"]);
         }
     }
 
