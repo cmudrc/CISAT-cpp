@@ -764,10 +764,18 @@ void Solution::remove_bisection(void) {
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); ++it1) {
         if (nodes[it1->first].parameters["editable"]) {
             if (nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size() == 3) {
+                // Get total FOS of edges
+                long double this_weight = 0;
+                for(int i=0; i<nodes[it1->first].outgoing_edges.size(); i++){
+                    this_weight = edges[nodes[it1->first].outgoing_edges[i]].parameters["FOS_lim"];
+                }
+                for(int i=0; i<nodes[it1->first].incoming_edges.size(); i++){
+                    this_weight = edges[nodes[it1->first].incoming_edges[i]].parameters["FOS_lim"];
+                }
                 std::vector<int> neighbors = get_neighbors(it1->first);
-                list.push_back({it1->first, neighbors[0], neighbors[1]}); weights.push_back(1.0);
-                list.push_back({it1->first, neighbors[2], neighbors[0]}); weights.push_back(1.0);
-                list.push_back({it1->first, neighbors[1], neighbors[2]}); weights.push_back(1.0);
+                list.push_back({it1->first, neighbors[0], neighbors[1]}); weights.push_back(this_weight);
+                list.push_back({it1->first, neighbors[2], neighbors[0]}); weights.push_back(this_weight);
+                list.push_back({it1->first, neighbors[1], neighbors[2]}); weights.push_back(this_weight);
             }
         }
     }
@@ -840,7 +848,17 @@ void Solution::remove_trisection(void){
                     && undirected_edge_exists(neighbors[2], neighbors[1])
                     && undirected_edge_exists(neighbors[0], neighbors[2])) {
                     list.push_back(it1->first);
-                    weights.push_back(1.0);
+
+                    // Get total FOS of edges
+                    long double this_weight = 0;
+                    for(int i=0; i<nodes[it1->first].outgoing_edges.size(); i++){
+                        this_weight = edges[nodes[it1->first].outgoing_edges[i]].parameters["FOS_lim"];
+                    }
+                    for(int i=0; i<nodes[it1->first].incoming_edges.size(); i++){
+                        this_weight = edges[nodes[it1->first].incoming_edges[i]].parameters["FOS_lim"];
+                    }
+
+                    weights.push_back(this_weight);
                 }
             }
         }
