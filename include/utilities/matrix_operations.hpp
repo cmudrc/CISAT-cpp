@@ -6,11 +6,11 @@
 
 std::vector<long double> gauss(std::vector< std::vector<long double> > A);
 
+// TODO: Move this function to a better place
 // FUnction to check for nans
 template <typename Type>
-
 bool is_nan(Type A) {
-    return (A !=A );
+    return (A != A);
 }
 
 template <typename Type>
