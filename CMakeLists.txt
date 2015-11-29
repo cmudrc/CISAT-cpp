@@ -9,7 +9,7 @@ project(CISAT)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
 
-# Add macro definitons for the problem statement
+# Add macro definitons for the problem statement type
 add_definitions(-DTRUSS=0
                 -DFRAME=1
                 -DFLUID=2
@@ -24,7 +24,8 @@ add_definitions(-DSHEA_FRAME=0
 
 # Define which problem statement to use
 add_definitions(-DPROBLEM_STATEMENT=TRUSS
-                -DRULE_SET=SHEA_TRUSS)
+                -DRULE_SET=SHEA_TRUSS
+                -DPROBLEM_NUMBER=0)
 
 
 set(SOURCE_FILES

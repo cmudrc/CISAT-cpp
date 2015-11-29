@@ -6,6 +6,12 @@
 
 std::vector<long double> gauss(std::vector< std::vector<long double> > A);
 
+// FUnction to check for nans
+template <typename Type>
+
+bool is_nan(Type A) {
+    return (A !=A );
+}
 
 template <typename Type>
 std::vector< Type > matrix_vector_mult(std::vector< std::vector<Type> > A) {
