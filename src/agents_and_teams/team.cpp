@@ -10,7 +10,7 @@
 Team::Team(ParameterSet x){
     parameters = x;
     // Make a vector of the appropriate length for storing things.
-    best_solution.assign(Solution::number_of_objectives, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
+    best_solution.assign(Solution::number_of_objectives*parameters.n_agents, std::vector<long double> (parameters.max_iter/parameters.n_agents, 0.0));
 }
 
 //// Give the team a new start
@@ -69,7 +69,8 @@ void Team::iterate(int iteration){
     }
 
     // Pull out the best solution
-    pull_best_solution(iteration);
+    // pull_best_solution(iteration);
+    pull_all_solutions(iteration);
 }
 
 
@@ -125,6 +126,26 @@ void Team::pull_best_solution(int iteration) {
             for(int j=0; j<Solution::number_of_objectives; j++) {
                 best_solution[j][iteration] = x[j];
             }
+        }
+    }
+}
+
+void Team::pull_all_solutions(int iteration) {
+    long double temp;
+    unsigned long num = Solution::number_of_objectives;
+
+    for(int i=0; i<Solution::number_of_objectives; i++) {
+        for(int j=0; j<parameters.n_agents; j++){
+            best_solution[i + j*Solution::number_of_objectives][iteration] = agent_list[j].current_solution.quality[i];
+        }
+    }
+
+    for (int i = 0; i < agent_list.size(); i++) {
+        if(parameters.save_designs == 2) {
+            char buff[50];
+            std::sprintf(buff, "./data/%lu/t%03d/a%03d/d%08d.html", run_id, team_id, i, iteration);
+            std::string name(buff);
+            agent_list[i].current_solution.save_as_x3d(name);
         }
     }
 }

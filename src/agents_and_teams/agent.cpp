@@ -235,7 +235,6 @@ Solution Agent::candidate_solution(void){
         for (int i=0; i < Solution::number_of_move_ops; i++) {
             move_oper_pref[0][i]/=sum_w;
         }
-        print(move_oper_pref);
     }
     else if(parameters.learning_style == "MARKOV") {
         // Choose which move operator to apply

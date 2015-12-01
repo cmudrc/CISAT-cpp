@@ -19,6 +19,7 @@ public:
     void new_start(void);
     void iterate(int iter);
     void pull_best_solution(int iter);
+    void pull_all_solutions(int iter);
 
     //// Variables
     ParameterSet parameters; // ParameterSet used for SA

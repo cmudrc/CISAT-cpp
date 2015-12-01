@@ -18,7 +18,6 @@
 
 const  unsigned long  Solution::number_of_objectives = 2;
 //const  std::vector<long double>    Solution::goal    = {175.0, -1.25};
-const  std::vector<long double>    Solution::goal    = {200.0, -1.00};
 
 // Material constants
 const  long double    Solution::E               = 209*std::pow(10,9); // Pa
@@ -33,6 +32,8 @@ const std::vector< long double > Solution::wall_thickness = {0.005/7.5, 0.010/7.
 
 // Problem definition
 #if PROBLEM_NUMBER == 0
+    const  std::vector<long double>    Solution::goal    = {200.0, -1.00};
+
     std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
         {{"x", -5.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
         {{"x", -2.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
@@ -96,20 +97,113 @@ const std::vector< long double > Solution::wall_thickness = {0.005/7.5, 0.010/7.
     };
 
 #elif PROBLEM_NUMBER == 1
+    const  std::vector<long double>    Solution::goal    = {350.0, -1.00};
+
+
     std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
             {{"x", 0.00}, {"y", 0.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
             {{"x", 5.00}, {"y", 0.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
-            {{"x", 2.50}, {"y", 10.00}, {"z", 0.00}, {"Fx", 20000.00}, {"Fy", -100000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+            {{"x", 2.50}, {"y", 15.00}, {"z", 0.00}, {"Fx", 20000.00}, {"Fy", -100000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
 
             {{"x", 0.00}, {"y", 5.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
             {{"x", 2.50}, {"y", 5.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+            {{"x", 0.00}, {"y", 10.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2.50}, {"y", 10.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
             {{"x", 5.00}, {"y", 5.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 5.00}, {"y", 10.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
 
             {{"x", 2.50}, {"y", 1.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
             {{"x", 0.83}, {"y", 3.33},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
             {{"x", 3.33}, {"y", 6.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
             {{"x", 4.17}, {"y", 3.33},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
-            {{"x", 1.67}, {"y", 6.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}}
+            {{"x", 1.67}, {"y", 6.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+            {{"x", 0.83}, {"y", 8.33},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 3.33}, {"y", 11.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 4.17}, {"y", 8.33},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 1.67}, {"y", 11.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}}
+    };
+
+    std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters = {
+            {{"initial", 0},  {"terminal", 3},  {"radius", 4}},
+            {{"initial", 0},  {"terminal", 4},  {"radius", 4}},
+            {{"initial", 3},  {"terminal", 4},  {"radius", 4}},
+            {{"initial", 1},  {"terminal", 4},  {"radius", 4}},
+
+            {{"initial", 3},  {"terminal", 5},  {"radius", 4}},
+            {{"initial", 2},  {"terminal", 5},  {"radius", 4}},
+
+            {{"initial", 6},  {"terminal", 5},  {"radius", 4}},
+            {{"initial", 6},  {"terminal", 3},  {"radius", 4}},
+            {{"initial", 6},  {"terminal", 4},  {"radius", 4}},
+            {{"initial", 6},  {"terminal", 2},  {"radius", 4}},
+
+            {{"initial", 7},  {"terminal", 1},  {"radius", 4}},
+            {{"initial", 7},  {"terminal", 4},  {"radius", 4}},
+            {{"initial", 7},  {"terminal", 6},  {"radius", 4}},
+
+            {{"initial", 8},  {"terminal", 2},  {"radius", 4}},
+            {{"initial", 8},  {"terminal", 6},  {"radius", 4}},
+            {{"initial", 8},  {"terminal", 7},  {"radius", 4}},
+
+            {{"initial", 9},  {"terminal", 0},  {"radius", 4}},
+            {{"initial", 9},  {"terminal", 1},  {"radius", 4}},
+            {{"initial", 9},  {"terminal", 4},  {"radius", 4}},
+
+            {{"initial", 10},  {"terminal", 0},  {"radius", 4}},
+            {{"initial", 10},  {"terminal", 3},  {"radius", 4}},
+            {{"initial", 10},  {"terminal", 4},  {"radius", 4}},
+
+            {{"initial", 11},  {"terminal", 6},  {"radius", 4}},
+            {{"initial", 11},  {"terminal", 7},  {"radius", 4}},
+            {{"initial", 11},  {"terminal", 4},  {"radius", 4}},
+
+            {{"initial", 12},  {"terminal", 1},  {"radius", 4}},
+            {{"initial", 12},  {"terminal", 7},  {"radius", 4}},
+            {{"initial", 12},  {"terminal", 4},  {"radius", 4}},
+
+            {{"initial", 13},  {"terminal", 3},  {"radius", 4}},
+            {{"initial", 13},  {"terminal", 4},  {"radius", 4}},
+            {{"initial", 13},  {"terminal", 6},  {"radius", 4}},
+
+            {{"initial", 14},  {"terminal", 3},  {"radius", 4}},
+            {{"initial", 14},  {"terminal", 5},  {"radius", 4}},
+            {{"initial", 14},  {"terminal", 6},  {"radius", 4}},
+
+            {{"initial", 15},  {"terminal", 8},  {"radius", 4}},
+            {{"initial", 15},  {"terminal", 2},  {"radius", 4}},
+            {{"initial", 15},  {"terminal", 6},  {"radius", 4}},
+
+            {{"initial", 16},  {"terminal", 6},  {"radius", 4}},
+            {{"initial", 16},  {"terminal", 7},  {"radius", 4}},
+            {{"initial", 16},  {"terminal", 8},  {"radius", 4}},
+
+            {{"initial", 17},  {"terminal", 2},  {"radius", 4}},
+            {{"initial", 17},  {"terminal", 5},  {"radius", 4}},
+            {{"initial", 17},  {"terminal", 6},  {"radius", 4}},
+    };
+
+#elif PROBLEM_NUMBER == 2
+const  std::vector<long double>    Solution::goal    = {350.0, -1.00};
+
+
+    std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
+            {{"x", 0.00}, {"y", 0.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+            {{"x", 2*5.00}, {"y", 0.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+            {{"x", 2*2.50}, {"y", 10.00}, {"z", 0.00}, {"Fx", 100000.00}, {"Fy", -100000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+
+            {{"x", 0.00}, {"y", 5.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2*2.50}, {"y", 5.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2*5.00}, {"y", 5.00},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+            {{"x", 2*2.50}, {"y", 1.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2*0.83}, {"y", 3.33},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2*3.33}, {"y", 6.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2*4.17}, {"y", 3.33},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+            {{"x", 2*1.67}, {"y", 6.67},  {"z", 0.00}, {"Fx", 0.00},     {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}}
     };
 
     std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters = {
@@ -175,6 +269,8 @@ void Solution::create_seed_graph(void){
     #if PROBLEM_NUMBER == 0
         int joints_to_add = uniform_int(14, 8);
     #elif PROBLEM_NUMBER == 1
+        int joints_to_add = uniform_int(18, 7);
+    #elif PROBLEM_NUMBER == 2
         int joints_to_add = uniform_int(11, 5);
     #endif
 
@@ -1316,7 +1412,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
     // Add the SWR
     std::string the_swr;
     the_swr.append("SWR = ");
-    the_swr.append(std::to_string((FOS/1.25)*(175/mass)));
+    the_swr.append(std::to_string((FOS/std::abs(goal[1]))*(goal[0]/mass)));
     x3d.add_html("h1", the_swr);
 
     // Add the SWR
@@ -1328,10 +1424,12 @@ void Solution::save_as_x3d(std::string save_to_file) {
     #if PROBLEM_NUMBER == 0
         x3d.start_scene(0, 1, 10);
     #elif PROBLEM_NUMBER == 1
-        x3d.start_scene(2.5, 5, 20);
+        x3d.start_scene(2.5, 7.5, 30);
+    #elif PROBLEM_NUMBER == 2
+        x3d.start_scene(5, 5, 20);
     #endif
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
-        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.05);
+        x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.25);
     }
 
     for (std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++) {
