@@ -240,6 +240,72 @@ const  std::vector<long double>    Solution::goal    = {350.0, -1.00};
             {{"initial", 8},  {"terminal", 5},  {"radius", 4}}
     };
 
+#elif PROBLEM_NUMBER == 3
+
+    const  std::vector<long double>    Solution::goal    = {250.0, -1.00};
+
+    std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
+        {{"x", -5.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+        {{"x", -2.00}, {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+        {{"x", 1.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+        {{"x", 3.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", -200000.00}, {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+        {{"x", 5.00},  {"y", 0.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 1}, {"ry", 1}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", false}},
+
+        {{"x", -3.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+        {{"x", -0.50}, {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+        {{"x", 2.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+        {{"x", 4.00},  {"y", 2.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+        {{"x", 1.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+        {{"x", -2.00}, {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+        {{"x", 3.00},  {"y", 4.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+        {{"x", -5.00}, {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+        {{"x", 5.00},  {"y", 3.00}, {"z", 0.00}, {"Fx", 0.00}, {"Fy", 0.00},       {"Fz", 0.00}, {"Mz", 0.00}, {"rx", 0}, {"ry", 0}, {"rz", 1}, {"mx", 0}, {"my", 0}, {"mz", 0}, {"editable", true}},
+
+    };
+
+    // Problem definition
+    std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters = {
+        {{"initial",  0}, {"terminal", 1}, {"radius", 4}},
+        {{"initial",  1}, {"terminal", 2}, {"radius", 4}},
+        {{"initial",  2}, {"terminal", 3}, {"radius", 4}},
+        {{"initial",  3}, {"terminal", 4}, {"radius", 4}},
+
+        {{"initial",  5}, {"terminal", 6}, {"radius", 4}},
+        {{"initial",  6}, {"terminal", 7}, {"radius", 4}},
+        {{"initial",  7}, {"terminal", 8}, {"radius", 4}},
+
+        {{"initial",  0}, {"terminal", 5}, {"radius", 4}},
+        {{"initial",  5}, {"terminal", 1}, {"radius", 4}},
+        {{"initial",  1}, {"terminal", 6}, {"radius", 4}},
+        {{"initial",  6}, {"terminal", 2}, {"radius", 4}},
+        {{"initial",  2}, {"terminal", 7}, {"radius", 4}},
+        {{"initial",  7}, {"terminal", 3}, {"radius", 4}},
+        {{"initial",  3}, {"terminal", 8}, {"radius", 4}},
+        {{"initial",  8}, {"terminal", 4}, {"radius", 4}},
+
+        {{"initial",  6}, {"terminal", 9}, {"radius", 4}},
+        {{"initial",  7}, {"terminal", 9}, {"radius", 4}},
+
+        {{"initial",  5}, {"terminal", 10}, {"radius", 4}},
+        {{"initial",  6}, {"terminal", 10}, {"radius", 4}},
+        {{"initial",  9}, {"terminal", 10}, {"radius", 4}},
+
+        {{"initial",  7}, {"terminal", 11}, {"radius", 4}},
+        {{"initial",  8}, {"terminal", 11}, {"radius", 4}},
+        {{"initial",  9}, {"terminal", 11}, {"radius", 4}},
+
+        {{"initial",  0}, {"terminal", 12}, {"radius", 4}},
+        {{"initial",  5}, {"terminal", 12}, {"radius", 4}},
+        {{"initial",  10}, {"terminal", 12}, {"radius", 4}},
+
+        {{"initial",  4}, {"terminal", 13}, {"radius", 4}},
+        {{"initial",  8}, {"terminal", 13}, {"radius", 4}},
+        {{"initial",  11}, {"terminal", 13}, {"radius", 4}},
+    };
+
 #endif
 
 // Integer to assign unique IDs to solutions
@@ -272,6 +338,8 @@ void Solution::create_seed_graph(void){
         int joints_to_add = uniform_int(18, 7);
     #elif PROBLEM_NUMBER == 2
         int joints_to_add = uniform_int(11, 5);
+    #elif PROBLEM_NUMBER == 3
+        int joints_to_add = uniform_int(14, 8);
     #endif
 
     // Add all joints
@@ -280,8 +348,8 @@ void Solution::create_seed_graph(void){
         add_node();
 
         // Add the values
-        nodes[node_id_counter].parameters["x"] = seed_node_parameters[i]["x"];// + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
-        nodes[node_id_counter].parameters["y"] = seed_node_parameters[i]["y"];// + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
+        nodes[node_id_counter].parameters["x"] = seed_node_parameters[i]["x"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
+        nodes[node_id_counter].parameters["y"] = seed_node_parameters[i]["y"] + uniform(0.25, -0.25)*seed_node_parameters[i]["editable"];
         nodes[node_id_counter].parameters["z"] = seed_node_parameters[i]["z"];
         nodes[node_id_counter].parameters["rx"] = seed_node_parameters[i]["rx"];
         nodes[node_id_counter].parameters["ry"] = seed_node_parameters[i]["ry"];
@@ -1427,6 +1495,8 @@ void Solution::save_as_x3d(std::string save_to_file) {
         x3d.start_scene(2.5, 7.5, 30);
     #elif PROBLEM_NUMBER == 2
         x3d.start_scene(5, 5, 20);
+    #elif PROBLEM_NUMBER == 3
+        x3d.start_scene(0, 1, 10);
     #endif
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.25);
