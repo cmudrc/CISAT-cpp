@@ -339,7 +339,7 @@ void Solution::create_seed_graph(void){
     #elif PROBLEM_NUMBER == 2
         int joints_to_add = uniform_int(11, 5);
     #elif PROBLEM_NUMBER == 3
-        int joints_to_add = uniform_int(14, 8);
+        int joints_to_add = uniform_int(14, 9);
     #endif
 
     // Add all joints

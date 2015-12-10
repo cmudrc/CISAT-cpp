@@ -27,7 +27,6 @@ add_definitions(-DPROBLEM_STATEMENT=TRUSS
                 -DRULE_SET=MCCOMB
                 -DPROBLEM_NUMBER=3)
 
-
 set(SOURCE_FILES
     cisat.cpp
 
