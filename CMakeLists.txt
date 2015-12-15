@@ -23,9 +23,9 @@ add_definitions(-DSHEA_FRAME=0
                 -DCAMPBELL=3)
 
 # Define which problem statement to use
-add_definitions(-DPROBLEM_STATEMENT=TRUSS
+add_definitions(-DPROBLEM_STATEMENT=FLUID
                 -DRULE_SET=MCCOMB
-                -DPROBLEM_NUMBER=3)
+                -DPROBLEM_NUMBER=0)
 
 set(SOURCE_FILES
     cisat.cpp

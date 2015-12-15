@@ -8,13 +8,13 @@
 #include "../../include/problem_statements/fluid_network.hpp"
 
 // Graph grammar characteristics
-const  unsigned long  Solution::number_of_move_ops   = 7;
-const  unsigned long  Solution::number_of_objectives = 3;
-const  std::vector<long double>    Solution::goal                 = {0.005, 200, 40};
+const  unsigned long  Solution::number_of_move_ops   = 6;
+const  unsigned long  Solution::number_of_objectives = 2;
+const  std::vector<long double>    Solution::goal                 = {0.01, 500};
 
 // Fluid constants
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
-const  long double    Solution::target_flowrate      = 0.01; //
+const  long double    Solution::target_flowrate      = 0.01; // [m^3/s]
 
 //Available pipe sizes
 const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
@@ -22,22 +22,45 @@ const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 
 enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 
 // Problem definition
-std::vector< std::map<std::string, long double> > Solution::seed_graph_parameters = {
-    {{"x", 0.00},   {"y", 5.00},  {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
-    {{"x", -10.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
-    {{"x", -10.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", -10.00}, {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", 10.00},  {"y", 20.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
-    {{"x", 10.00},  {"y", 25.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", 10.00},  {"y", 30.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", -5.00},  {"y", 40.00}, {"z", 0.00}, {"p", -1.00},     {"type", OUTLET}},
-    {{"x", 5.00},   {"y", 40.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", 0.00},   {"y", 40.00}, {"z", 0.00}, {"p", -1.00},    {"type", OUTLET}},
-    {{"x", 0.00},   {"y", 25.00}, {"z", 0.00}, {"p", -1.0},    {"type", INTERMEDIATE_INLET}},
-    {{"x", -5.00},   {"y", 25.00}, {"z", 0.00}, {"p", -1.0},    {"type", INTERMEDIATE_OUTLET}},
-    {{"x", 5.00},   {"y", 25.00}, {"z", 0.00}, {"p", -1.0},    {"type", INTERMEDIATE_OUTLET}},
-    {{"x", 0.00},   {"y", 32.500}, {"z", 0.00}, {"p", -1.0},    {"type", INTERMEDIATE_OUTLET}}};
+std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
+    {{"set", 1}, {"x", 50.00}, {"y", 0.00}, {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
+    {{"set", 1}, {"x", 75.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+    {{"set", 1}, {"x", 100.00}, {"y", 40.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 100.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 100.00}, {"y", 60.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 80.00}, {"y", 80.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_OUTLET}},
+    {{"set", 1}, {"x", 60.00}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 50.00}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 40.00}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 20.00}, {"y", 80.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_OUTLET}},
+    {{"set", 1}, {"x", 0.00}, {"y", 60.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 0.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 0.00}, {"y", 40.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+    {{"set", 1}, {"x", 25.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
 
+    {{"set", 1}, {"x", 50.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+    {{"set", 1}, {"x", 25.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+    {{"set", 1}, {"x", 75.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+    {{"set", 1}, {"x", 50.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+    {{"set", 1}, {"x", 50.00}, {"y", 75.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}}
+};
+
+std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters = {
+    {{"set", 1}, {"initial", 0}, {"terminal", 1}},
+    {{"set", 1}, {"initial", 1}, {"terminal", 2}},
+    {{"set", 1}, {"initial", 2}, {"terminal", 3}},
+    {{"set", 1}, {"initial", 3}, {"terminal", 4}},
+    {{"set", 1}, {"initial", 4}, {"terminal", 5}},
+    {{"set", 1}, {"initial", 5}, {"terminal", 6}},
+    {{"set", 1}, {"initial", 6}, {"terminal", 7}},
+    {{"set", 1}, {"initial", 7}, {"terminal", 8}},
+    {{"set", 1}, {"initial", 8}, {"terminal", 9}},
+    {{"set", 1}, {"initial", 9}, {"terminal", 10}},
+    {{"set", 1}, {"initial", 10}, {"terminal", 11}},
+    {{"set", 1}, {"initial", 11}, {"terminal", 12}},
+    {{"set", 1}, {"initial", 12}, {"terminal", 13}},
+    {{"set", 1}, {"initial", 13}, {"terminal", 0}}
+};
 
 // Integer to assign unique IDs to solutions
 int Solution::solution_counter = 0;
@@ -64,33 +87,33 @@ Solution::Solution(bool) {
 
 void Solution::create_seed_graph(void) {
     // Create nodes at each of the specified locations
-    for(int i=0; i < seed_graph_parameters.size(); i++) {
+    for(int i=0; i < seed_node_parameters.size(); i++) {
 
         // If its an inlet or outlet, add a node pair
-        if(seed_graph_parameters[i]["type"] == INLET || seed_graph_parameters[i]["type"] == OUTLET) {
-            add_junction(seed_graph_parameters[i]["x"],
-                         seed_graph_parameters[i]["y"],
-                         seed_graph_parameters[i]["z"],
+        if(seed_node_parameters[i]["type"] == INLET || seed_node_parameters[i]["type"] == OUTLET) {
+            add_junction(seed_node_parameters[i]["x"],
+                         seed_node_parameters[i]["y"],
+                         seed_node_parameters[i]["z"],
                          false);
-            nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"]+1;
+            nodes[node_id_counter].parameters["type"] = seed_node_parameters[i]["type"]+1;
 
 
-            add_junction(seed_graph_parameters[i]["x"],
-                         seed_graph_parameters[i]["y"],
-                         seed_graph_parameters[i]["z"]+1.0,
+            add_junction(seed_node_parameters[i]["x"],
+                         seed_node_parameters[i]["y"],
+                         seed_node_parameters[i]["z"]+1.0,
                          false);
-            nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
-            nodes[node_id_counter].parameters["p"] = seed_graph_parameters[i]["p"];
+            nodes[node_id_counter].parameters["type"] = seed_node_parameters[i]["type"];
+            nodes[node_id_counter].parameters["p"] = seed_node_parameters[i]["p"];
             add_pipe(node_id_counter, node_id_counter-1, 0, false);
         }
         // Else just add the node
         else {
 
-            add_junction(seed_graph_parameters[i]["x"],
-                         seed_graph_parameters[i]["y"],
-                         seed_graph_parameters[i]["z"],
+            add_junction(seed_node_parameters[i]["x"],
+                         seed_node_parameters[i]["y"],
+                         seed_node_parameters[i]["z"],
                          true);
-            nodes[node_id_counter].parameters["type"] = seed_graph_parameters[i]["type"];
+            nodes[node_id_counter].parameters["type"] = seed_node_parameters[i]["type"];
         }
     }
 
@@ -104,7 +127,7 @@ void Solution::create_seed_graph(void) {
 
     for(int i=0; i<editable.size(); i++){
         for(int j=i+1; j<editable.size(); j++){
-            if(uniform(1.0, 0.0) < 0.3){
+            if(uniform(75.0, 0.0) < 75-euclidean_distance(editable[i], editable[j])){
                 add_pipe(editable[i], editable[j], 2, true);
             }
         }
@@ -145,7 +168,7 @@ void Solution::compute_quality(void) {
         }
 
         // Complexity
-        quality[2] = number_of_edges + number_of_nodes;
+//        quality[2] = number_of_edges + number_of_nodes;
     } else {
         for(int i=0; i<number_of_objectives; i++){
             quality[i] = 100*goal[i];
@@ -249,12 +272,9 @@ void Solution::apply_move_operator(int move_type) {
             remove_junction();
             break;
         case 4:
-            increase_pipe_size();
+            change_pipe_size();
             break;
         case 5:
-            decrease_pipe_size();
-            break;
-        case 6:
             move_junction();
             break;
         default:
@@ -424,56 +444,46 @@ void Solution::remove_junction(void) {
     clean_dangly_bits();
 }
 
-
-void Solution::increase_pipe_size(void) {
+void Solution::change_pipe_size(void) {
     // Define a couple of things
     std::vector<int> editable = get_edge_ids("editable", true);
     std::vector<long double> weights(editable.size(), 1.0);
 
-    if (editable.size() > 0) {
-        // Add weighting according to flow rate
-        for (int i=0; i<editable.size(); i++){
-            weights[i] = std::abs(edges[editable[i]].parameters["Q"]);
-        }
+    // If quality is ok, try to decrease size. Else, increase
+    if(weights.size() > 0){
+        if(quality[0] < 1.0) {
+            // Refine weights
+            for(int i=0; i<editable.size(); i++){
+                if(edges[editable[i]].parameters["d"] == 0) {
+                    weights[i] = 0.0;
+                }
+            }
 
-        // Select one to remove at random
-        int idx = weighted_choice(weights);
+            // Select one to remove at random
+            int idx = weighted_choice(weights);
 
-        // Increase the size of the chosen edge
-        if(edges[editable[idx]].parameters["d"] < pipe_diam.size()-1) {
-            edges[editable[idx]].parameters["d"]++;
-        }
-    }
-}
-
-
-void Solution::decrease_pipe_size(void) {
-    // Define a couple of things
-    std::vector<int> editable = get_edge_ids("editable", true);
-    std::vector<long double> weights(editable.size(), 1.0);
-
-    if (editable.size() > 0) {
-        // Add weighting according to flow rates
-        for (int i=0; i<editable.size(); i++){
-            weights[i] = std::abs(edges[editable[i]].parameters["Q"]);
-        }
-
-        // Invert weighting
-        long double the_max = vector_maximum(weights);
-        for (int i=0; i<weights.size(); i++){
-            weights[i] = the_max - weights[i];
-        }
-
-        // Select one to remove at random
-        int idx = weighted_choice(weights);
-
-        // Decrease the size of the chosen edge
-        if(edges[editable[idx]].parameters["d"] > 0) {
+            // Decrease the size of the chosen edge
             edges[editable[idx]].parameters["d"]--;
+        } else {
+            // Refine weights
+            for(int i=0; i<editable.size(); i++){
+                if(edges[editable[i]].parameters["Q"] < target_flowrate && edges[editable[i]].parameters["d"] < pipe_diam.size()-1){
+                    weights[i] = target_flowrate - edges[editable[i]].parameters["Q"];
+                } else {
+                    weights[i] = 0.0;
+                }
+            }
+
+            // Select one to remove at random
+            int idx = weighted_choice(weights);
+
+            if(edges[editable[idx]].parameters["d"] < pipe_diam.size()-1) {
+                edges[editable[idx]].parameters["d"]++;
+            }
         }
     }
-}
 
+}
 
 // This is the function that moves a junction with some level of determinicity
 void Solution::move_junction(void){
@@ -488,7 +498,7 @@ void Solution::move_junction(void){
         // Move it somehow
         long double step_size = 2.0;
         int max_iter = 8;
-        long double best_quality = quality[0];
+        long double best_quality = quality[1];
         std::vector< std::vector< long double> > unit_direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         for(int i=0; i<max_iter; i++){
             for(int j=0; j<4; j++){
@@ -500,8 +510,8 @@ void Solution::move_junction(void){
                 compute_quality();
 
                 // If improved, keep and break. Else, reverse.
-                if(quality[0] < best_quality) {
-                    best_quality = quality[0];
+                if(quality[1] < best_quality) {
+                    best_quality = quality[1];
                     break;
                 } else {
                     nodes[key].parameters["x"] -= unit_direction[j][0]*step_size;
@@ -687,7 +697,7 @@ void Solution::save_as_x3d(std::string save_to_file) {
     int n1, n2;
 
     x3d.open_file(save_to_file);
-    x3d.start_scene(12.5, 12.5, 75);
+    x3d.start_scene(50, 50, 125);
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
         x3d.write_sphere(nodes[it1->first].parameters["x"], nodes[it1->first].parameters["y"], nodes[it1->first].parameters["z"], 0.5);
     }

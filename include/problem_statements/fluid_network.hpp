@@ -49,7 +49,8 @@ private:
     long double cond;
 
     // Inlet location
-    static std::vector< std::map<std::string, long double> > seed_graph_parameters;
+    static std::vector< std::map<std::string, long double> > seed_node_parameters;
+    static std::vector< std::map<std::string, long double> > seed_edge_parameters;
 
     // Functions
     void compute_quality(void);
@@ -62,8 +63,7 @@ private:
     void add_junction(long double x, long double y, long double z, bool editable);
     void remove_pipe(void);
     void remove_junction(void);
-    void increase_pipe_size(void);
-    void decrease_pipe_size(void);
+    void change_pipe_size(void);
     void add_midpoint_junction(void);
     void move_junction(void);
 
