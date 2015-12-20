@@ -10,14 +10,13 @@
 // Graph grammar characteristics
 const  unsigned long  Solution::number_of_move_ops   = 6;
 const  unsigned long  Solution::number_of_objectives = 2;
-const  std::vector<long double>    Solution::goal                 = {0.01, 500};
+const  std::vector<long double>    Solution::goal                 = {-0.005, 400};
 
 // Fluid constants
 const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
-const  long double    Solution::target_flowrate      = 0.01; // [m^3/s]
 
 //Available pipe sizes
-const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10};
+const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14};
 
 enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 
@@ -153,12 +152,14 @@ void Solution::compute_quality(void) {
 
     // Now, compute qualities
     if(is_valid()) {
-        // Compute objective for target rate of outflows
-        quality[0] = std::pow(10, -8);
-        for(int i=0; i<q.size(); i++){
-            if(q[i] < target_flowrate) {
-                quality[0] += (target_flowrate - q[i]);
-            }
+
+        // Compute discrepancy of flow rates
+        long double min_flow = vector_minimum(q);
+        quality[0] = -min_flow/goal[0];
+        if(min_flow < -goal[0]) {
+            quality[0] = -10*std::log(-min_flow/goal[0]) + 1;
+        } else {
+            quality[0] = 2 - quality[0];
         }
 
         // Compute total length
@@ -166,23 +167,10 @@ void Solution::compute_quality(void) {
             k = (it->first);
             quality[1] += edges[k].parameters["L"];
         }
-
-        // Complexity
-//        quality[2] = number_of_edges + number_of_nodes;
-    } else {
+        quality[1]/=goal[1];
+   } else {
         for(int i=0; i<number_of_objectives; i++){
-            quality[i] = 100*goal[i];
-        }
-    }
-
-    // Normalize objectives
-    for(int i=0; i<number_of_objectives; i++){
-        // Normalize
-        quality[i]/=goal[i];
-
-        // Penalize
-        if(quality[i] > 1.0){
-            quality[i] += std::pow((quality[i] - 1.0), 2.0);
+            quality[i] = 100;//*goal[i];
         }
     }
 
@@ -467,8 +455,8 @@ void Solution::change_pipe_size(void) {
         } else {
             // Refine weights
             for(int i=0; i<editable.size(); i++){
-                if(edges[editable[i]].parameters["Q"] < target_flowrate && edges[editable[i]].parameters["d"] < pipe_diam.size()-1){
-                    weights[i] = target_flowrate - edges[editable[i]].parameters["Q"];
+                if(edges[editable[i]].parameters["Q"] < -goal[0] && edges[editable[i]].parameters["d"] < pipe_diam.size()-1){
+                    weights[i] = -goal[0] - edges[editable[i]].parameters["Q"];
                 } else {
                     weights[i] = 0.0;
                 }
@@ -720,32 +708,32 @@ void Solution::update_length(int e){
 }
 
 void Solution::clean_dangly_bits(void) {
-    // Update the quality
-    compute_quality();
-
-    // Remove edges that have 0 flow rate
-    std::vector<int> edges_to_remove;
-    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++){
-        if((std::abs(edges[it1->first].parameters["Q"]) < std::pow(10, -10))
-           && edges[it1->first].parameters["editable"]){
-            edges_to_remove.push_back(it1->first);
-        }
-    }
-    for(int i=0; i<edges_to_remove.size(); i++){
-        remove_edge(edges_to_remove[i]);
-    }
-
-    // Remove nodes that have no connections
-    std::vector<int> nodes_to_remove;
-    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++){
-        if(((nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size()) == 0)
-           && nodes[it1->first].parameters["editable"]){
-            nodes_to_remove.push_back(it1->first);
-        }
-    }
-    for(int i=0; i<nodes_to_remove.size(); i++){
-        remove_node(nodes_to_remove[i]);
-    }
+//    // Update the quality
+//    compute_quality();
+//
+//    // Remove edges that have 0 flow rate
+//    std::vector<int> edges_to_remove;
+//    for(std::map<int, Edge>::iterator it1 = edges.begin(); it1 != edges.end(); it1++){
+//        if((std::abs(edges[it1->first].parameters["Q"]) < std::pow(10, -10))
+//           && edges[it1->first].parameters["editable"]){
+//            edges_to_remove.push_back(it1->first);
+//        }
+//    }
+//    for(int i=0; i<edges_to_remove.size(); i++){
+//        remove_edge(edges_to_remove[i]);
+//    }
+//
+//    // Remove nodes that have no connections
+//    std::vector<int> nodes_to_remove;
+//    for(std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++){
+//        if(((nodes[it1->first].incoming_edges.size() + nodes[it1->first].outgoing_edges.size()) == 0)
+//           && nodes[it1->first].parameters["editable"]){
+//            nodes_to_remove.push_back(it1->first);
+//        }
+//    }
+//    for(int i=0; i<nodes_to_remove.size(); i++){
+//        remove_node(nodes_to_remove[i]);
+//    }
 }
 
 #endif
