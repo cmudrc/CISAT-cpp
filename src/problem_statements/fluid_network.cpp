@@ -44,23 +44,6 @@ std::vector< std::map<std::string, long double> > Solution::seed_node_parameters
     {{"set", 1}, {"x", 50.00}, {"y", 75.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}}
 };
 
-std::vector< std::map<std::string, long double> > Solution::seed_edge_parameters = {
-    {{"set", 1}, {"initial", 0}, {"terminal", 1}},
-    {{"set", 1}, {"initial", 1}, {"terminal", 2}},
-    {{"set", 1}, {"initial", 2}, {"terminal", 3}},
-    {{"set", 1}, {"initial", 3}, {"terminal", 4}},
-    {{"set", 1}, {"initial", 4}, {"terminal", 5}},
-    {{"set", 1}, {"initial", 5}, {"terminal", 6}},
-    {{"set", 1}, {"initial", 6}, {"terminal", 7}},
-    {{"set", 1}, {"initial", 7}, {"terminal", 8}},
-    {{"set", 1}, {"initial", 8}, {"terminal", 9}},
-    {{"set", 1}, {"initial", 9}, {"terminal", 10}},
-    {{"set", 1}, {"initial", 10}, {"terminal", 11}},
-    {{"set", 1}, {"initial", 11}, {"terminal", 12}},
-    {{"set", 1}, {"initial", 12}, {"terminal", 13}},
-    {{"set", 1}, {"initial", 13}, {"terminal", 0}}
-};
-
 // Integer to assign unique IDs to solutions
 int Solution::solution_counter = 0;
 
@@ -108,8 +91,8 @@ void Solution::create_seed_graph(void) {
         // Else just add the node
         else {
 
-            add_junction(seed_node_parameters[i]["x"],
-                         seed_node_parameters[i]["y"],
+            add_junction(seed_node_parameters[i]["x"] + uniform(10, -10),
+                         seed_node_parameters[i]["y"] + uniform(10, -10),
                          seed_node_parameters[i]["z"],
                          true);
             nodes[node_id_counter].parameters["type"] = seed_node_parameters[i]["type"];
