@@ -25,7 +25,7 @@ add_definitions(-DSHEA_FRAME=0
 # Define which problem statement to use
 add_definitions(-DPROBLEM_STATEMENT=FLUID
                 -DRULE_SET=MCCOMB
-                -DPROBLEM_NUMBER=1)
+                -DPROBLEM_NUMBER=2)
 
 set(SOURCE_FILES
     cisat.cpp

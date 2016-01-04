@@ -49,7 +49,6 @@ enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 #elif PROBLEM_NUMBER == 1
     const  std::vector<long double>    Solution::goal                 = {-0.005, 400};
     const  long double    Solution::fluid_u              = 1.3*std::pow(10,-3); // [PA-s]
-    //Available pipe sizes
     const std::vector< long double > Solution::pipe_diam = {0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14};
 
     std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
@@ -75,6 +74,60 @@ enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
         {{"set", 1}, {"x",  66.67}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}}
     };
 
+#elif PROBLEM_NUMBER == 2
+    const  std::vector<long double>    Solution::goal                 = {-0.005, 400};
+    const  long double    Solution::fluid_u              = 0.3; // [PA-s]
+    const std::vector< long double > Solution::pipe_diam = {0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28};
+    std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
+        {{"set", 1}, {"x", 50.00}, {"y", 0.00}, {"z", 0.00}, {"p", 500000.00}, {"type", INLET}},
+        {{"set", 1}, {"x", 75.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 100.00}, {"y", 40.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 100.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 100.00}, {"y", 60.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 80.00}, {"y", 80.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_OUTLET}},
+        {{"set", 1}, {"x", 60.00}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 50.00}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 40.00}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 20.00}, {"y", 80.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_OUTLET}},
+        {{"set", 1}, {"x", 0.00}, {"y", 60.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 0.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 0.00}, {"y", 40.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 25.00}, {"y", 20.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+
+        {{"set", 1}, {"x", 50.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 25.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 75.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 50.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 50.00}, {"y", 75.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}}
+    };
+
+
+#elif PROBLEM_NUMBER == 3
+    const  std::vector<long double>    Solution::goal                 = {-0.005, 400};
+    const  long double    Solution::fluid_u              = 0.3; // [PA-s]
+    const std::vector< long double > Solution::pipe_diam = {0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28};
+    std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
+        {{"set", 1}, {"x", 50.00}, {"y", 50.00}, {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
+
+        {{"set", 1}, {"x", 75.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 50.00}, {"y", 75.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 25.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 50.00}, {"y", 25.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+
+        {{"set", 1}, {"x", 32.50}, {"y", 67.50}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 32.50}, {"y", 32.50}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 67.50}, {"y", 67.50}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+        {{"set", 1}, {"x", 67.50}, {"y", 32.50}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
+
+        {{"set", 1}, {"x",   0.00}, {"y",  33.33}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x",   0.00}, {"y",  66.67}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 100.00}, {"y",  33.33}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x", 100.00}, {"y",  66.67}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x",  33.33}, {"y",   0.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x",  66.67}, {"y",   0.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x",  33.33}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}},
+        {{"set", 1}, {"x",  66.67}, {"y", 100.00}, {"z", 0.00}, {"p", -1.0}, {"type", OUTLET}}
+    };
 #endif
 // Integer to assign unique IDs to solutions
 int Solution::solution_counter = 0;
@@ -164,6 +217,7 @@ void Solution::compute_quality(void) {
         k = nodes[outlets[i]].outgoing_edges[0];
         q.push_back(std::abs(edges[k].parameters["Q"]));
     }
+    print(q);
 
     // Now, compute qualities
     if(is_valid()) {
@@ -709,6 +763,10 @@ void Solution::save_as_x3d(std::string save_to_file) {
     #if PROBLEM_NUMBER == 0
         x3d.start_scene(50, 50, 125);
     #elif PROBLEM_NUMBER == 1
+        x3d.start_scene(50, 50, 125);
+    #elif PROBLEM_NUMBER == 2
+        x3d.start_scene(50, 50, 125);
+    #elif PROBLEM_NUMBER == 3
         x3d.start_scene(50, 50, 125);
     #endif
     for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
