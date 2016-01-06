@@ -107,7 +107,7 @@ enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
     const  long double    Solution::fluid_u              = 0.3; // [PA-s]
     const std::vector< long double > Solution::pipe_diam = {0.04, 0.08, 0.12, 0.16, 0.20, 0.24, 0.28};
     std::vector< std::map<std::string, long double> > Solution::seed_node_parameters = {
-        {{"set", 1}, {"x", 50.00}, {"y", 50.00}, {"z", 0.00}, {"p", 35000.00}, {"type", INLET}},
+        {{"set", 1}, {"x", 50.00}, {"y", 50.00}, {"z", 0.00}, {"p", 500000.00}, {"type", INLET}},
 
         {{"set", 1}, {"x", 75.00}, {"y", 50.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
         {{"set", 1}, {"x", 50.00}, {"y", 75.00}, {"z", 0.00}, {"p", -1.0}, {"type", INTERMEDIATE_INLET}},
