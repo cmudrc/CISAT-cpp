@@ -12,8 +12,6 @@ const  unsigned long  Solution::number_of_move_ops   = 6;
 const  unsigned long  Solution::number_of_objectives = 2;
 
 // Fluid constants
-
-
 enum NodeTypes {INLET=1, INTERMEDIATE_INLET, OUTLET, INTERMEDIATE_OUTLET};
 
 // Problem definition
