@@ -257,3 +257,27 @@ bool Graph::node_exists(int n1) {
         return false;
     }
 }
+
+std::vector< std::vector<int> > Graph::return_connectivity_matrix(void) {
+    // Initialize the matrix that needs to be filled in
+    std::vector< std::vector<int> > C(static_cast<unsigned long>(number_of_nodes), std::vector<int>(static_cast<unsigned long>(number_of_nodes), 0));
+
+    int i = 0;
+    int j = 0;
+    print("start");
+    for (std::map<int, Node>::iterator it1 = nodes.begin(); it1 != nodes.end(); it1++) {
+        for (std::map<int, Node>::iterator it2 = nodes.begin(); it2 != nodes.end(); it2++) {
+            if(undirected_edge_exists(it1->first, it2->first)) {
+                C[i][j] = 1;
+                C[j][i] = 1;
+            }
+            j++;
+        }
+        j = 0;
+        i++;
+    }
+
+    print(C);
+
+    return C;
+}

@@ -82,6 +82,7 @@ public:
     // Displaying graph
     void print_undirected_connectivity_matrix(std::string label);
     void print_directed_edge_list(void);
+    std::vector< std::vector<int> > return_connectivity_matrix(void);
 };
 
 #endif
